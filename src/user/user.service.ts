@@ -2,9 +2,9 @@ import {HttpException, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {IUser, UserSchema} from "./user.schema";
 import {Model} from 'mongoose';
-import {RegistrationRequest} from "../api/user/registration.request";
+import {RegistrationRequest} from "../api/oauth2/registration.request";
 import {EmailAlreadyRegistered} from "../api/errors/errors.factory";
-import {RegistrationResponse} from "../api/user/registration.response";
+import {RegistrationResponse} from "../api/oauth2/registration.response";
 
 @Injectable()
 export class UserService {
