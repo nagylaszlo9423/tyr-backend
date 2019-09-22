@@ -7,7 +7,7 @@ abstract class GeneralException extends HttpException {
   }
 }
 
-export class BadRequest extends HttpException {
+export class BadRequestException extends HttpException {
   constructor() {
     super(new ErrorResponse('BAD_REQUEST'), 400);
   }
@@ -31,14 +31,20 @@ export class ForbiddenException extends HttpException {
   }
 }
 
-export class EmailAlreadyRegistered extends GeneralException {
+export class EmailAlreadyRegisteredException extends GeneralException {
   constructor() {
     super('EMAIL_ALREADY_REGISTERED');
   }
 }
 
-export class LoginDenied extends GeneralException{
+export class LoginDeniedException extends GeneralException{
   constructor() {
     super('LOGIN_DENIED');
+  }
+}
+
+export class InvalidTokenException extends GeneralException {
+  constructor() {
+    super('INVALID_TOKEN');
   }
 }
