@@ -5,7 +5,7 @@ export interface IAuthorizationCode extends mongoose.Document {
   clientId: string;
   redirectUri: string;
   userId: string;
-  scope: string;
+  expirationDate: Date;
 }
 
 export const AuthorizationCodeSchema = new mongoose.Schema({
@@ -13,5 +13,5 @@ export const AuthorizationCodeSchema = new mongoose.Schema({
   clientId: String,
   redirectUri: String,
   userId: String,
-  scope: String,
+  expirationDate: Date
 });

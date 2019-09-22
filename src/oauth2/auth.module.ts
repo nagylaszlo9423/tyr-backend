@@ -15,7 +15,7 @@ import {GoogleOauthMiddleware} from "./middlewares/google-oauth.middleware";
     PassportModule.register({defaultStrategy: 'google', session: true})
   ]
 })
-export class OauthModule implements NestModule {
+export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       .apply(GoogleOauthMiddleware)
