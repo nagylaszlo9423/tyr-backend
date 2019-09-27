@@ -1,17 +1,9 @@
-import * as mongoose from 'mongoose';
+import {TokenBaseSchema} from "./token-base.schema";
 
-export interface IAuthorizationCode extends mongoose.Document {
-  code: string;
+export class AuthorizationCode implements TokenBaseSchema{
   clientId: string;
   redirectUri: string;
   userId: string;
   expirationDate: Date;
+  value: string;
 }
-
-export const AuthorizationCodeSchema = new mongoose.Schema({
-  code: String,
-  clientId: String,
-  redirectUri: String,
-  userId: String,
-  expirationDate: Date
-});

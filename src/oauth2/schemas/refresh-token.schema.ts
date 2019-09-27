@@ -1,15 +1,8 @@
-import * as mongoose from 'mongoose';
+import {TokenBaseSchema} from "./token-base.schema";
 
-export interface IRefreshToken extends mongoose.Document {
-  token: string;
+export class RefreshToken implements TokenBaseSchema {
   accessToken: string;
-  expirationDate: Date;
   userId: string;
+  expirationDate: Date;
+  value: string;
 }
-
-export const RefreshTokenSchema = new mongoose.Schema({
-  token: String,
-  accessToken: String,
-  expirationDate: Date,
-  userId: String
-});

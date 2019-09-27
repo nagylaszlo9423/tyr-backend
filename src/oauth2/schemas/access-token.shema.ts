@@ -1,15 +1,8 @@
-import * as mongoose from 'mongoose';
+import {TokenBaseSchema} from "./token-base.schema";
 
-export interface IAccessToken extends mongoose.Document {
-  token: string;
+export class AccessToken implements TokenBaseSchema {
   clientId: string;
   userId: string;
   expirationDate: Date;
+  value: string;
 }
-
-export const AccessTokenSchema = new mongoose.Schema({
-  token: String,
-  clientId: String,
-  userId: String,
-  expirationDate: Date
-});

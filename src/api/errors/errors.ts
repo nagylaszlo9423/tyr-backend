@@ -1,9 +1,10 @@
-import {HttpException} from "@nestjs/common";
 import {ErrorResponse} from "./error.response";
+import {HttpException} from "@nestjs/common";
+
 
 abstract class GeneralException extends HttpException {
-  protected constructor(code: string, message?: string) {
-    super(new ErrorResponse(code, message), 422);
+  protected constructor(response: ErrorResponse) {
+    super(response, 422);
   }
 }
 
@@ -20,8 +21,8 @@ export class UnauthorizedException extends HttpException {
 }
 
 export class NotFoundException extends HttpException {
-  constructor() {
-    super(new ErrorResponse('NOT_FOUND'), 404);
+  constructor(message?: string) {
+    super(new ErrorResponse('NOT_FOUND', message), 404);
   }
 }
 
@@ -31,20 +32,32 @@ export class ForbiddenException extends HttpException {
   }
 }
 
-export class EmailAlreadyRegisteredException extends GeneralException {
+export class InternalServerErrorException extends HttpException {
   constructor() {
-    super('EMAIL_ALREADY_REGISTERED');
+    super(new ErrorResponse('INTERNAL_SERVER_ERROR'), 500);
   }
 }
 
-export class LoginDeniedException extends GeneralException{
+export class EmailAlreadyRegisteredException extends GeneralException {
   constructor() {
-    super('LOGIN_DENIED');
+    super(new ErrorResponse('EMAIL_ALREADY_REGISTERED'));
+  }
+}
+
+export class LoginDeniedException extends GeneralException {
+  constructor() {
+    super(new ErrorResponse('LOGIN_DENIED'));
   }
 }
 
 export class InvalidTokenException extends GeneralException {
   constructor() {
-    super('INVALID_TOKEN');
+    super(new ErrorResponse('INVALID_TOKEN'));
+  }
+}
+
+export class InvalidAuthorizationCode extends GeneralException{
+  constructor() {
+    super(new ErrorResponse('INVALID_AUTHORIZATION_CODE'));
   }
 }

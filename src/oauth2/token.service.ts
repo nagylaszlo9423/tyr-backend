@@ -1,78 +1,63 @@
 import {Injectable, Logger} from "@nestjs/common";
-import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
-import {IAccessToken} from "./schemas/access-token.shema";
-import {IRefreshToken} from "./schemas/refresh-token.schema";
+import {AccessToken} from "./schemas/access-token.shema";
+import {RefreshToken} from "./schemas/refresh-token.schema";
 import * as crypto from 'crypto';
 import {environment} from "../environment/environment";
 import {InvalidTokenException} from "../api/errors/errors";
 import {TokenResponse} from "../api/oauth2/token.response";
-import {Interval, NestSchedule} from "nest-schedule";
+import {RedisService} from "../core/redis.service";
 
 
 @Injectable()
-export class TokenService extends NestSchedule {
+export class TokenService {
 
-  constructor(@InjectModel('RefreshToken') private refreshTokenModel: Model<IRefreshToken>,
-              @InjectModel('AccessToken') private accessTokenModel: Model<IAccessToken>,
-              private logger: Logger) {
-    super();
-  }
+  private static readonly accessTokenExpiresInSeconds = environment.accessToken.expiresInMinutes * 60;
+  private static readonly refreshTokenExpiresInSeconds = environment.refreshToken.expiresInMinutes * 60;
 
-  async renewToken(token: string): Promise<TokenResponse> {
-    const refreshToken = await this.refreshTokenModel.findOne({token: token}).exec();
-    const accessToken = await this.accessTokenModel.findOne({token: refreshToken.token}).exec();
+  constructor(private redisService: RedisService) {}
+
+  async renewToken(refreshTokenValue: string): Promise<TokenResponse> {
+    const refreshToken: RefreshToken = await this.redisService.getToken(refreshTokenValue, 'refresh');
+    const accessToken: AccessToken = await this.redisService.getToken(refreshToken.value, 'access');
     if (refreshToken.expirationDate < new Date()) {
       throw new InvalidTokenException();
     }
     const userId = accessToken.userId;
     const clientId = accessToken.clientId;
-    await accessToken.remove();
-    await refreshToken.remove();
+
+    await this.redisService.removeToken(accessToken.value, 'access');
+    await this.redisService.removeToken(refreshToken.value, 'refresh');
+
     return this.createTokens(userId, clientId);
   }
 
   async createTokens(userId: string, clientId: string) {
     const accessToken = await this.createAccessToken(clientId, userId);
-    const refreshToken = await this.createRefreshToken(accessToken.token, userId);
+    const refreshToken = await this.createRefreshToken(accessToken.value, userId);
     return new TokenResponse({
-      accessToken: accessToken.token,
+      accessToken: accessToken.value,
       accessTokenExpiration: accessToken.expirationDate,
-      refreshToken: refreshToken.token,
+      refreshToken: refreshToken.value,
       refreshTokenExpiration: refreshToken.expirationDate
     });
   }
 
-  private createAccessToken(clientId: string, userId: string): Promise<IAccessToken> {
-    const accessToken = new this.accessTokenModel();
+  private createAccessToken(clientId: string, userId: string): Promise<AccessToken> {
+    const accessToken = new AccessToken();
     accessToken.clientId = clientId;
-    accessToken.token = crypto.randomBytes(environment.accessToken.length).toString('hex');
+    accessToken.value = crypto.randomBytes(environment.accessToken.length).toString('hex');
     accessToken.userId = userId;
-    return accessToken.save();
+    return this.redisService.addTokenAndSetExpiration(accessToken.value, accessToken, 'access', environment.accessToken.expiresInMinutes * 60);
   }
 
-  private createRefreshToken(accessToken: string, userId: string): Promise<IRefreshToken> {
-    const refreshToken = new this.refreshTokenModel();
+  private createRefreshToken(accessToken: string, userId: string): Promise<RefreshToken> {
+    const refreshToken = new RefreshToken();
     const expirationDate = new Date();
     expirationDate.setMinutes(expirationDate.getMinutes() + environment.refreshToken.expiresInMinutes);
-    refreshToken.token = crypto.randomBytes(environment.refreshToken.length).toString('hex');
+    refreshToken.value = crypto.randomBytes(environment.refreshToken.length).toString('hex');
     refreshToken.accessToken = accessToken;
     refreshToken.expirationDate = expirationDate;
     refreshToken.userId = userId;
-    return refreshToken.save();
-  }
-
-  @Interval(environment.accessToken.autoCleanInMillis)
-  async deleteExpiredAccessTokens() {
-    this.logger.log('Deleting expired access tokens...');
-    await this.accessTokenModel.deleteMany({expirationDate: {$lt: new Date()}}).exec();
-    this.logger.log('Deleted expired access tokens');
-  }
-
-  @Interval(environment.refreshToken.autoCleanInMillis)
-  async deleteExpiredRefreshToken() {
-    this.logger.log('Deleting expired refresh tokens...');
-    await this.refreshTokenModel.deleteMany({expirationDate: {$lt: new Date()}}).exec();
-    this.logger.log('Deleted expired refresh tokens');
+    return this.redisService.addTokenAndSetExpiration(refreshToken.value, refreshToken, 'refresh', environment.refreshToken.expiresInMinutes * 60);
   }
 }
