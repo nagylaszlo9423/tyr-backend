@@ -30,14 +30,14 @@ export class Oauth2Controller {
 
   @Post('token')
   token(@Query('grant_type') grantType: string,
-        @Query('code') code: string,
-        @Query('redirect_uri') redirectUri: string,
-        @Query('client_id') clientId: string,
-        @Query('refresh_token') refreshToken: string): Promise<TokenResponse> {
+        @Query('code') code?: string,
+        @Query('redirect_uri') redirectUri?: string,
+        @Query('client_id') clientId?: string,
+        @Query('refresh_token') refreshToken?: string): Promise<TokenResponse> {
     if (grantType !== 'authorization_code' && grantType !== 'refresh_token' || !clientId) {
       throw new BadRequestException()
     }
-    if (grantType === 'authorization_code' && code) {
+    if (grantType === 'authorization_code' && code && redirectUri) {
       return this.authService.exchangeAuthorizationCodeForTokens(code, clientId, redirectUri);
     }
     if (grantType === 'refresh_token' && refreshToken) {

@@ -1,6 +1,6 @@
 
 
 export class ErrorResponse {
-  constructor(public error: string, message?: string) {
+  constructor(public cause: string, message?: string) {
   }
 }
