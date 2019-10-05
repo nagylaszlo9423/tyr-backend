@@ -32,7 +32,7 @@ export class AuthService {
     return this.tokenService.renewToken(refreshToken);
   }
 
-  async register(request: RegistrationRequest): Promise<RegistrationResponse> {
+  register(request: RegistrationRequest): Promise<RegistrationResponse> {
     return this.userService.register(request);
   }
 }

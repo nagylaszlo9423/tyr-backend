@@ -3,7 +3,7 @@ import {AccessToken} from "./schemas/access-token.shema";
 import {RefreshToken} from "./schemas/refresh-token.schema";
 import * as crypto from 'crypto';
 import {environment} from "../environment/environment";
-import {InvalidTokenException} from "../api/errors/errors";
+import {GeneralException} from "../api/errors/errors";
 import {TokenResponse} from "../api/oauth2/token.response";
 import {RedisService} from "../core/redis.service";
 
@@ -20,7 +20,7 @@ export class TokenService {
     const refreshToken: RefreshToken = await this.redisService.getToken(refreshTokenValue, 'refresh');
     const accessToken: AccessToken = await this.redisService.getToken(refreshToken.value, 'access');
     if (refreshToken.expirationDate < new Date()) {
-      throw new InvalidTokenException();
+      throw new GeneralException("INVALID_TOKEN");
     }
     const userId = accessToken.userId;
     const clientId = accessToken.clientId;
@@ -47,7 +47,7 @@ export class TokenService {
     accessToken.clientId = clientId;
     accessToken.value = crypto.randomBytes(environment.accessToken.length).toString('hex');
     accessToken.userId = userId;
-    return this.redisService.addTokenAndSetExpiration(accessToken.value, accessToken, 'access', environment.accessToken.expiresInMinutes * 60);
+    return this.redisService.addTokenAndSetExpiration(accessToken.value, accessToken, 'access', TokenService.accessTokenExpiresInSeconds);
   }
 
   private createRefreshToken(accessToken: string, userId: string): Promise<RefreshToken> {
@@ -58,6 +58,6 @@ export class TokenService {
     refreshToken.accessToken = accessToken;
     refreshToken.expirationDate = expirationDate;
     refreshToken.userId = userId;
-    return this.redisService.addTokenAndSetExpiration(refreshToken.value, refreshToken, 'refresh', environment.refreshToken.expiresInMinutes * 60);
+    return this.redisService.addTokenAndSetExpiration(refreshToken.value, refreshToken, 'refresh', TokenService.refreshTokenExpiresInSeconds);
   }
 }

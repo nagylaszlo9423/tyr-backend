@@ -4,7 +4,7 @@ import * as crypto from 'crypto'
 import {environment} from "../environment/environment";
 import {UserService} from "../user/user.service";
 import {RedisService} from "../core/redis.service";
-import {InvalidAuthorizationCode, NotFoundException} from "../api/errors/errors";
+import {GeneralException, NotFoundException} from "../api/errors/errors";
 
 
 @Injectable()
@@ -27,10 +27,10 @@ export class AuthorizationCodeService {
 
   async getUserIdForAuthorizationCode(code: string, clientId: string, redirectUri: string): Promise<string> {
     const authorizationCode = await this.redisService.getToken<AuthorizationCode>(code, 'code').catch(() => {
-      throw new InvalidAuthorizationCode();
+      throw new GeneralException("INVALID_AUTHORIZATION_CODE");
     });
     if (authorizationCode.clientId != clientId || authorizationCode.redirectUri != redirectUri) {
-      throw new InvalidAuthorizationCode();
+      throw new GeneralException("INVALID_AUTHORIZATION_CODE");
     }
     const user = await this.userService.findById(authorizationCode.userId).catch(() => {
       throw new NotFoundException('User not found!');

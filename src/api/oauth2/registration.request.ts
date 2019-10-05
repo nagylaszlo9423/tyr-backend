@@ -9,8 +9,4 @@ export class RegistrationRequest {
   @IsNotEmpty()
   password: string;
 
-  constructor(init?: Partial<RegistrationRequest>) {
-    init = init || {};
-    Object.assign(this, init);
-  }
 }

@@ -3,7 +3,7 @@ import {InjectModel} from "@nestjs/mongoose";
 import {IUser} from "./user.schema";
 import {Model} from 'mongoose';
 import {RegistrationRequest} from "../api/oauth2/registration.request";
-import {EmailAlreadyRegisteredException, LoginDeniedException} from "../api/errors/errors";
+import {GeneralException} from "../api/errors/errors";
 import {RegistrationResponse} from "../api/oauth2/registration.response";
 import * as crypto from 'crypto';
 import {LoginRequest} from "../api/oauth2/login.request";
@@ -16,12 +16,13 @@ export class UserService {
   async register(request: RegistrationRequest): Promise<RegistrationResponse> {
     const existingUser: IUser = await this.findByEmail(request.email);
     if (existingUser) {
-      throw new EmailAlreadyRegisteredException();
+      throw new GeneralException("EMAIL_ALREADY_REGISTERED");
     }
     const newUser: IUser = new this.userModel();
     newUser.email = request.email;
     newUser.password = UserService.hashString(request.password);
     await newUser.save();
+    console.log(newUser._id);
     return {
       userId: newUser._id
     }
@@ -30,7 +31,7 @@ export class UserService {
   async login(request: LoginRequest): Promise<string> {
     const user = await this.findByEmail(request.email);
     if (!user || user.password !== UserService.hashString(request.password)) {
-      throw new LoginDeniedException();
+      throw new GeneralException("LOGIN_DENIED");
     }
     return user._id;
   }

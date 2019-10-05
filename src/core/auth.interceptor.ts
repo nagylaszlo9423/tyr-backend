@@ -3,7 +3,6 @@ import {ExecutionContext, Injectable, Logger} from "@nestjs/common";
 import {IncomingHttpHeaders} from "http";
 import {RedisService} from "./redis.service";
 import {AccessToken} from "../oauth2/schemas/access-token.shema";
-import {UnauthorizedException} from "../api/errors/errors";
 import {Request, Response} from "express";
 import {ErrorResponse} from "../api/errors/error.response";
 
@@ -21,7 +20,7 @@ export class AuthInterceptor implements NestInterceptor {
         await this.authorize(request.headers);
       } catch (e) {
         this.logger.error(e, undefined,'AuthInterceptor');
-        return response.status(401).json(new ErrorResponse('Unauthorized'));
+        return response.status(401).json(new ErrorResponse('UNAUTHORIZED'));
       }
     }
     return next.handle();

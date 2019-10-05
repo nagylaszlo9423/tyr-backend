@@ -1,6 +1,7 @@
+import {Cause} from "./errors";
 
 
 export class ErrorResponse {
-  constructor(public cause: string, message?: string) {
+  constructor(public cause: Cause, message?: string) {
   }
 }
