@@ -1,6 +1,5 @@
 import {CallHandler, NestInterceptor} from "@nestjs/common/interfaces/features/nest-interceptor.interface";
 import {ExecutionContext, Injectable, Logger} from "@nestjs/common";
-import {IncomingHttpHeaders} from "http";
 import {RedisService} from "./redis.service";
 import {AccessToken} from "../oauth2/schemas/access-token.shema";
 import {Request, Response} from "express";
@@ -17,7 +16,7 @@ export class AuthInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse<Response>();
     if(AuthInterceptor.isSecured(request.url)) {
       try {
-        await this.authorize(request.headers);
+        await this.authorize(request);
       } catch (e) {
         this.logger.error(e, undefined,'AuthInterceptor');
         return response.status(401).json(new ErrorResponse('UNAUTHORIZED'));
@@ -26,12 +25,12 @@ export class AuthInterceptor implements NestInterceptor {
     return next.handle();
   }
 
-  private async authorize(headers: IncomingHttpHeaders) {
-    const tokenValue = headers['Authorization'];
+  private async authorize(request: Request) {
+    const tokenValue = request.headers['Authorization'];
     if (tokenValue && (typeof tokenValue === 'string')) {
       const token: AccessToken = await this.redisService.getToken(tokenValue, 'access');
       if (token) {
-        headers['User-Id'] = token.userId;
+        request.headers['User-Id'] = token.userId;
       }
     } else {
       throw new Error('Invalid token');

@@ -32,8 +32,10 @@ export class TokenService {
   }
 
   async createTokens(userId: string, clientId: string) {
-    const accessToken = await this.createAccessToken(clientId, userId);
-    const refreshToken = await this.createRefreshToken(accessToken.value, userId);
+    const accessToken = TokenService.createAccessToken(clientId, userId);
+    const accessTokenHashedKey = await this.redisService.addTokenAndSetExpiration(accessToken.value, accessToken, 'access', TokenService.accessTokenExpiresInSeconds);
+    const refreshToken = TokenService.createRefreshToken(accessTokenHashedKey);
+    await this.redisService.addTokenAndSetExpiration([accessToken.value, userId], refreshToken, 'refresh', TokenService.refreshTokenExpiresInSeconds);
     return new TokenResponse({
       accessToken: accessToken.value,
       accessTokenExpiration: accessToken.expirationDate,
@@ -42,22 +44,27 @@ export class TokenService {
     });
   }
 
-  private createAccessToken(clientId: string, userId: string): Promise<AccessToken> {
+  async removeTokens(accessToken: string) {
+    const userId = (await this.redisService.getToken(accessToken, 'access')).value;
+    await this.redisService.removeToken(accessToken, 'access');
+    await this.redisService.removeToken([accessToken, userId], 'refresh');
+  }
+
+  private static createAccessToken(clientId: string, userId: string): AccessToken {
     const accessToken = new AccessToken();
     accessToken.clientId = clientId;
     accessToken.value = crypto.randomBytes(environment.accessToken.length).toString('hex');
     accessToken.userId = userId;
-    return this.redisService.addTokenAndSetExpiration(accessToken.value, accessToken, 'access', TokenService.accessTokenExpiresInSeconds);
+    return accessToken;
   }
 
-  private createRefreshToken(accessToken: string, userId: string): Promise<RefreshToken> {
+  private static createRefreshToken(userId: string): RefreshToken {
     const refreshToken = new RefreshToken();
     const expirationDate = new Date();
     expirationDate.setMinutes(expirationDate.getMinutes() + environment.refreshToken.expiresInMinutes);
     refreshToken.value = crypto.randomBytes(environment.refreshToken.length).toString('hex');
-    refreshToken.accessToken = accessToken;
     refreshToken.expirationDate = expirationDate;
     refreshToken.userId = userId;
-    return this.redisService.addTokenAndSetExpiration(refreshToken.value, refreshToken, 'refresh', TokenService.refreshTokenExpiresInSeconds);
+    return refreshToken;
   }
 }

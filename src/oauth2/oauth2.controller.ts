@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post, Query, Res} from "@nestjs/common";
+import {Body, Controller, Get, Header, Headers, Param, Post, Query, Res} from "@nestjs/common";
 import {LoginRequest} from "../api/oauth2/login.request";
 import {Response} from 'express';
 import {AuthService} from "./auth.service";
@@ -52,8 +52,9 @@ export class Oauth2Controller {
   }
 
   @Post('logout')
-  logout() {
-
+  logout(@Headers('authorization') token: any) {
+    if (!token) throw new BadRequestException();
+    return this.authService.logout(token);
   }
 
   @Post('login/:provider(google|facebook)')

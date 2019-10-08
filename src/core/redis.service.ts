@@ -23,16 +23,16 @@ export class RedisService {
     this.redisClient.on('error', (reason) => logger.error(reason));
   }
 
-  addTokenAndSetExpiration<T extends TokenBaseSchema>(key: string, value: T, prefix: KeyPrefix, expireInSecond?: number): Promise<T> {
+  addTokenAndSetExpiration<T extends TokenBaseSchema>(key: string|string[], value: T, prefix: KeyPrefix, expireInSecond?: number): Promise<string> {
     const _key = RedisService.createKey(key, prefix);
     this.logger.debug(`set ${_key}`, RedisService.Context);
-    return new Promise<T>((resolve, reject) =>
+    return new Promise<string>((resolve, reject) =>
       this.redisClient.set(_key, RedisService.cipherValue(JSON.stringify(value)), this.handle(reject, () =>
         this.redisClient.expire(_key, expireInSecond, this.handle(reject, () => {
           const expirationDate = new Date();
           expirationDate.setSeconds(expirationDate.getSeconds() + expireInSecond);
           value.expirationDate = expirationDate;
-          resolve(value);
+          resolve(_key);
         })))
       ))
   }
@@ -49,7 +49,7 @@ export class RedisService {
       })));
   }
 
-  removeToken(key: string, prefix: KeyPrefix): Promise<void> {
+  removeToken(key: string|string[], prefix: KeyPrefix): Promise<void> {
     const _key = RedisService.createKey(key, prefix);
     this.logger.debug(`del ${_key}`, RedisService.Context);
     return new Promise<void>((resolve, reject) =>
@@ -61,8 +61,9 @@ export class RedisService {
       }));
   }
 
-  private static createKey(key: string, prefix: KeyPrefix): string {
-    return `${prefix}:${RedisService.hashKey(key)}`;
+  private static createKey(key: string|string[], prefix: KeyPrefix): string {
+    const _key = typeof key === 'string' ? key : key.reduce((previousValue, currentValue) => previousValue + currentValue);
+    return `${prefix}:${RedisService.hashKey(_key)}`;
   }
 
   private static hashKey(key: string): string {

@@ -22,7 +22,8 @@ export class AuthorizationCodeService {
     authorizationCode.userId = userId;
     authorizationCode.clientId = clientId;
     authorizationCode.redirectUri = redirectUri;
-    return (await this.redisService.addTokenAndSetExpiration(authorizationCode.value, authorizationCode, 'code', AuthorizationCodeService.expirationInSeconds)).value;
+    await this.redisService.addTokenAndSetExpiration(authorizationCode.value, authorizationCode, 'code', AuthorizationCodeService.expirationInSeconds)
+    return authorizationCode.value;
   }
 
   async getUserIdForAuthorizationCode(code: string, clientId: string, redirectUri: string): Promise<string> {

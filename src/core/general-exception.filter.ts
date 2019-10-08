@@ -5,7 +5,6 @@ import {ErrorResponse} from "../api/errors/error.response";
 @Catch()
 export class GeneralExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): any {
-    console.log('caught', exception);
     const response = host.switchToHttp().getResponse<Response>();
     if (exception instanceof HttpException) {
       const ex = exception as HttpException;

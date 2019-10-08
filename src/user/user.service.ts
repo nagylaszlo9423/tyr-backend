@@ -22,7 +22,6 @@ export class UserService {
     newUser.email = request.email;
     newUser.password = UserService.hashString(request.password);
     await newUser.save();
-    console.log(newUser._id);
     return {
       userId: newUser._id
     }
