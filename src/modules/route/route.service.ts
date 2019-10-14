@@ -1,7 +1,7 @@
 import {Injectable} from "@nestjs/common";
 import {RouteRequest} from "../../api/route/route.request";
 import {InjectModel} from "@nestjs/mongoose";
-import {IRoute} from "./route.schema";
+import {IRoute, RouteState} from "./route.schema";
 import {Model} from "mongoose";
 import {RouteResponse} from "../../api/route/route.response";
 import {createAudit, modifyAudit} from "../../core/schemas/audit.schema";
@@ -47,7 +47,8 @@ export class RouteService {
   }
 
   async findAllPublic(): Promise<RouteResponse[]> {
-
+    const routes: IRoute[] = await this.routeModel.find({state: RouteState.PUBLIC}).exec();
+    return routes.map(this.routeModelToResponse);
   }
 
   async changeState(routeId: string, userId: string): Promise<void> {
