@@ -1,12 +1,12 @@
 import {Injectable} from "@nestjs/common";
-import {LoginRequest} from "../api/oauth2/login.request";
+import {LoginRequest} from "../../api/oauth2/login.request";
 import {UserService} from "../user/user.service";
-import {RegistrationRequest} from "../api/oauth2/registration.request";
-import {RegistrationResponse} from "../api/oauth2/registration.response";
-import {LoginResponse} from "../api/oauth2/login.response";
+import {RegistrationRequest} from "../../api/oauth2/registration.request";
+import {RegistrationResponse} from "../../api/oauth2/registration.response";
+import {LoginResponse} from "../../api/oauth2/login.response";
 import {AuthorizationCodeService} from "./authorization-code.service";
 import {TokenService} from "./token.service";
-import {TokenResponse} from "../api/oauth2/token.response";
+import {TokenResponse} from "../../api/oauth2/token.response";
 
 
 @Injectable()

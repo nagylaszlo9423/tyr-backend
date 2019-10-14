@@ -2,10 +2,10 @@ import {Injectable, Logger} from "@nestjs/common";
 import {AccessToken} from "./schemas/access-token.shema";
 import {RefreshToken} from "./schemas/refresh-token.schema";
 import * as crypto from 'crypto';
-import {environment} from "../environment/environment";
-import {GeneralException} from "../api/errors/errors";
-import {TokenResponse} from "../api/oauth2/token.response";
-import {RedisService} from "../core/redis.service";
+import {environment} from "../../environment/environment";
+import {GeneralException} from "../../api/errors/errors";
+import {TokenResponse} from "../../api/oauth2/token.response";
+import {RedisService} from "../../core/redis.service";
 
 
 @Injectable()

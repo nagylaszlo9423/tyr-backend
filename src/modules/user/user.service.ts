@@ -2,11 +2,11 @@ import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {IUser} from "./user.schema";
 import {Model} from 'mongoose';
-import {RegistrationRequest} from "../api/oauth2/registration.request";
-import {GeneralException} from "../api/errors/errors";
-import {RegistrationResponse} from "../api/oauth2/registration.response";
+import {RegistrationRequest} from "../../api/oauth2/registration.request";
+import {GeneralException} from "../../api/errors/errors";
+import {RegistrationResponse} from "../../api/oauth2/registration.response";
 import * as crypto from 'crypto';
-import {LoginRequest} from "../api/oauth2/login.request";
+import {LoginRequest} from "../../api/oauth2/login.request";
 
 @Injectable()
 export class UserService {
