@@ -1,11 +1,14 @@
 import {Module} from "@nestjs/common";
 import {MongooseModule} from "@nestjs/mongoose";
-import {RouteSchema} from "./route.schema";
 import {RouteService} from "./route.service";
+import {RouteSchema} from "./route.schema";
+import {RouteController} from "./route.controller";
 
 @Module({
-  imports: [MongooseModule.forFeature([{name: 'Route', schema: RouteSchema}])],
-  controllers: [],
+  imports: [
+    MongooseModule.forFeature([{name: 'Route', schema: RouteSchema}])
+  ],
+  controllers: [RouteController],
   providers: [RouteService]
 })
 export class UserModule {

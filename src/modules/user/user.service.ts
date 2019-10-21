@@ -1,24 +1,26 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
-import {IUser} from "./user.schema";
-import {Model} from 'mongoose';
+import {User} from "./user.schema";
+import {Model, Schema} from 'mongoose';
 import {RegistrationRequest} from "../../api/oauth2/registration.request";
 import {GeneralException} from "../../api/errors/errors";
 import {RegistrationResponse} from "../../api/oauth2/registration.response";
 import * as crypto from 'crypto';
 import {LoginRequest} from "../../api/oauth2/login.request";
+import {BaseService} from "../../core/base.service";
 
 @Injectable()
-export class UserService {
-  constructor(@InjectModel('User') private readonly userModel: Model<IUser>) {
+export class UserService extends BaseService<User> {
+  constructor(@InjectModel('User') userModel: Model<User>) {
+    super(userModel);
   }
 
   async register(request: RegistrationRequest): Promise<RegistrationResponse> {
-    const existingUser: IUser = await this.findByEmail(request.email);
+    const existingUser: User = await this.findByEmail(request.email);
     if (existingUser) {
       throw new GeneralException("EMAIL_ALREADY_REGISTERED");
     }
-    const newUser: IUser = new this.userModel();
+    const newUser: User = new this.model();
     newUser.email = request.email;
     newUser.password = UserService.hashString(request.password);
     await newUser.save();
@@ -35,12 +37,12 @@ export class UserService {
     return user._id;
   }
 
-  async findById(id: string): Promise<IUser> {
-    return this.userModel.findById(id).exec()
+  async findById(id: string): Promise<User> {
+    return this.fetchById(id);
   }
 
-  async findByEmail(email: string): Promise<IUser> {
-    return this.userModel.findOne({email: email}).exec();
+  async findByEmail(email: string): Promise<User> {
+    return this.model.findOne({email: email}).exec();
   }
 
   private static hashString(str: string): string {
