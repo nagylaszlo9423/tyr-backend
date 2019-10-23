@@ -40,9 +40,9 @@ export class Audit {
       docs.forEach(doc => {
         if (doc['_userId']) {
           if (doc['audit']) {
-            Audit.modifyAudit(doc.audit, this['_userId'])
+            Audit.modifyAudit(doc.audit, doc['_userId'])
           } else {
-            doc.audit = Audit.createAudit(this['_userId'])
+            doc.audit = Audit.createAudit(doc['_userId'])
           }
         }
       });

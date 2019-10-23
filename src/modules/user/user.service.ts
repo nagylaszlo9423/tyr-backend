@@ -38,7 +38,7 @@ export class UserService extends BaseService<User> {
   }
 
   async findById(id: string): Promise<User> {
-    return this.fetchById(id);
+    return this._fetchById(id);
   }
 
   async findByEmail(email: string): Promise<User> {

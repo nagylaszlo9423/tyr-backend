@@ -1,15 +1,14 @@
-import {Model, Schema, Types} from "mongoose";
-import {Audit, modifyAudit} from "../../core/schemas/audit.schema";
+import {Model} from "mongoose";
 import {RouteMapper} from "./route.mapper";
 import {InjectModel} from "@nestjs/mongoose";
-import {Route, RouteState} from "./route.schema";
+import {Route, RouteVisibility} from "./route.schema";
 import {RouteRequest} from "../../api/route/route.request";
 import {RouteResponse} from "../../api/route/route.response";
 import {Injectable} from "@nestjs/common";
 import {BaseService} from "../../core/base.service";
-import {UserService} from "../user/user.service";
 import {GroupService} from "../group/group.service";
 import {ForbiddenException} from "../../api/errors/errors";
+import {Group} from "../group/group.schema";
 
 @Injectable()
 export class RouteService extends BaseService<Route> {
@@ -18,43 +17,65 @@ export class RouteService extends BaseService<Route> {
     super(routeModel);
   }
 
-  public async create(request: RouteRequest, userId: string): Promise<string> {
+  async create(request: RouteRequest, userId: string): Promise<string> {
     const route = new this.model();
     RouteMapper.requestToModel(request, route);
-    route.audit = await modifyAudit(route.audit, userId);
-    route.owner = new Schema.Types.ObjectId(userId);
-    return route.save().then(route => route._id);
+    route.owner = userId;
+    return this._saveAndAudit(route, userId).then(route => route._id);
   }
 
   async update(request: RouteRequest, id: string, userId: string): Promise<void> {
-    await this.fetchById(id);
+    await this._fetchById(id);
     const route = new this.model();
       RouteMapper.requestToModel(request, route);
     route._id = id;
-    await this.saveAndAudit(route, userId);
+    await this._saveAndAudit(route, userId);
   }
 
-  async deleteById(id: string): Promise<void> {
-    return this.removeById(id)
+  async deleteById(routeId: string, userId: string): Promise<void> {
+    const route = await this._fetchById(routeId);
+    if (route.owner !== userId) {
+      throw new ForbiddenException();
+    }
+    return this._removeById(routeId)
   }
 
-  async findById(id: string): Promise<RouteResponse> {
-    return RouteMapper.modelToResponse(await this.fetchById(id));
+  async findById(routeId: string, userId: string): Promise<RouteResponse> {
+    const route = await this.model.findById(routeId).populate('group');
+    const group = route.group as Group;
+    if (route.visibility === RouteVisibility.PRIVATE && route.owner !== userId) {
+      throw new ForbiddenException();
+    }
+    if (route.visibility === RouteVisibility.GROUP && group && !this.isUserInGroup(group, userId)) {
+      throw new ForbiddenException();
+    }
+    return RouteMapper.modelToResponse(route);
   }
 
   async shareInGroup(routeId: string, groupId: string, userId: string): Promise<void> {
-    const route = await this.fetchById(routeId);
-    const group = await this.groupService.fetchById(groupId);
-    const isUserInGroup = group.users.findIndex(_userId => _userId === userId) > -1;
-    if (!isUserInGroup) {
+    const route = await this._fetchById(routeId);
+    const group = await this.groupService._fetchById(groupId);
+    if (!this.isUserInGroup(group, userId)) {
       throw new ForbiddenException();
     }
-    route.state = RouteState.GROUP;
+    route.visibility = RouteVisibility.GROUP;
     route.group = group;
-    await this.saveAndAudit(route, userId);
+    await this._saveAndAudit(route, userId);
   }
 
-  async publish(): Promise<void> {
+  async publish(routeId: string, userId: string): Promise<void> {
+    const route = await this._fetchById(routeId);
+    if (route.visibility === RouteVisibility.PUBLIC) {
+      return;
+    }
+    if (route.owner !== userId) {
+      throw new ForbiddenException();
+    }
+    route.visibility = RouteVisibility.PUBLIC;
+    await this._saveAndAudit(route, userId);
+  }
 
+  private isUserInGroup(group: Group, userId: string): boolean {
+    return group.members.findIndex(_userId => _userId === userId) > -1;
   }
 }

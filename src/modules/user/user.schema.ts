@@ -1,8 +1,10 @@
 import * as mongoose from 'mongoose';
-import {UserRole} from "./user-role";
-import {Schema} from "mongoose";
 import {Route} from "../route/route.schema";
 import {Group} from "../group/group.schema";
+
+export enum UserRole {
+  USER = 'USER', ADMIN = 'ADMIN'
+}
 
 export interface User extends mongoose.Document {
   email: string;
@@ -16,7 +18,7 @@ export interface User extends mongoose.Document {
 export const UserSchema = new mongoose.Schema({
   email: {type: String, required: true, unique: true},
   password: {type: String, required: true, unique: true},
-  role: {type:UserRole, required: true},
+  role: {type: String, required: true, enum: ['USER', 'ADMIN'], default: 'USER'},
   friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   groups: [{type: mongoose.Schema.Types.ObjectId, ref: 'Group'}]
 });

@@ -1,4 +1,4 @@
-import {RouteState} from "../../modules/route/route.schema";
+import {RouteVisibility} from "../../modules/route/route.schema";
 import {IPolygon} from "../../core/schemas/polygon.schema";
 import {IAudit} from "../../core/schemas/audit.schema";
 
