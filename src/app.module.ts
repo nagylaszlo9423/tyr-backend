@@ -7,14 +7,23 @@ import {UserModule} from "./modules/user/user.module";
 import {ScheduleModule} from "nest-schedule";
 import {environment} from "./environment/environment";
 import {APP_INTERCEPTOR} from "@nestjs/core";
-import {RedisService} from "./core/redis.service";
-import {AuthInterceptor} from "./core/auth.interceptor";
+import {RedisService} from "./core/security/redis.service";
+import {AuthInterceptor} from "./core/security/auth.interceptor";
+import {RouteModule} from "./modules/route/route.module";
+import {GroupModule} from "./modules/group/group.module";
+import {ArticleModule} from "./modules/article/article.module";
+import {ResourceModule} from "./modules/resource/resource.module";
+import {ContextProviderService} from "./core/services/context-provider.service";
 
 @Module({
   imports: [
     MongooseModule.forRoot(`${environment.mongoDbUrl}/${environment.collection}`, {useNewUrlParser: true, useUnifiedTopology: true}),
     ScheduleModule.register(),
     AuthModule,
+    RouteModule,
+    GroupModule,
+    ArticleModule,
+    ResourceModule,
     UserModule
   ],
   controllers: [AppController],

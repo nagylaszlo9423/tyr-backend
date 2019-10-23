@@ -1,7 +1,7 @@
-import {Route} from "../modules/route/route.schema";
-import {NotFoundException} from "../api/errors/errors";
+import {Route} from "../../modules/route/route.schema";
+import {NotFoundException} from "../../api/errors/errors";
 import {Document, Model} from "mongoose";
-import {IAuditable} from "./schemas/auditable.schema";
+import {Auditable} from "../util/auditable";
 
 
 export abstract class BaseService<T extends Document> {
@@ -22,7 +22,7 @@ export abstract class BaseService<T extends Document> {
     return model;
   }
 
-  public async _saveAndAudit(model: T & IAuditable, userId: string): Promise<T> {
+  public async _saveAndAudit(model: T & Auditable, userId: string): Promise<T> {
     model._userId = userId;
     return model.save();
   }

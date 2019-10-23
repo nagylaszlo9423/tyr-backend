@@ -1,7 +1,7 @@
 import {Callback, createClient, RedisClient, RetryStrategyOptions} from 'redis';
 import {Injectable, Logger} from "@nestjs/common";
 import * as crypto from 'crypto';
-import {TokenBaseSchema} from "../modules/oauth2/schemas/token-base.schema";
+import {TokenBaseSchema} from "../../modules/oauth2/schemas/token-base.schema";
 
 export type KeyPrefix = 'access' | 'refresh' | 'code';
 

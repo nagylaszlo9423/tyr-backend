@@ -1,14 +1,12 @@
-import {RouteVisibility} from "../../modules/route/route.schema";
 import {IsNotEmpty} from "class-validator";
-import {IPolygon} from "../../core/schemas/polygon.schema";
+import {Polygon} from "../../core/schemas/polygon.schema";
 
 
 export class RouteRequest {
   @IsNotEmpty()
   title: string;
+  @IsNotEmpty()
   description: string;
   @IsNotEmpty()
-  state: RouteVisibility;
-  @IsNotEmpty()
-  path: IPolygon;
+  path: Polygon;
 }

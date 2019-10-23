@@ -8,7 +8,7 @@ import {TokenService} from "./token.service";
 import {Oauth2Controller} from "./oauth2.controller";
 import {UserService} from "../user/user.service";
 import {UserSchema} from "../user/user.schema";
-import {RedisService} from "../../core/redis.service";
+import {RedisService} from "../../core/security/redis.service";
 
 
 @Module({

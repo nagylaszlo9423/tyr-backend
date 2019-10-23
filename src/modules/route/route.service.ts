@@ -2,13 +2,14 @@ import {Model} from "mongoose";
 import {RouteMapper} from "./route.mapper";
 import {InjectModel} from "@nestjs/mongoose";
 import {Route, RouteVisibility} from "./route.schema";
-import {RouteRequest} from "../../api/route/route.request";
 import {RouteResponse} from "../../api/route/route.response";
 import {Injectable} from "@nestjs/common";
-import {BaseService} from "../../core/base.service";
+import {BaseService} from "../../core/services/base.service";
 import {GroupService} from "../group/group.service";
 import {ForbiddenException} from "../../api/errors/errors";
 import {Group} from "../group/group.schema";
+import {UpdateRouteRequest} from "../../api/route/update-route.request";
+import {CreateRouteRequest} from "../../api/route/create-route.request";
 
 @Injectable()
 export class RouteService extends BaseService<Route> {
@@ -17,18 +18,18 @@ export class RouteService extends BaseService<Route> {
     super(routeModel);
   }
 
-  async create(request: RouteRequest, userId: string): Promise<string> {
+  async create(request: CreateRouteRequest, userId: string): Promise<string> {
     const route = new this.model();
-    RouteMapper.requestToModel(request, route);
+    RouteMapper.createRequestToModel(request, route);
     route.owner = userId;
     return this._saveAndAudit(route, userId).then(route => route._id);
   }
 
-  async update(request: RouteRequest, id: string, userId: string): Promise<void> {
-    await this._fetchById(id);
+  async update(request: UpdateRouteRequest, routeId: string, userId: string): Promise<void> {
+    await this._fetchById(routeId);
     const route = new this.model();
-      RouteMapper.requestToModel(request, route);
-    route._id = id;
+      RouteMapper.updateRequestToModel(request, route);
+    route._id = routeId;
     await this._saveAndAudit(route, userId);
   }
 

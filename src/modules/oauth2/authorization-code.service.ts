@@ -3,7 +3,7 @@ import {AuthorizationCode} from "./schemas/authorization-code.schema";
 import * as crypto from 'crypto'
 import {environment} from "../../environment/environment";
 import {UserService} from "../user/user.service";
-import {RedisService} from "../../core/redis.service";
+import {RedisService} from "../../core/security/redis.service";
 import {GeneralException, NotFoundException} from "../../api/errors/errors";
 
 

@@ -1,9 +1,9 @@
 import {CallHandler, NestInterceptor} from "@nestjs/common/interfaces/features/nest-interceptor.interface";
 import {ExecutionContext, Injectable, Logger} from "@nestjs/common";
 import {RedisService} from "./redis.service";
-import {AccessToken} from "../modules/oauth2/schemas/access-token.shema";
+import {AccessToken} from "../../modules/oauth2/schemas/access-token.shema";
 import {Request, Response} from "express";
-import {ErrorResponse} from "../api/errors/error.response";
+import {ErrorResponse} from "../../api/errors/error.response";
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {

@@ -11,5 +11,5 @@ import {RouteController} from "./route.controller";
   controllers: [RouteController],
   providers: [RouteService]
 })
-export class UserModule {
+export class RouteModule {
 }

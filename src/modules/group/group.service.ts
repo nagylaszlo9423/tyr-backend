@@ -1,10 +1,10 @@
 import {Injectable} from "@nestjs/common";
-import {BaseService} from "../../core/base.service";
+import {BaseService} from "../../core/services/base.service";
 import {Group} from "./group.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
-import {CreateGroupRequest} from "../../api/group/CreateGroupRequest";
-import {UpdateGroupRequest} from "../../api/group/UpdateGroupRequest";
+import {CreateGroupRequest} from "../../api/group/create-group.request";
+import {UpdateGroupRequest} from "../../api/group/update-group.request";
 
 
 @Injectable()

@@ -29,5 +29,13 @@ export const LocalEnvironment = new Environment({
     expiresInMinutes: 5,
     length: 32,
     autoCleanInMillis: hoursToMillis(1)
-  }
+  },
+  roles: {
+    admin: [
+
+    ],
+    user: [
+
+    ]
+  },
 });

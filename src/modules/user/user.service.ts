@@ -7,7 +7,7 @@ import {GeneralException} from "../../api/errors/errors";
 import {RegistrationResponse} from "../../api/oauth2/registration.response";
 import * as crypto from 'crypto';
 import {LoginRequest} from "../../api/oauth2/login.request";
-import {BaseService} from "../../core/base.service";
+import {BaseService} from "../../core/services/base.service";
 
 @Injectable()
 export class UserService extends BaseService<User> {

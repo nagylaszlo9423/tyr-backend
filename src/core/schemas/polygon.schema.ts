@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 
-export interface IPolygon {
+export interface Polygon {
   type: 'Polygon';
   coordinates: string[][][];
 }

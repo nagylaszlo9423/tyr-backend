@@ -20,5 +20,6 @@ export const UserSchema = new mongoose.Schema({
   password: {type: String, required: true, unique: true},
   role: {type: String, required: true, enum: ['USER', 'ADMIN'], default: 'USER'},
   friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+  routes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Route'}],
   groups: [{type: mongoose.Schema.Types.ObjectId, ref: 'Group'}]
 });

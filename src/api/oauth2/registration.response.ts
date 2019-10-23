@@ -1,4 +1,4 @@
-import {ObjectInitializer} from "../../core/util/ObjectInitializer";
+import {ObjectInitializer} from "../../core/util/object-initializer";
 
 
 export class RegistrationResponse extends ObjectInitializer<RegistrationResponse> {

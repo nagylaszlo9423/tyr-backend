@@ -27,6 +27,10 @@ export class Environment {
     expiresInMinutes: number;
     autoCleanInMillis: number;
   };
+  roles: {
+    admin: [],
+    user: []
+  };
 
   constructor(init: Environment) {
     Object.assign(this, init);
