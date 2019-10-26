@@ -2,6 +2,8 @@ import {ErrorResponse} from "./error.response";
 import {HttpException} from "@nestjs/common";
 
 export type Cause =
+  'ROUTE_ALREADY_PUBLISHED' |
+  'NOT_MEMBER_OF_THE_GROUP' |
   'BAD_REQUEST' |
   'UNAUTHORIZED' |
   'EMAIL_ALREADY_REGISTERED' |

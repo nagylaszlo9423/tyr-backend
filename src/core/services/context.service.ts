@@ -1,8 +1,8 @@
-import {Inject, Injectable, Scope} from "@nestjs/common";
+import {Inject, Injectable, Request, Scope} from "@nestjs/common";
 import {REQUEST} from "@nestjs/core";
 
 @Injectable({scope: Scope.REQUEST})
-export class ContextProviderService {
+export class ContextService {
   private readonly _userId: string;
 
   constructor(@Inject(REQUEST) private readonly context: Request) {

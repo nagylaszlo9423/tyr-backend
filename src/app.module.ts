@@ -13,7 +13,7 @@ import {RouteModule} from "./modules/route/route.module";
 import {GroupModule} from "./modules/group/group.module";
 import {ArticleModule} from "./modules/article/article.module";
 import {ResourceModule} from "./modules/resource/resource.module";
-import {ContextProviderService} from "./core/services/context-provider.service";
+import {ContextService} from "./core/services/context.service";
 
 @Module({
   imports: [

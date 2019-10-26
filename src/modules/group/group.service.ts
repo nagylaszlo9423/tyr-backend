@@ -13,6 +13,22 @@ export class GroupService extends BaseService<Group> {
     super(model);
   }
 
+  async findById() {
+
+  }
+
+  async findAllGroupsByPage(page: number, size: number) {
+
+  }
+
+  async join() {
+
+  }
+
+  async leave() {
+
+  }
+
   async create(createRequest: CreateGroupRequest, userId: string): Promise<string> {
     return Promise.resolve('');
   }

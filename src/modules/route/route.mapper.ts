@@ -5,6 +5,10 @@ import {RouteRequest} from "../../api/route/route.request";
 import {UpdateRouteRequest} from "../../api/route/update-route.request";
 
 export class RouteMapper {
+  static modelsToResponses(entities: Route[]): RouteResponse[] {
+    return entities.map(entity => RouteMapper.modelToResponse(entity));
+  }
+
   static modelToResponse(entity: Route): RouteResponse {
     const result = new RouteResponse();
 

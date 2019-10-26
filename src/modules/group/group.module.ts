@@ -1,15 +1,16 @@
 import {Module} from "@nestjs/common";
 import {MongooseModule} from "@nestjs/mongoose";
 import {RouteSchema} from "../route/route.schema";
-import {RouteController} from "../route/route.controller";
-import {RouteService} from "../route/route.service";
+import {GroupController} from "./group.controller";
+import {GroupService} from "./group.service";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name: 'Group', schema: RouteSchema}])
+    MongooseModule.forFeature([{name: 'Group', schema: RouteSchema}]),
   ],
-  controllers: [RouteController],
-  providers: [RouteService]
+  controllers: [GroupController],
+  providers: [GroupService],
+  exports: [GroupService]
 })
 export class GroupModule {
 }
