@@ -2,15 +2,14 @@ import {Catch, ArgumentsHost, HttpException, ExceptionFilter} from '@nestjs/comm
 import {Response} from 'express';
 import {ErrorResponse} from "../../api/errors/error.response";
 
-@Catch()
+@Catch(HttpException)
 export class GeneralExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost): any {
+  catch(exception: HttpException, host: ArgumentsHost): any {
     const response = host.switchToHttp().getResponse<Response>();
-    if (exception instanceof HttpException) {
-      const ex = exception as HttpException;
-      return response.status(ex.getStatus()).json(ex.getResponse());
+    try {
+      return response.status(exception.getStatus()).json(exception.getResponse());
+    } catch (e) {
+      return response.status(500).json(new ErrorResponse('INTERNAL_SERVER_ERROR'));
     }
-
-    return response.status(500).json(new ErrorResponse('INTERNAL_SERVER_ERROR'));
   }
 }

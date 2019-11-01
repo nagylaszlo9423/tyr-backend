@@ -13,7 +13,8 @@
     "typeRoots": ["node_modules/@types"],
     "incremental": true,
     "types": [
-      "node"
+      "node",
+      "jest"
     ]
   },
   "exclude": [

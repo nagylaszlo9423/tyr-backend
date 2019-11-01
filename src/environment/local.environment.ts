@@ -16,7 +16,7 @@ export const LocalEnvironment = new Environment({
     loginPage: 'http://localhost:3000/login',
   },
   accessToken: {
-    expiresInMinutes: 5,
+    expiresInMinutes: 500,
     length: 128,
     autoCleanInMillis: hoursToMillis(1)
   },

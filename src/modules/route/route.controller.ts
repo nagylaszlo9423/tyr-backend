@@ -18,7 +18,7 @@ export class RouteController {
 
   @Put(':id')
   async update(@Body() request: UpdateRouteRequest,
-               @Param() routeId: string): Promise<void> {
+               @Param('id') routeId: string): Promise<void> {
     return this.routeService.update(request, routeId);
   }
 
@@ -28,8 +28,8 @@ export class RouteController {
   }
 
   @Get('most-popular')
-  async findMostPopularInTheArea() {
-
+  async findMostPopularInTheArea(): Promise<RouteResponse[]> {
+    return Promise.resolve([]);
   }
 
   @Get(':id')

@@ -1,14 +1,21 @@
 import * as mongoose from "mongoose";
-import {Polygon, PolygonSchema} from "../../core/schemas/polygon.schema";
 import {AuditSchema, Audit} from "../../core/schemas/audit.schema";
 import {User} from "../user/user.schema";
 import {Group} from "../group/group.schema";
 import {Auditable, AuditManager} from "../../core/util/auditable";
+import {LineString, LineStringSchema} from "../../core/schemas/line-string.schema";
 
 export enum RouteVisibility {
   PUBLIC = 'PUBLIC',
   GROUP = 'GROUP',
   PRIVATE = 'PRIVATE'
+}
+
+export enum RouteCategory {
+  BICYCLE = "BICYCLE",
+  SIGHTSEEING ="SIGHTSEEING",
+  HIKING = "HIKING",
+  OFF_ROAD = "OFF_ROAD"
 }
 
 export interface Route extends mongoose.Document, Auditable {
@@ -17,7 +24,7 @@ export interface Route extends mongoose.Document, Auditable {
   owner: User | string;
   group: Group | string;
   visibility: RouteVisibility;
-  path: Polygon;
+  path: LineString;
   audit: Audit;
 }
 
@@ -26,9 +33,8 @@ export const RouteSchema = new mongoose.Schema({
   description: String,
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   group: {type: mongoose.Schema.Types.ObjectId, ref: 'Group'},
+  categories: [{type: String, enum: ['BICYCLE', 'SIGHTSEEING', 'HIKING', 'OFF_ROAD']}],
   visibility: {type: String, enum: ['PUBLIC', 'GROUP', 'PRIVATE'], required: true, default: 'PRIVATE'},
-  path: PolygonSchema,
+  path: LineStringSchema,
   audit: AuditSchema
 });
-
-AuditManager.beforeSave(RouteSchema);

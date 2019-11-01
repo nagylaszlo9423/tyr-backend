@@ -3,6 +3,7 @@ import {Route} from "./route.schema";
 import {CreateRouteRequest} from "../../api/route/create-route.request";
 import {RouteRequest} from "../../api/route/route.request";
 import {UpdateRouteRequest} from "../../api/route/update-route.request";
+import {GeojsonMapper} from "../../core/util/geojson.mapper";
 
 export class RouteMapper {
   static modelsToResponses(entities: Route[]): RouteResponse[] {
@@ -14,7 +15,7 @@ export class RouteMapper {
 
     result.title = entity.title;
     result.description = entity.description;
-    result.path = entity.path;
+    result.path = GeojsonMapper.lineStringModelToResponse(entity.path);
     result.audit = entity.audit;
 
     return result;
@@ -23,12 +24,11 @@ export class RouteMapper {
   static requestToModel(request: RouteRequest, model: Route) {
     model.title = request.title;
     model.description = request.description;
-    model.path = request.path;
+    GeojsonMapper.lineStringRequestToModel(request.path, model.path);
   }
 
   static createRequestToModel(request: CreateRouteRequest, model: Route) {
     RouteMapper.requestToModel(request, model);
-    model.visibility = request.visibility;
   }
 
   static updateRequestToModel(request: UpdateRouteRequest, model: Route) {

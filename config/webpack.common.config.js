@@ -6,7 +6,7 @@ module.exports = {
   target: 'node',
   output: {
     path: relativePath('dist'),
-    filename: 'server.js'
+    filename: 'main.js'
   },
   module: {
     rules: [

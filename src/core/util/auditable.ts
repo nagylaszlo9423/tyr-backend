@@ -1,5 +1,4 @@
 import {Audit, AuditSchema} from "../schemas/audit.schema";
-import {Schema} from "mongoose";
 import * as mongoose from "mongoose";
 import {environment} from "../../environment/environment";
 
@@ -24,20 +23,5 @@ export class AuditManager {
   static modifyAudit(audit: Audit, userId: string) {
     audit.modifiedBy = userId;
     audit.modifiedAt = new Date();
-  }
-
-  static beforeSave(schema: Schema) {
-    schema.pre('save', function (next, docs) {
-      docs.forEach(doc => {
-        if (doc['_userId']) {
-          if (doc['audit']) {
-            AuditManager.modifyAudit(doc.audit, doc['_userId'])
-          } else {
-            doc.audit = AuditManager.createAudit(doc['_userId'])
-          }
-        }
-      });
-      return next();
-    })
   }
 }

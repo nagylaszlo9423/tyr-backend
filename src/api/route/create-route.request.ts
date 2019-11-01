@@ -4,6 +4,4 @@ import {RouteVisibility} from "../../modules/route/route.schema";
 
 
 export class CreateRouteRequest extends RouteRequest {
-  @IsNotEmpty()
-  visibility: RouteVisibility;
 }

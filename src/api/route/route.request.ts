@@ -1,5 +1,5 @@
 import {IsNotEmpty} from "class-validator";
-import {Polygon} from "../../core/schemas/polygon.schema";
+import {LineStringDto} from "../geojson/line-string.dto";
 
 
 export class RouteRequest {
@@ -8,5 +8,5 @@ export class RouteRequest {
   @IsNotEmpty()
   description: string;
   @IsNotEmpty()
-  path: Polygon;
+  path: LineStringDto;
 }

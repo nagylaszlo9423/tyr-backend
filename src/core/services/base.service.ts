@@ -1,7 +1,6 @@
-import {Route} from "../../modules/route/route.schema";
 import {NotFoundException} from "../../api/errors/errors";
 import {Document, Model} from "mongoose";
-import {Auditable} from "../util/auditable";
+import {Auditable, AuditManager} from "../util/auditable";
 
 
 export abstract class BaseService<T extends Document> {
@@ -23,7 +22,11 @@ export abstract class BaseService<T extends Document> {
   }
 
   public async _saveAndAudit(model: T & Auditable, userId: string): Promise<T> {
-    model._userId = userId;
+    if (model.audit && model.audit.createdAt && model.audit.createdBy) {
+      AuditManager.modifyAudit(model.audit, userId);
+    } else {
+      model.audit = AuditManager.createAudit(userId);
+    }
     return model.save();
   }
 }

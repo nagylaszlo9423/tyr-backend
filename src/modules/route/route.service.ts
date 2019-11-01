@@ -11,10 +11,12 @@ import {Group} from "../group/group.schema";
 import {UpdateRouteRequest} from "../../api/route/update-route.request";
 import {CreateRouteRequest} from "../../api/route/create-route.request";
 import {ContextService} from "../../core/services/context.service";
+import {LineString} from "../../core/schemas/line-string.schema";
 
 @Injectable()
 export class RouteService extends BaseService<Route> {
   public constructor(@InjectModel('Route') routeModel: Model<Route>,
+                     @InjectModel('LineString') private lineStringModel: Model<LineString>,
                      private groupService: GroupService,
                      private ctx: ContextService) {
     super(routeModel);
@@ -22,16 +24,16 @@ export class RouteService extends BaseService<Route> {
 
   async create(request: CreateRouteRequest): Promise<string> {
     const route = new this.model();
+    route.path = new this.lineStringModel();
     RouteMapper.createRequestToModel(request, route);
     route.owner = this.ctx.userId;
+    route.visibility = RouteVisibility.PRIVATE;
     return this._saveAndAudit(route, this.ctx.userId).then(route => route._id);
   }
 
   async update(request: UpdateRouteRequest, routeId: string): Promise<void> {
-    await this._fetchById(routeId);
-    const route = new this.model();
-      RouteMapper.updateRequestToModel(request, route);
-    route._id = routeId;
+    const route = await this._fetchById(routeId);
+    RouteMapper.updateRequestToModel(request, route);
     await this._saveAndAudit(route, this.ctx.userId);
   }
 

@@ -3,13 +3,9 @@ import {REQUEST} from "@nestjs/core";
 
 @Injectable({scope: Scope.REQUEST})
 export class ContextService {
-  private readonly _userId: string;
-
-  constructor(@Inject(REQUEST) private readonly context: Request) {
-    this._userId = context.headers.get('User-Id');
-  }
+  constructor(@Inject(REQUEST) private readonly context: Request) {}
 
   get userId(): string {
-    return this._userId;
+    return this.context.headers['User-Id'];
   }
 }

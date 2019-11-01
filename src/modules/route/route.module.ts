@@ -5,12 +5,14 @@ import {RouteSchema} from "./route.schema";
 import {RouteController} from "./route.controller";
 import {CoreModule} from "../../core/core.module";
 import {GroupModule} from "../group/group.module";
+import {LineStringSchema} from "../../core/schemas/line-string.schema";
 
 @Module({
   imports: [
     CoreModule,
     GroupModule,
-    MongooseModule.forFeature([{name: 'Route', schema: RouteSchema}])
+    MongooseModule.forFeature([{name: 'Route', schema: RouteSchema}]),
+    MongooseModule.forFeature([{name: 'LineString', schema: LineStringSchema}])
   ],
   controllers: [RouteController],
   providers: [RouteService]

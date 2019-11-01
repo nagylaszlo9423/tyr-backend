@@ -19,18 +19,22 @@ export class AuthInterceptor implements NestInterceptor {
         await this.authorize(request);
       } catch (e) {
         this.logger.error(e, undefined,'AuthInterceptor');
-        return response.status(401).json(new ErrorResponse('UNAUTHORIZED'));
+        response.status(401).json(new ErrorResponse('UNAUTHORIZED'));
+        return;
       }
     }
     return next.handle();
   }
 
   private async authorize(request: Request) {
-    const tokenValue = request.headers['Authorization'];
+    const tokenValue = request.headers.authorization;
     if (tokenValue && (typeof tokenValue === 'string')) {
       const token: AccessToken = await this.redisService.getToken(tokenValue, 'access');
+
       if (token) {
         request.headers['User-Id'] = token.userId;
+      } else {
+        throw new Error('Invalid token');
       }
     } else {
       throw new Error('Invalid token');

@@ -5,10 +5,10 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build": "nest build --watch --webpack",
     "build:prod": "cross-envNODE_ENV=production npm run build",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "concurrently --restart-tries 2 --restart-after 5000 \"npm run build -- --watch\" \"node dist/server.js\"",
+    "start": "node dist/main",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -36,6 +36,7 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
+    "@nestjs/cli": "^6.11.1",
     "@nestjs/testing": "^6.0.0",
     "@types/express": "4.16.1",
     "@types/jest": "^24.0.11",

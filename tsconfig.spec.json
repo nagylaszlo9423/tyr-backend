@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./test"
+  },
   "exclude": ["node_modules", "src", "dist"]
 }
