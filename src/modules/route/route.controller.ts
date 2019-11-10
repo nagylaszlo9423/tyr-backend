@@ -43,8 +43,8 @@ export class RouteController {
     return this.routeService.shareInGroup(routeId, groupId);
   }
 
-  @Post(':routeId')
-  async publish(@Param('routeId') routeId: string): Promise<void> {
+  @Post(':id')
+  async publish(@Param('id') routeId: string): Promise<void> {
     return this.routeService.publish(routeId);
   }
 }
