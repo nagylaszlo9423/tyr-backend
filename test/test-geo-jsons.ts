@@ -1,4 +1,5 @@
-import {LineStringDto} from "../src/api/geojson/line-string.dto";
+import {LineStringDto} from "tyr-api";
+
 
 export const TestGeoJsons = {
   path: <LineStringDto>{

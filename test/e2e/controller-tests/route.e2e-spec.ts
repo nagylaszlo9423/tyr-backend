@@ -1,7 +1,7 @@
-import {CreateRouteRequest} from "../../../src/api/route/create-route.request";
 import {TestGeoJsons} from "../../test-geo-jsons";
 import * as request from "supertest";
 import {e2eSuite} from "../e2e-suite";
+import {CreateRouteRequest} from "tyr-api";
 
 
 e2eSuite('RouteController', [

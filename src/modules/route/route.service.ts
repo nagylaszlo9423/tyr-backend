@@ -2,16 +2,14 @@ import {Model} from "mongoose";
 import {RouteMapper} from "./route.mapper";
 import {InjectModel} from "@nestjs/mongoose";
 import {Route, RouteVisibility} from "./route.schema";
-import {RouteResponse} from "../../api/route/route.response";
 import {Injectable} from "@nestjs/common";
 import {BaseService} from "../../core/services/base.service";
 import {GroupService} from "../group/group.service";
-import {ForbiddenException, GeneralException} from "../../api/errors/errors";
+import {ForbiddenException, GeneralException} from "../../errors/errors";
 import {Group} from "../group/group.schema";
-import {UpdateRouteRequest} from "../../api/route/update-route.request";
-import {CreateRouteRequest} from "../../api/route/create-route.request";
 import {ContextService} from "../../core/services/context.service";
 import {LineString} from "../../core/schemas/line-string.schema";
+import {CreateRouteRequest, RouteResponse, UpdateRouteRequest} from "tyr-api";
 
 @Injectable()
 export class RouteService extends BaseService<Route> {

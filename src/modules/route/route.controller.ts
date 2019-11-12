@@ -1,9 +1,6 @@
 import {Body, Controller, Delete, Get, Header, Headers, Param, Post, Put} from "@nestjs/common";
 import {RouteService} from "./route.service";
-import {UpdateRouteRequest} from "../../api/route/update-route.request";
-import {CreateRouteRequest} from "../../api/route/create-route.request";
-import {RouteResponse} from "../../api/route/route.response";
-
+import {CreateRouteRequest, RouteResponse, UpdateRouteRequest} from "tyr-api";
 
 @Controller('route')
 export class RouteController {

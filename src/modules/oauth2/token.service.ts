@@ -3,9 +3,9 @@ import {AccessToken} from "./schemas/access-token.shema";
 import {RefreshToken} from "./schemas/refresh-token.schema";
 import * as crypto from 'crypto';
 import {environment} from "../../environment/environment";
-import {GeneralException} from "../../api/errors/errors";
-import {TokenResponse} from "../../api/oauth2/token.response";
+import {GeneralException} from "../../errors/errors";
 import {RedisService} from "../../core/security/redis.service";
+import {TokenResponse} from "tyr-api";
 
 
 @Injectable()
@@ -14,7 +14,8 @@ export class TokenService {
   private static readonly accessTokenExpiresInSeconds = environment.accessToken.expiresInMinutes * 60;
   private static readonly refreshTokenExpiresInSeconds = environment.refreshToken.expiresInMinutes * 60;
 
-  constructor(private redisService: RedisService) {}
+  constructor(private redisService: RedisService) {
+  }
 
   async renewToken(refreshTokenValue: string): Promise<TokenResponse> {
     const refreshToken: RefreshToken = await this.redisService.getToken(refreshTokenValue, 'refresh');
@@ -36,12 +37,12 @@ export class TokenService {
     const accessTokenHashedKey = await this.redisService.addTokenAndSetExpiration(accessToken.value, accessToken, 'access', TokenService.accessTokenExpiresInSeconds);
     const refreshToken = TokenService.createRefreshToken(accessTokenHashedKey);
     await this.redisService.addTokenAndSetExpiration([accessToken.value, userId], refreshToken, 'refresh', TokenService.refreshTokenExpiresInSeconds);
-    return new TokenResponse({
-      accessToken: accessToken.value,
-      accessTokenExpiration: accessToken.expirationDate,
-      refreshToken: refreshToken.value,
-      refreshTokenExpiration: refreshToken.expirationDate
-    });
+    const response = new TokenResponse();
+    response.accessToken = accessToken.value;
+    response.accessTokenExpiration = accessToken.expirationDate.toISOString();
+    response.refreshToken = refreshToken.value;
+    response.refreshTokenExpiration = refreshToken.expirationDate.toISOString();
+    return response;
   }
 
   async removeTokens(accessToken: string) {

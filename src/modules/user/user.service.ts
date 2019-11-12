@@ -1,13 +1,11 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {User} from "./user.schema";
-import {Model, Schema} from 'mongoose';
-import {RegistrationRequest} from "../../api/oauth2/registration.request";
-import {GeneralException} from "../../api/errors/errors";
-import {RegistrationResponse} from "../../api/oauth2/registration.response";
+import {Model} from 'mongoose';
+import {GeneralException} from "../../errors/errors";
 import * as crypto from 'crypto';
-import {LoginRequest} from "../../api/oauth2/login.request";
 import {BaseService} from "../../core/services/base.service";
+import {LoginRequest, RegistrationRequest, RegistrationResponse} from "tyr-api";
 
 @Injectable()
 export class UserService extends BaseService<User> {

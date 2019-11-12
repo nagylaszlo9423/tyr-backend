@@ -1,4 +1,4 @@
-import {NotFoundException} from "../../api/errors/errors";
+import {NotFoundException} from "../../errors/errors";
 import {Document, Model} from "mongoose";
 import {Auditable, AuditManager} from "../util/auditable";
 

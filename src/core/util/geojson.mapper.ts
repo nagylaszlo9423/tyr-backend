@@ -1,5 +1,5 @@
-import {LineStringDto} from "../../api/geojson/line-string.dto";
 import {LineString} from "../schemas/line-string.schema";
+import {LineStringDto} from "tyr-api";
 
 
 export class GeojsonMapper {
@@ -9,10 +9,12 @@ export class GeojsonMapper {
   }
 
   static lineStringModelToResponse(model: LineString): LineStringDto {
-    return new LineStringDto({
-      type: model.type,
-      coordinates: model.coordinates
-    });
+    const response = new LineStringDto();
+
+    response.type = model.type;
+    response.coordinates = model.coordinates;
+
+    return response;
   }
 
 }

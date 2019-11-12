@@ -1,12 +1,9 @@
 import {Body, Controller, Get, Header, Headers, Param, Post, Query, Res} from "@nestjs/common";
-import {LoginRequest} from "../../api/oauth2/login.request";
 import {Response} from 'express';
 import {AuthService} from "./auth.service";
 import {environment} from "../../environment/environment";
-import {RegistrationRequest} from "../../api/oauth2/registration.request";
-import {BadRequestException} from "../../api/errors/errors";
-import {TokenResponse} from "../../api/oauth2/token.response";
-import {LoginResponse} from "../../api/oauth2/login.response";
+import {BadRequestException} from "../../errors/errors";
+import {LoginRequest, LoginResponse, RegistrationRequest, TokenResponse} from "tyr-api";
 
 @Controller('oauth')
 export class Oauth2Controller {
