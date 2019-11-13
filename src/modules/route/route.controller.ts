@@ -1,6 +1,7 @@
 import {Body, Controller, Delete, Get, Header, Headers, Param, Post, Put} from "@nestjs/common";
 import {RouteService} from "./route.service";
 import {CreateRouteRequest, RouteResponse, UpdateRouteRequest} from "tyr-api";
+import {CreatedResponse} from "../../core/dto/created.response";
 
 @Controller('route')
 export class RouteController {
@@ -9,7 +10,7 @@ export class RouteController {
   }
 
   @Post()
-  async create(@Body() request: CreateRouteRequest): Promise<string> {
+  async create(@Body() request: CreateRouteRequest): Promise<CreatedResponse> {
     return this.routeService.create(request);
   }
 

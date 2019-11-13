@@ -10,6 +10,7 @@ import {Group} from "../group/group.schema";
 import {ContextService} from "../../core/services/context.service";
 import {LineString} from "../../core/schemas/line-string.schema";
 import {CreateRouteRequest, RouteResponse, UpdateRouteRequest} from "tyr-api";
+import {CreatedResponse} from "../../core/dto/created.response";
 
 @Injectable()
 export class RouteService extends BaseService<Route> {
@@ -20,13 +21,13 @@ export class RouteService extends BaseService<Route> {
     super(routeModel);
   }
 
-  async create(request: CreateRouteRequest): Promise<string> {
+  async create(request: CreateRouteRequest): Promise<CreatedResponse> {
     const route = new this.model();
     route.path = new this.lineStringModel();
     RouteMapper.createRequestToModel(request, route);
     route.owner = this.ctx.userId;
     route.visibility = RouteVisibility.PRIVATE;
-    return this._saveAndAudit(route, this.ctx.userId).then(route => route._id);
+    return CreatedResponse.of(await this._saveAndAudit(route, this.ctx.userId));
   }
 
   async update(request: UpdateRouteRequest, routeId: string): Promise<void> {

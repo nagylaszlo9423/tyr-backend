@@ -2,6 +2,7 @@ import {Body, Controller, Delete, Get, Param, Post, Put, Query} from "@nestjs/co
 import {GroupService} from "./group.service";
 import {CreateGroupRequest, GroupResponse, PageResponse, UpdateGroupRequest} from "tyr-api";
 import {PaginationOptions} from "../../core/util/pagination";
+import {CreatedResponse} from "../../core/dto/created.response";
 
 
 @Controller('group')
@@ -31,18 +32,18 @@ export class GroupController {
   }
 
   @Post()
-  async create(@Body() createRequest: CreateGroupRequest): Promise<string> {
-    return Promise.resolve('');
+  async create(@Body() createRequest: CreateGroupRequest): Promise<CreatedResponse> {
+    return this.groupService.create(createRequest);
   }
 
   @Put(':id')
   async update(@Param('id') groupId: string,
                @Body() updateRequest: UpdateGroupRequest): Promise<void> {
-    return Promise.resolve();
+    return this.groupService.update(updateRequest, groupId);
   }
 
   @Delete(':id')
-  async deleteGroup(@Param('id') groupId: string) {
-
+  async deleteGroup(@Param('id') groupId: string): Promise<void> {
+    return this.groupService.delete(groupId);
   }
 }

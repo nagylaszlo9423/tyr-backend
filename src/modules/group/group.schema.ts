@@ -12,6 +12,7 @@ export interface Group extends mongoose.Document {
   name: string;
   description: string;
   access: GroupAccess;
+  owner: User | string;
   members: User[] | string[];
   routes: Route[] | string[];
 }
@@ -20,6 +21,7 @@ export const GroupSchema = new mongoose.Schema({
   name: String,
   description: String,
   access: {type: String, enum: ['INVITE_ONLY', 'REQUEST', 'PUBLIC'], required: true, default: 'INVITE_ONLY'},
+  owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   routes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Route'}]
 });

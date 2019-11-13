@@ -1,11 +1,13 @@
 import {Injectable} from "@nestjs/common";
 import {BaseService} from "../../core/services/base.service";
-import {Group} from "./group.schema";
+import {Group, GroupAccess} from "./group.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {CreateGroupRequest, GroupResponse, PageResponse, UpdateGroupRequest} from "tyr-api";
 import {mapResultsToPageResponse, PaginationOptions} from "../../core/util/pagination";
 import {ContextService} from "../../core/services/context.service";
+import {CreatedResponse} from "../../core/dto/created.response";
+import {ForbiddenException} from "../../errors/errors";
 
 
 @Injectable()
@@ -15,13 +17,13 @@ export class GroupService extends BaseService<Group> {
     super(model);
   }
 
-  async findById(id: string): Promise<GroupResponse> {
-    return this._fetchById(id);
+  findById(id: string): Promise<GroupResponse> {
+    return this._fetchById(id).then(this.modelToResponse);
   }
 
   async findAllGroupsByPage(options: PaginationOptions): Promise<PageResponse> {
     const results: Group[] = await this.model.find().skip(options.skip()).limit(options.size).exec();
-    const groupResponse = results.map(GroupService.modelToResponse);
+    const groupResponse = results.map(this.modelToResponse);
     return mapResultsToPageResponse(groupResponse, options);
   }
 
@@ -43,21 +45,51 @@ export class GroupService extends BaseService<Group> {
     await group.save();
   }
 
-  async create(createRequest: CreateGroupRequest, userId: string): Promise<string> {
-    return Promise.resolve('');
+  async create(createRequest: CreateGroupRequest): Promise<CreatedResponse> {
+    const group = this.createRequestToModel(createRequest, this.ctx.userId);
+    await group.save();
+    return CreatedResponse.of(group);
   }
 
-  async update(updateRequest: UpdateGroupRequest, userId: string): Promise<void> {
-    return Promise.resolve();
+  async update(updateRequest: UpdateGroupRequest, groupId: string): Promise<void> {
+    const group = await this._fetchById(groupId);
+    this.updateRequestToModel(updateRequest, group);
+    await group.save();
   }
 
-  private static modelToResponse(model: Group): GroupResponse {
+  async delete(groupId) {
+    const group = await this._fetchById(groupId);
+    if (group.owner !== this.ctx.userId) {
+      throw new ForbiddenException();
+    }
+    await group.remove();
+  }
+
+  private modelToResponse(model: Group): GroupResponse {
     const response = new GroupResponse();
 
     response.name = model.name;
     response.access = model.access;
+    response.owner = model.owner as string;
     response.description = model.description;
 
     return response;
+  }
+
+  private createRequestToModel(request: CreateGroupRequest, owner: string): Group {
+    return new this.model(<Group>{
+      name: request.name,
+      access: request.access,
+      description: request.description,
+      owner: owner,
+      members: [],
+      routes: []
+    });
+  }
+
+  private updateRequestToModel(request: UpdateGroupRequest, model: Group) {
+    model.name = request.name;
+    model.description = request.description;
+    model.access = GroupAccess[request.access];
   }
 }
