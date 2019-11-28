@@ -7,7 +7,7 @@ export class Environment {
   loginPageUrl: string;
   logLevel: LogLevel[];
   mongoDbUrl: string;
-  collection: string;
+  db: string;
   frontend: {
     url: string;
     loginPage: string;

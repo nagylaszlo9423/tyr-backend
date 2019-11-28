@@ -10,7 +10,7 @@ export const LocalEnvironment = new Environment({
   loginPageUrl: 'http://localhost:3000/login',
   logLevel: ['debug', 'log', 'warn', 'error', 'verbose'],
   mongoDbUrl: 'mongodb://localhost',
-  collection: 'tyr_dev_db',
+  db: 'tyr_dev_db',
   frontend: {
     url: 'http://localhost:3000',
     loginPage: 'http://localhost:3000/login',

@@ -13,11 +13,10 @@ import {RouteModule} from "./modules/route/route.module";
 import {GroupModule} from "./modules/group/group.module";
 import {ArticleModule} from "./modules/article/article.module";
 import {ResourceModule} from "./modules/resource/resource.module";
-import {ContextService} from "./core/services/context.service";
 
 @Module({
   imports: [
-    MongooseModule.forRoot(`${environment.mongoDbUrl}/${environment.collection}`, {useNewUrlParser: true, useUnifiedTopology: true}),
+    MongooseModule.forRoot(`${environment.mongoDbUrl}/${environment.db}`, {useNewUrlParser: true, useUnifiedTopology: true}),
     ScheduleModule.register(),
     AuthModule,
     RouteModule,
