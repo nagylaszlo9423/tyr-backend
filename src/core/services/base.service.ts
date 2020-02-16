@@ -1,6 +1,8 @@
 import {NotFoundException} from "../../errors/errors";
 import {Document, Model} from "mongoose";
 import {Auditable, AuditManager} from "../util/auditable";
+import {PaginationOptions} from "../util/pagination/pagination-options";
+import {Page} from "../util/pagination/page";
 
 
 export abstract class BaseService<T extends Document> {
@@ -28,5 +30,17 @@ export abstract class BaseService<T extends Document> {
       model.audit = AuditManager.createAudit(userId);
     }
     return model.save();
+  }
+
+  public async _findPage(options: PaginationOptions): Promise<Page<T>> {
+    console.log('itt');
+    const results: T[] = await this.model.find().skip(options.skip()).limit(options.size).exec();
+    const total = await this.model.count({}).exec();
+    return new Page({
+      page: options.page,
+      size: options.size,
+      total: total,
+      items: results
+    });
   }
 }

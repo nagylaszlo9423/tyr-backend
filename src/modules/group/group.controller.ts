@@ -1,8 +1,8 @@
 import {Body, Controller, Delete, Get, Param, Post, Put, Query} from "@nestjs/common";
 import {GroupService} from "./group.service";
 import {CreateGroupRequest, GroupResponse, PageResponse, UpdateGroupRequest} from "tyr-api";
-import {PaginationOptions} from "../../core/util/pagination";
 import {CreatedResponse} from "../../core/dto/created.response";
+import {PaginationOptions} from "../../core/util/pagination/pagination-options";
 
 
 @Controller('group')

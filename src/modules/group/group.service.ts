@@ -3,11 +3,12 @@ import {BaseService} from "../../core/services/base.service";
 import {Group, GroupAccess} from "./group.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
-import {CreateGroupRequest, GroupResponse, PageResponse, UpdateGroupRequest} from "tyr-api";
-import {mapResultsToPageResponse, PaginationOptions} from "../../core/util/pagination";
+import {CreateGroupRequest, GroupPageResponse, GroupResponse, PageResponse, UpdateGroupRequest} from "tyr-api";
 import {ContextService} from "../../core/services/context.service";
 import {CreatedResponse} from "../../core/dto/created.response";
 import {ForbiddenException} from "../../errors/errors";
+import {mapResultsToPageResponse} from "../../core/util/pagination/pagination-mapper";
+import {PaginationOptions} from "../../core/util/pagination/pagination-options";
 
 
 @Injectable()
@@ -18,13 +19,11 @@ export class GroupService extends BaseService<Group> {
   }
 
   findById(id: string): Promise<GroupResponse> {
-    return this._fetchById(id).then(this.modelToResponse);
+    return this._fetchById(id).then(GroupService.modelToResponse);
   }
 
-  async findAllGroupsByPage(options: PaginationOptions): Promise<PageResponse> {
-    const results: Group[] = await this.model.find().skip(options.skip()).limit(options.size).exec();
-    const groupResponse = results.map(this.modelToResponse);
-    return mapResultsToPageResponse(groupResponse, options);
+  async findAllGroupsByPage(options: PaginationOptions): Promise<GroupPageResponse> {
+    return mapResultsToPageResponse(await this._findPage(options), GroupService.modelsToResponse);
   }
 
   async join(groupId: string) {
@@ -65,17 +64,6 @@ export class GroupService extends BaseService<Group> {
     await group.remove();
   }
 
-  private modelToResponse(model: Group): GroupResponse {
-    const response = new GroupResponse();
-
-    response.name = model.name;
-    response.access = model.access;
-    response.owner = model.owner as string;
-    response.description = model.description;
-
-    return response;
-  }
-
   private createRequestToModel(request: CreateGroupRequest, owner: string): Group {
     return new this.model(<Group>{
       name: request.name,
@@ -91,5 +79,20 @@ export class GroupService extends BaseService<Group> {
     model.name = request.name;
     model.description = request.description;
     model.access = GroupAccess[request.access];
+  }
+
+  private static modelsToResponse(models: Group[]): GroupResponse[] {
+    return models.map(this.modelToResponse);
+  }
+
+  private static modelToResponse(model: Group): GroupResponse {
+    const response = new GroupResponse();
+
+    response.name = model.name;
+    response.access = model.access;
+    response.owner = model.owner as string;
+    response.description = model.description;
+
+    return response;
   }
 }
