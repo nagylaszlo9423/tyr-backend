@@ -2,16 +2,19 @@ import {Callback, createClient, RedisClient, RetryStrategyOptions} from 'redis';
 import {Injectable, Logger} from "@nestjs/common";
 import * as crypto from 'crypto';
 import {TokenBaseSchema} from "../../modules/oauth2/schemas/token-base.schema";
+import {EncryptedData} from "./encrypted-data";
 
 export type KeyPrefix = 'access' | 'refresh' | 'code';
 
 @Injectable()
 export class RedisService {
   private static readonly Context = 'Redis';
-  private redisClient: RedisClient;
   private static readonly retryConnectionIn = 5000;
+  private static readonly hashAlgorithm = 'sha256';
+  private static readonly cipherAlgorithm = 'aes-128-gcm';
   private static readonly cipherKey = crypto.randomBytes(16);
-  private static readonly initVector = 'initVector';
+  private static readonly initVector = crypto.randomBytes(16);
+  private redisClient: RedisClient;
 
   constructor(private logger: Logger) {
     this.redisClient = createClient({
@@ -19,7 +22,7 @@ export class RedisService {
       port: 6379,
       retry_strategy: this.retryStrategy.bind(this)
     });
-    this.redisClient.on('connect', () => logger.log('Connected', 'Redis'));
+    this.redisClient.on('connect', () => logger.log('Connected', RedisService.Context));
     this.redisClient.on('error', (reason) => logger.error(reason));
   }
 
@@ -27,7 +30,7 @@ export class RedisService {
     const _key = RedisService.createKey(key, prefix);
     this.logger.debug(`set ${_key}`, RedisService.Context);
     return new Promise<string>((resolve, reject) =>
-      this.redisClient.set(_key, RedisService.cipherValue(JSON.stringify(value)), this.handle(reject, () =>
+      this.redisClient.set(_key, RedisService.cipherValue(JSON.stringify(value)).toString(), this.handle(reject, () =>
         this.redisClient.expire(_key, expireInSecond, this.handle(reject, () => {
           const expirationDate = new Date();
           expirationDate.setSeconds(expirationDate.getSeconds() + expireInSecond);
@@ -43,7 +46,7 @@ export class RedisService {
     return new Promise<T>((resolve, reject) =>
       this.redisClient.get(_key, this.handle(reject, (value) => {
         if (value) {
-          return resolve(JSON.parse(RedisService.decipherValue(value)));
+          return resolve(JSON.parse(RedisService.decipherValue(EncryptedData.from(value))));
         }
         return reject();
       })));
@@ -67,22 +70,33 @@ export class RedisService {
   }
 
   private static hashKey(key: string): string {
-    return crypto.createHash('sha256').update(key).digest('hex');
+    return crypto.createHash(RedisService.hashAlgorithm).update(key).digest('hex');
   }
 
-  private static cipherValue(value: string): string {
-    return crypto.createCipheriv('aes-128-gcm', RedisService.cipherKey, RedisService.initVector).update(value).toString('hex');
+  private static cipherValue(value: string): EncryptedData {
+    const cipher = crypto.createCipheriv(RedisService.cipherAlgorithm, Buffer.from(RedisService.cipherKey), RedisService.initVector);
+    let encrypted = cipher.update(value, 'utf8');
+    cipher.final();
+    return new EncryptedData({
+      data: encrypted.toString('hex'),
+      authTag: cipher.getAuthTag().toString('hex')
+    });
   }
 
-  private static decipherValue(value: string): string {
-    const encryptedText = Buffer.from(value, 'hex');
-    return crypto.createDecipheriv('aes-128-gcm', RedisService.cipherKey, RedisService.initVector).update(encryptedText).toString();
+  private static decipherValue(value: EncryptedData): string {
+    const authTag = Buffer.from(value.authTag, 'hex');
+    const decipher = crypto.createDecipheriv(RedisService.cipherAlgorithm, Buffer.from(RedisService.cipherKey), RedisService.initVector);
+    decipher.setAuthTag(authTag);
+    const encryptedValue = Buffer.from(value.data, 'hex');
+    let deciphered = decipher.update(encryptedValue);
+    decipher.final();
+    return deciphered.toString();
   }
 
   private retryStrategy(options: RetryStrategyOptions): number | Error {
-    this.logger.error('Connection failed', undefined, 'Redis');
+    this.logger.error('Connection failed', undefined, RedisService.Context);
     this.logger.error(options.error);
-    this.logger.log(`Retrying to connect in ${RedisService.retryConnectionIn}`, 'Redis');
+    this.logger.log(`Retrying to connect in ${RedisService.retryConnectionIn}`, RedisService.Context);
     return RedisService.retryConnectionIn;
   }
 
