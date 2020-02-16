@@ -14,7 +14,7 @@ export class AuthInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<any> {
     const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
-    if(AuthInterceptor.isSecured(request.url)) {
+    if (AuthInterceptor.isSecured(request.url)) {
       try {
         await this.authorize(request);
       } catch (e) {

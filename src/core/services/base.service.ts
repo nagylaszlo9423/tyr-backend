@@ -33,7 +33,6 @@ export abstract class BaseService<T extends Document> {
   }
 
   public async _findPage(options: PaginationOptions): Promise<Page<T>> {
-    console.log('itt');
     const results: T[] = await this.model.find().skip(options.skip()).limit(options.size).exec();
     const total = await this.model.count({}).exec();
     return new Page({
