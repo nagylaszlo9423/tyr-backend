@@ -1,0 +1,10 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ext": "ts",
+  "ignore": [
+    "test/**/*.spec.ts"
+  ],
+  "exec": "npm run build -- --watch && node --inspect=5858 -r tsconfig-paths/register src/main.ts"
+}

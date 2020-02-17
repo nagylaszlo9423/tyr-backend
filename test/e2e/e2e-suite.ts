@@ -13,7 +13,6 @@ export function e2eSuite(name: string, tests: {name: string, test: (app: INestAp
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    console.log('initialized');
   });
 
   tests.forEach(test => it(test.name, () => test.test(app)));

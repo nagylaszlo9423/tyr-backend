@@ -16,7 +16,7 @@ import {ResourceModule} from "./modules/resource/resource.module";
 
 @Module({
   imports: [
-    MongooseModule.forRoot(`${environment.mongoDbUrl}/${environment.db}`, {useNewUrlParser: true, useUnifiedTopology: true}),
+    MongooseModule.forRoot(`${environment.db.url}/${environment.db.name}`, {useNewUrlParser: true, useUnifiedTopology: true}),
     ScheduleModule.register(),
     AuthModule,
     RouteModule,

@@ -18,11 +18,11 @@ export class Oauth2Controller {
             @Res() response: Response) {
     if (!responseType || !clientId) {
       response.append('error', 'invalid_request');
-      response.redirect(environment.loginPageUrl);
+      response.redirect(environment.frontend.loginPage);
     }
     response.append('client_id', clientId);
     response.append('redirect_uri', redirectUri);
-    response.redirect(environment.loginPageUrl);
+    response.redirect(environment.frontend.loginPage);
   }
 
   @Post('token')

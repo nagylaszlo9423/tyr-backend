@@ -4,9 +4,9 @@ import {Route, RouteSchema, RouteVisibility} from "../modules/route/route.schema
 const mongoose = require('mongoose');
 
 
-mongoose.connect(`${environment.mongoDbUrl}/${environment.db}`, {useNewUrlParser: true}).then(async () => {
+mongoose.connect(`${environment.db.url}/${environment.db.name}`, {useNewUrlParser: true}).then(async () => {
   for (let i = 0; i < 10; i++) {
-    new mongoose.model('Route', RouteSchema, environment.db)(<Route>{
+    new mongoose.model('Route', RouteSchema, environment.db.name)(<Route>{
       path: {
         "type": "LineString",
         "coordinates": [

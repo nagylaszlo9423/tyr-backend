@@ -1,38 +1,46 @@
 import {LogLevel} from "@nestjs/common";
-
+import {defaultEnvironment} from "./default.environment";
+import {merge} from 'lodash';
 
 export class Environment {
-  port: number;
-  frontendUrl: string;
-  loginPageUrl: string;
-  logLevel: LogLevel[];
-  mongoDbUrl: string;
-  db: string;
-  frontend: {
-    url: string;
-    loginPage: string;
+  port?: number = 3001;
+  logLevel?: LogLevel[] = ['debug', 'log', 'warn', 'error', 'verbose'];
+  db?: {
+    name?: string,
+    url?: string
   };
-  accessToken: {
-    length: number;
-    expiresInMinutes: number;
-    autoCleanInMillis: number;
+  frontend?: {
+    url?: string,
+    loginPage?: string
   };
-  refreshToken: {
-    length: number;
-    expiresInMinutes: number;
-    autoCleanInMillis: number;
+  security?: {
+    accessToken?: {
+      length?: number,
+      expiresInMinutes?: number,
+      autoCleanInMillis?: number
+    },
+    refreshToken?: {
+      expiresInMinutes?: number,
+      length?: number,
+      autoCleanInMillis?: number
+    },
+    authorizationCode?: {
+      expiresInMinutes?: number,
+      length?: number,
+      autoCleanInMillis?: number
+    },
+    encryption?: {
+      cipherKey?: string,
+      initVector?: string
+    }
   };
-  authorizationCode: {
-    length: number;
-    expiresInMinutes: number;
-    autoCleanInMillis: number;
-  };
-  roles: {
-    admin: [],
-    user: []
+  roles?: {
+    admin?: [],
+    user?: []
   };
 
-  constructor(init: Environment) {
-    Object.assign(this, init);
+  constructor(init?: Partial<Environment>) {
+    init = init || {};
+    Object.assign(this, merge(defaultEnvironment, init));
   }
 }

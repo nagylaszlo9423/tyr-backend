@@ -8,7 +8,7 @@ export interface Auditable {
   _userId: string;
 }
 
-const AuditModel = mongoose.model<Audit>('Audit', AuditSchema, environment.db);
+const AuditModel = mongoose.model<Audit>('Audit', AuditSchema, environment.db.name);
 
 export class AuditManager {
   static createAudit(userId: string): Audit {

@@ -10,7 +10,7 @@ import {GeneralException, NotFoundException} from "../../errors/errors";
 @Injectable()
 export class AuthorizationCodeService {
 
-  private static readonly expirationInSeconds = environment.authorizationCode.expiresInMinutes * 60;
+  private static readonly expirationInSeconds = environment.security.authorizationCode.expiresInMinutes * 60;
 
   constructor(private redisService: RedisService,
               private userService: UserService) {
@@ -18,7 +18,7 @@ export class AuthorizationCodeService {
 
   async createAuthorizationCode(userId: string, clientId: string, redirectUri: string): Promise<string> {
     const authorizationCode: AuthorizationCode = new AuthorizationCode();
-    authorizationCode.value = crypto.randomBytes(environment.authorizationCode.length).toString('hex');
+    authorizationCode.value = crypto.randomBytes(environment.security.authorizationCode.length).toString('hex');
     authorizationCode.userId = userId;
     authorizationCode.clientId = clientId;
     authorizationCode.redirectUri = redirectUri;

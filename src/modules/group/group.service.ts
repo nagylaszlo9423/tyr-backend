@@ -19,11 +19,11 @@ export class GroupService extends BaseService<Group> {
   }
 
   findById(id: string): Promise<GroupResponse> {
-    return this._fetchById(id).then(GroupService.modelToResponse);
+    return this._fetchById(id).then(this.modelToResponse);
   }
 
   async findAllGroupsByPage(options: PaginationOptions): Promise<GroupPageResponse> {
-    return mapResultsToPageResponse(await this._findPage(options), GroupService.modelsToResponse);
+    return mapResultsToPageResponse(await this._findPage(options), this.modelsToResponse.bind(this));
   }
 
   async join(groupId: string) {
@@ -81,11 +81,11 @@ export class GroupService extends BaseService<Group> {
     model.access = GroupAccess[request.access];
   }
 
-  private static modelsToResponse(models: Group[]): GroupResponse[] {
+  private modelsToResponse(models: Group[]): GroupResponse[] {
     return models.map(this.modelToResponse);
   }
 
-  private static modelToResponse(model: Group): GroupResponse {
+  private modelToResponse(model: Group): GroupResponse {
     const response = new GroupResponse();
 
     response.name = model.name;
