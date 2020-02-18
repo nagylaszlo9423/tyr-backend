@@ -31,8 +31,12 @@ export class AuthService {
     return this.tokenService.renewToken(refreshToken);
   }
 
-  logout(token: string): Promise<void> {
-    return this.tokenService.removeTokens(token);
+  logout(accessToken: string): Promise<void> {
+    return this.tokenService.removeAccessToken(accessToken);
+  }
+
+  logoutEverywhere(accessToken: string) {
+    return this.tokenService.removeTokens(accessToken);
   }
 
   register(request: RegistrationRequest): Promise<RegistrationResponse> {

@@ -3,15 +3,15 @@ import {Response} from 'express';
 import {AuthService} from "./auth.service";
 import {environment} from "../../environment/environment";
 import {BadRequestException} from "../../errors/errors";
-import {LoginRequest, LoginResponse, RegistrationRequest, TokenResponse} from "tyr-api";
+import {LoginRequest, LoginResponse, LogoutRequest, RegistrationRequest, TokenResponse} from "tyr-api";
 
-@Controller('oauth')
+@Controller('/oauth')
 export class Oauth2Controller {
 
   constructor(private authService: AuthService) {
   }
 
-  @Get('authorize')
+  @Get('/authorize')
   authorize(@Query('response_type') responseType: string,
             @Query('client_id') clientId: string,
             @Query('redirect_uri') redirectUri: string,
@@ -25,7 +25,7 @@ export class Oauth2Controller {
     response.redirect(environment.frontend.loginPage);
   }
 
-  @Post('token')
+  @Post('/token')
   token(@Query('grant_type') grantType: string,
         @Query('code') code?: string,
         @Query('redirect_uri') redirectUri?: string,
@@ -43,18 +43,24 @@ export class Oauth2Controller {
     throw new BadRequestException();
   }
 
-  @Post('login')
+  @Post('/login')
   login(@Body() request: LoginRequest): Promise<LoginResponse> {
     return this.authService.login(request);
   }
 
-  @Post('logout')
-  logout(@Headers('authorization') token: any) {
-    if (!token) throw new BadRequestException();
-    return this.authService.logout(token);
+  @Post('/logout')
+  logout(@Body() request: LogoutRequest) {
+    if (!request.accessToken) throw new BadRequestException();
+    return this.authService.logout(request.accessToken);
   }
 
-  @Post('login/:provider(google|facebook)')
+  @Post('/logout/all')
+  logoutEverywhere(@Body() request: LogoutRequest) {
+    if (!request.accessToken) throw new BadRequestException();
+    return this.authService.logoutEverywhere(request.accessToken);
+  }
+
+  @Post('/login/:provider(google|facebook)')
   loginSocial(@Param('provider') provider: string) {
 
   }

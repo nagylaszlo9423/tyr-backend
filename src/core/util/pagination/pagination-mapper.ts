@@ -6,6 +6,7 @@ export function mapResultsToPageResponse<T, R>(results: Page<T>, mapper: (items:
 
   response.page = results.page;
   response.size = results.size;
+  response.total = results.total;
   if (mapper) {
     response.items = mapper(results.items);
   } else {

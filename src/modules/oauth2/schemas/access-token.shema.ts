@@ -5,4 +5,5 @@ export class AccessToken implements TokenBaseSchema {
   userId: string;
   expirationDate: Date;
   value: string;
+  refreshTokenValue: string;
 }

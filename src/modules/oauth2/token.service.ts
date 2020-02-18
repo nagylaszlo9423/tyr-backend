@@ -32,40 +32,51 @@ export class TokenService {
     return this.createTokens(userId, clientId);
   }
 
-  async createTokens(userId: string, clientId: string) {
-    const accessToken = TokenService.createAccessToken(clientId, userId);
-    const accessTokenHashedKey = await this.redisService.addTokenAndSetExpiration(accessToken.value, accessToken, 'access', TokenService.accessTokenExpiresInSeconds);
-    const refreshToken = TokenService.createRefreshToken(accessTokenHashedKey);
-    await this.redisService.addTokenAndSetExpiration([accessToken.value, userId], refreshToken, 'refresh', TokenService.refreshTokenExpiresInSeconds);
-    const response = new TokenResponse();
-    response.accessToken = accessToken.value;
-    response.accessTokenExpiration = accessToken.expirationDate.toISOString();
-    response.refreshToken = refreshToken.value;
-    response.refreshTokenExpiration = refreshToken.expirationDate.toISOString();
-    return response;
+  async createTokens(userId: string, clientId: string): Promise<TokenResponse> {
+    const accessToken = TokenService.createAccessToken('', clientId, userId);
+    const refreshToken = TokenService.createRefreshToken(accessToken.value, userId);
+    accessToken.refreshTokenValue = refreshToken.value;
+    await this.redisService.addTokenAndSetExpiration(accessToken.value, accessToken, 'access', TokenService.accessTokenExpiresInSeconds);
+    await this.redisService.addTokenAndSetExpiration(refreshToken.value, refreshToken, 'refresh', TokenService.refreshTokenExpiresInSeconds);
+    return TokenService.mapToResponse(accessToken, refreshToken);
   }
 
-  async removeTokens(accessToken: string) {
-    const userId = (await this.redisService.getToken(accessToken, 'access')).value;
-    await this.redisService.removeToken(accessToken, 'access');
-    await this.redisService.removeToken([accessToken, userId], 'refresh');
+  removeAccessToken(accessToken: string): Promise<void> {
+    return this.redisService.removeToken(accessToken, 'access');
   }
 
-  private static createAccessToken(clientId: string, userId: string): AccessToken {
+  async removeTokens(accessTokenValue: string) {
+    const accessToken: AccessToken = await this.redisService.getToken(accessTokenValue, 'access');
+    await this.redisService.removeToken(accessToken.refreshTokenValue, 'refresh');
+    await this.redisService.removeToken(accessToken.value, 'access');
+  }
+
+  private static createAccessToken(refreshTokenValue: string, clientId: string, userId: string): AccessToken {
     const accessToken = new AccessToken();
     accessToken.clientId = clientId;
     accessToken.value = crypto.randomBytes(environment.security.accessToken.length).toString('hex');
     accessToken.userId = userId;
+    accessToken.refreshTokenValue = refreshTokenValue;
     return accessToken;
   }
 
-  private static createRefreshToken(userId: string): RefreshToken {
+  private static createRefreshToken(accessTokenValue: string, userId: string): RefreshToken {
     const refreshToken = new RefreshToken();
     const expirationDate = new Date();
     expirationDate.setMinutes(expirationDate.getMinutes() + environment.security.refreshToken.expiresInMinutes);
     refreshToken.value = crypto.randomBytes(environment.security.refreshToken.length).toString('hex');
     refreshToken.expirationDate = expirationDate;
     refreshToken.userId = userId;
+    refreshToken.accessTokenValue = accessTokenValue;
     return refreshToken;
+  }
+
+  private static mapToResponse(accessToken: AccessToken, refreshToken: RefreshToken) {
+    const response = new TokenResponse();
+    response.accessToken = accessToken.value;
+    response.accessTokenExpiration = accessToken.expirationDate.toISOString();
+    response.refreshToken = refreshToken.value;
+    response.refreshTokenExpiration = refreshToken.expirationDate.toISOString();
+    return response;
   }
 }
