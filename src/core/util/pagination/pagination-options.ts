@@ -1,5 +1,3 @@
-import {ObjectInitializer} from "../object-initializer";
-
 
 export interface IPaginationOptions {
   page: number;

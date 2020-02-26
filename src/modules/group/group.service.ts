@@ -1,14 +1,17 @@
 import {Injectable} from "@nestjs/common";
 import {BaseService} from "../../core/services/base.service";
-import {Group, GroupAccess} from "./group.schema";
+import {Group} from "./group.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
-import {CreateGroupRequest, GroupPageResponse, GroupResponse, PageResponse, UpdateGroupRequest} from "tyr-api";
 import {ContextService} from "../../core/services/context.service";
 import {CreatedResponse} from "../../core/dto/created.response";
 import {ForbiddenException} from "../../errors/errors";
 import {mapResultsToPageResponse} from "../../core/util/pagination/pagination-mapper";
 import {PaginationOptions} from "../../core/util/pagination/pagination-options";
+import {GroupResponse} from "../../dtos/group/group-response";
+import {GroupJoinPolicy} from "./group-join-policy";
+import {PageResponse} from "../../core/dto/page.response";
+import {GroupRequest} from "../../dtos/group/group.request";
 
 
 @Injectable()
@@ -22,7 +25,7 @@ export class GroupService extends BaseService<Group> {
     return this._fetchById(id).then(this.modelToResponse);
   }
 
-  async findAllGroupsByPage(options: PaginationOptions): Promise<GroupPageResponse> {
+  async findAllGroupsByPage(options: PaginationOptions): Promise<PageResponse<GroupResponse>> {
     return mapResultsToPageResponse(await this._findPage(options), this.modelsToResponse.bind(this));
   }
 
@@ -44,13 +47,13 @@ export class GroupService extends BaseService<Group> {
     await group.save();
   }
 
-  async create(createRequest: CreateGroupRequest): Promise<CreatedResponse> {
+  async create(createRequest: GroupRequest): Promise<CreatedResponse> {
     const group = this.createRequestToModel(createRequest, this.ctx.userId);
     await group.save();
     return CreatedResponse.of(group);
   }
 
-  async update(updateRequest: UpdateGroupRequest, groupId: string): Promise<void> {
+  async update(updateRequest: GroupRequest, groupId: string): Promise<void> {
     const group = await this._fetchById(groupId);
     this.updateRequestToModel(updateRequest, group);
     await group.save();
@@ -64,10 +67,10 @@ export class GroupService extends BaseService<Group> {
     await group.remove();
   }
 
-  private createRequestToModel(request: CreateGroupRequest, owner: string): Group {
+  private createRequestToModel(request: GroupRequest, owner: string): Group {
     return new this.model(<Group>{
       name: request.name,
-      access: request.access,
+      joinPolicy: request.joinPolicy,
       description: request.description,
       owner: owner,
       members: [],
@@ -75,10 +78,10 @@ export class GroupService extends BaseService<Group> {
     });
   }
 
-  private updateRequestToModel(request: UpdateGroupRequest, model: Group) {
+  private updateRequestToModel(request: GroupRequest, model: Group) {
     model.name = request.name;
     model.description = request.description;
-    model.access = GroupAccess[request.access];
+    model.joinPolicy = GroupJoinPolicy[request.joinPolicy];
   }
 
   private modelsToResponse(models: Group[]): GroupResponse[] {
@@ -88,8 +91,9 @@ export class GroupService extends BaseService<Group> {
   private modelToResponse(model: Group): GroupResponse {
     const response = new GroupResponse();
 
+    response.id = model._id;
     response.name = model.name;
-    response.access = model.access;
+    response.joinPolicy = model.joinPolicy;
     response.owner = model.owner as string;
     response.description = model.description;
 

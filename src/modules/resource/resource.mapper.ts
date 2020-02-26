@@ -1,5 +1,5 @@
-import {ResourceItemResponse} from "tyr-api";
 import {ResourceItem} from "./resource-item.schema";
+import {ResourceItemResponse} from "../../core/dto/resource-item.response";
 
 
 export class ResourceMapper {

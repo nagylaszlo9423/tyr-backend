@@ -1,5 +1,5 @@
 import {Audit} from "../schemas/audit.schema";
-import {AuditDto} from "tyr-api";
+import {AuditDto} from "../dto/audit.dto";
 
 
 export class AuditMapper {

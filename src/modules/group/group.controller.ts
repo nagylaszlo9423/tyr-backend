@@ -1,8 +1,10 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from "@nestjs/common";
 import {GroupService} from "./group.service";
-import {CreateGroupRequest, GroupResponse, PageResponse, UpdateGroupRequest} from "tyr-api";
 import {CreatedResponse} from "../../core/dto/created.response";
 import {PaginationOptions} from "../../core/util/pagination/pagination-options";
+import {PageResponse} from "../../core/dto/page.response";
+import {GroupResponse} from "../../dtos/group/group-response";
+import {GroupRequest} from "../../dtos/group/group.request";
 
 
 @Controller('/group')
@@ -12,7 +14,7 @@ export class GroupController {
   }
 
   @Get('/page')
-  findAllGroupsPaged(@Query('page', ParseIntPipe) page: number, @Query('size', ParseIntPipe) size: number): Promise<PageResponse> {
+  findAllGroupsPaged(@Query('page', ParseIntPipe) page: number, @Query('size', ParseIntPipe) size: number): Promise<PageResponse<GroupResponse>> {
     return this.groupService.findAllGroupsByPage(PaginationOptions.of(page, size));
   }
 
@@ -32,13 +34,13 @@ export class GroupController {
   }
 
   @Post()
-  async create(@Body() createRequest: CreateGroupRequest): Promise<CreatedResponse> {
+  async create(@Body() createRequest: GroupRequest): Promise<CreatedResponse> {
     return this.groupService.create(createRequest);
   }
 
   @Put('/:id')
   async update(@Param('id') groupId: string,
-               @Body() updateRequest: UpdateGroupRequest): Promise<void> {
+               @Body() updateRequest: GroupRequest): Promise<void> {
     return this.groupService.update(updateRequest, groupId);
   }
 

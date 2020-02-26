@@ -3,7 +3,11 @@ import {Response} from 'express';
 import {AuthService} from "./auth.service";
 import {environment} from "../../environment/environment";
 import {BadRequestException} from "../../errors/errors";
-import {LoginRequest, LoginResponse, LogoutRequest, RegistrationRequest, TokenResponse} from "tyr-api";
+import {TokenResponse} from "../../dtos/auth/token-response";
+import {LoginResponse} from "../../dtos/auth/login-response";
+import {LoginRequest} from "../../dtos/auth/login-request";
+import {LogoutRequest} from "../../dtos/auth/logout-request";
+import {RegistrationRequest} from "../../dtos/auth/registration-request";
 
 @Controller('/oauth')
 export class Oauth2Controller {

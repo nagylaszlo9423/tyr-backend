@@ -5,7 +5,9 @@ import {Model} from 'mongoose';
 import {GeneralException} from "../../errors/errors";
 import * as crypto from 'crypto';
 import {BaseService} from "../../core/services/base.service";
-import {LoginRequest, RegistrationRequest, RegistrationResponse} from "tyr-api";
+import {RegistrationRequest} from "../../dtos/auth/registration-request";
+import {RegistrationResponse} from "../../dtos/auth/registration-response";
+import {LoginRequest} from "../../dtos/auth/login-request";
 
 @Injectable()
 export class UserService extends BaseService<User> {

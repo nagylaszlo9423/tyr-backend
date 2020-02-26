@@ -1,5 +1,5 @@
 import {LineString} from "../schemas/line-string.schema";
-import {LineStringDto} from "tyr-api";
+import {LineStringDto} from "../../dtos/route/line-string.dto";
 
 
 export class GeojsonMapper {

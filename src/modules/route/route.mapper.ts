@@ -1,9 +1,11 @@
 import {Route} from "./route.schema";
 import {GeojsonMapper} from "../../core/util/geojson.mapper";
-import {CreateRouteRequest, RouteResponse, UpdateRouteRequest} from "tyr-api";
 import {AuditMapper} from "../../core/util/audit.mapper";
 import {ResourceMapper} from "../resource/resource.mapper";
 import {ResourceItem} from "../resource/resource-item.schema";
+import {RouteResponse} from "../../dtos/route/route.response";
+import {CreateRouteRequest} from "../../dtos/route/create-route.request";
+import {UpdateRouteRequest} from "../../dtos/route/update-route.request";
 
 export class RouteMapper {
   static modelsToResponses(entities: Route[]): RouteResponse[] {

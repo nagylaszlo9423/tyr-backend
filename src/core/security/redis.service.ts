@@ -105,6 +105,7 @@ export class RedisService {
   }
 
   private isEncryptedDataValid(value: EncryptedData) {
+    console.log(value.created, this.created)
     return value.created > this.created;
   }
 

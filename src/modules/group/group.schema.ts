@@ -1,17 +1,12 @@
 import * as mongoose from "mongoose";
 import {User} from "../user/user.schema";
 import {Route} from "../route/route.schema";
-
-export enum GroupAccess {
-  INVITE_ONLY = 'INVITE_ONLY',
-  REQUEST = 'REQUEST',
-  PUBLIC = 'PUBLIC'
-}
+import {GroupJoinPolicy} from "./group-join-policy";
 
 export interface Group extends mongoose.Document {
   name: string;
   description: string;
-  access: GroupAccess;
+  joinPolicy: GroupJoinPolicy;
   owner: User | string;
   members: User[] | string[];
   routes: Route[] | string[];
@@ -20,7 +15,7 @@ export interface Group extends mongoose.Document {
 export const GroupSchema = new mongoose.Schema({
   name: String,
   description: String,
-  access: {type: String, enum: ['INVITE_ONLY', 'REQUEST', 'PUBLIC'], required: true, default: 'INVITE_ONLY'},
+  joinPolicy: {type: String, enum: Object.keys(GroupJoinPolicy), required: true, default: 'INVITE_ONLY'},
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   routes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Route'}]

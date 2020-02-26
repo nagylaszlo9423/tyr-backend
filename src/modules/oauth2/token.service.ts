@@ -5,7 +5,7 @@ import * as crypto from 'crypto';
 import {environment} from "../../environment/environment";
 import {GeneralException} from "../../errors/errors";
 import {RedisService} from "../../core/security/redis.service";
-import {TokenResponse} from "tyr-api";
+import {TokenResponse} from "../../dtos/auth/token-response";
 
 
 @Injectable()

@@ -9,8 +9,10 @@ import {ForbiddenException, GeneralException} from "../../errors/errors";
 import {Group} from "../group/group.schema";
 import {ContextService} from "../../core/services/context.service";
 import {LineString} from "../../core/schemas/line-string.schema";
-import {CreateRouteRequest, RouteResponse, UpdateRouteRequest} from "tyr-api";
 import {CreatedResponse} from "../../core/dto/created.response";
+import {CreateRouteRequest} from "../../dtos/route/create-route.request";
+import {UpdateRouteRequest} from "../../dtos/route/update-route.request";
+import {RouteResponse} from "../../dtos/route/route.response";
 
 @Injectable()
 export class RouteService extends BaseService<Route> {
