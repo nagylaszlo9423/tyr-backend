@@ -13,11 +13,13 @@ import {CreatedResponse} from "../../core/dto/created.response";
 import {CreateRouteRequest} from "../../dtos/route/create-route.request";
 import {UpdateRouteRequest} from "../../dtos/route/update-route.request";
 import {RouteResponse} from "../../dtos/route/route.response";
+import {UserService} from "../user/user.service";
 
 @Injectable()
 export class RouteService extends BaseService<Route> {
   public constructor(@InjectModel('Route') routeModel: Model<Route>,
                      @InjectModel('LineString') private lineStringModel: Model<LineString>,
+                     private userService: UserService,
                      private groupService: GroupService,
                      private ctx: ContextService) {
     super(routeModel);
@@ -56,6 +58,19 @@ export class RouteService extends BaseService<Route> {
       throw new ForbiddenException();
     }
     return RouteMapper.modelToResponse(route);
+  }
+
+  async findAllAvailable() {
+    const user = await this.userService.findById(this.ctx.userId);
+    const routes = await this.model.find().populate('group').or([
+      {'group.id': {$in: user.groups}},
+      {'owner': user._id}
+    ]).exec();
+    return RouteMapper.modelsToResponses(routes);
+  }
+
+  async findAllByCurrentUser() {
+    return RouteMapper.modelsToResponses(await this.model.find({owner: this.ctx.userId}).exec());
   }
 
   async findAllByGroup(groupId: string): Promise<RouteResponse[]> {

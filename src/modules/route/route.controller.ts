@@ -5,7 +5,7 @@ import {CreateRouteRequest} from "../../dtos/route/create-route.request";
 import {UpdateRouteRequest} from "../../dtos/route/update-route.request";
 import {RouteResponse} from "../../dtos/route/route.response";
 
-@Controller('route')
+@Controller('/route')
 export class RouteController {
 
   constructor(private routeService: RouteService) {
@@ -16,34 +16,44 @@ export class RouteController {
     return this.routeService.create(request);
   }
 
-  @Put(':id')
+  @Put('/:id')
   async update(@Body() request: UpdateRouteRequest,
                @Param('id') routeId: string): Promise<void> {
     return this.routeService.update(request, routeId);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   async delete(@Param() routeId: string): Promise<void> {
     return this.routeService.deleteById(routeId);
   }
 
-  @Get('most-popular')
-  async findMostPopularInTheArea(): Promise<RouteResponse[]> {
-    return Promise.resolve([]);
+  @Get('/list')
+  findAllAvailable(): Promise<RouteResponse[]> {
+    return this.routeService.findAllAvailable();
   }
 
-  @Get(':id')
+  @Get('/list/:filter')
+  findByFilter(@Param() filter: string): Promise<RouteResponse[]> {
+    switch (filter) {
+      case 'most-popular': return Promise.resolve([]);
+      case 'near': return Promise.resolve([]);
+      case 'own':
+      default: return this.routeService.findAllByCurrentUser();
+    }
+  }
+
+  @Get('/:id')
   async findById(@Param() routeId: string): Promise<RouteResponse> {
     return this.routeService.findById(routeId);
   }
 
-  @Post(':routeId/share-in-group/:groupId')
+  @Post('/:routeId/share-in-group/:groupId')
   async shareInGroup(@Param('routeId') routeId: string,
                      @Param('groupId') groupId: string): Promise<void> {
     return this.routeService.shareInGroup(routeId, groupId);
   }
 
-  @Post(':id')
+  @Post('/:id')
   async publish(@Param('id') routeId: string): Promise<void> {
     return this.routeService.publish(routeId);
   }
