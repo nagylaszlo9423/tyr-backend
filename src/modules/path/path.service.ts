@@ -30,7 +30,7 @@ export class PathService extends BaseService<Path> {
     const path = new this.model();
     path.path = new this.lineStringModel();
     PathMapper.createRequestToModel(request, path);
-    path.owner = new ObjectId(this.ctx.userId);
+    path.owner = ObjectId(this.ctx.userId) as any;
     path.visibility = PathVisibility.PRIVATE;
     return CreatedResponse.of(await this._saveAndAudit(path, this.ctx.userId));
   }
