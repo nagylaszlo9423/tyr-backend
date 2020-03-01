@@ -1,36 +1,38 @@
-import {Route} from "./route.schema";
 import {GeojsonMapper} from "../../core/util/geojson.mapper";
 import {AuditMapper} from "../../core/util/audit.mapper";
 import {ResourceMapper} from "../resource/resource.mapper";
 import {ResourceItem} from "../resource/resource-item.schema";
-import {RouteResponse} from "../../dtos/route/route.response";
-import {CreateRouteRequest} from "../../dtos/route/create-route.request";
-import {UpdateRouteRequest} from "../../dtos/route/update-route.request";
+import {PathResponse} from "../../dtos/path/path-response";
+import {CreatePathRequest} from "../../dtos/path/create-path.request";
+import {Path} from "./path.schema";
+import {UpdatePathRequest} from "../../dtos/path/update-path.request";
 
-export class RouteMapper {
-  static modelsToResponses(entities: Route[]): RouteResponse[] {
-    return entities.map(entity => RouteMapper.modelToResponse(entity));
+export class PathMapper {
+  static modelsToResponses(entities: Path[], owner: string): PathResponse[] {
+    return entities.map(entity => PathMapper.modelToResponse(entity, owner));
   }
 
-  static modelToResponse(entity: Route): RouteResponse {
-    const result = new RouteResponse();
+  static modelToResponse(entity: Path, owner: string): PathResponse {
+    const result = new PathResponse();
 
+    result.id = entity._id;
     result.title = entity.title;
     result.description = entity.description;
     result.path = GeojsonMapper.lineStringModelToResponse(entity.path);
     result.audit = AuditMapper.modelToResponse(entity.audit);
     result.images = ResourceMapper.modelsToResponse(entity.images as ResourceItem[]);
+    result.isEditable = owner === entity.owner.toString();
 
     return result;
   }
 
-  static createRequestToModel(request: CreateRouteRequest, model: Route) {
+  static createRequestToModel(request: CreatePathRequest, model: Path) {
     model.title = request.title;
     model.description = request.description;
     GeojsonMapper.lineStringRequestToModel(request.path, model.path);
   }
 
-  static updateRequestToModel(request: UpdateRouteRequest, model: Route) {
+  static updateRequestToModel(request: UpdatePathRequest, model: Path) {
     model.title = request.title;
     model.description = request.description;
     GeojsonMapper.lineStringRequestToModel(request.path, model.path);;

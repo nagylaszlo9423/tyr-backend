@@ -7,7 +7,7 @@ import {Page} from "../util/pagination/page";
 
 export abstract class BaseService<T extends Document> {
 
-  public constructor(protected model: Model<T>) {
+  protected constructor(protected model: Model<T>) {
   }
 
   public async _removeById(id: string): Promise<void> {

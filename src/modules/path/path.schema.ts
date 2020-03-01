@@ -6,31 +6,31 @@ import {Auditable} from "../../core/util/auditable";
 import {LineString, LineStringSchema} from "../../core/schemas/line-string.schema";
 import {ResourceItem} from "../resource/resource-item.schema";
 
-export enum RouteVisibility {
+export enum PathVisibility {
   PUBLIC = 'PUBLIC',
   GROUP = 'GROUP',
   PRIVATE = 'PRIVATE'
 }
 
-export enum RouteCategory {
+export enum PathCategory {
   BICYCLE = "BICYCLE",
   SIGHTSEEING ="SIGHTSEEING",
   HIKING = "HIKING",
   OFF_ROAD = "OFF_ROAD"
 }
 
-export interface Route extends mongoose.Document, Auditable {
+export interface Path extends mongoose.Document, Auditable {
   title: string;
   description: string;
-  owner: User | string;
-  group: Group | string;
+  owner: User | mongoose.Schema.Types.ObjectId;
+  group: Group | mongoose.Schema.Types.ObjectId;
   images: ResourceItem[] | string[];
-  visibility: RouteVisibility;
+  visibility: PathVisibility;
   path: LineString;
   audit: Audit;
 }
 
-export const RouteSchema = new mongoose.Schema({
+export const PathSchema = new mongoose.Schema({
   title: {type: String, required: true},
   description: String,
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},

@@ -1,12 +1,12 @@
 import {environment} from "../environment/environment";
-import {Route, RouteSchema, RouteVisibility} from "../modules/route/route.schema";
+import {Path, PathSchema, PathVisibility} from "../modules/path/path.schema";
 
 const mongoose = require('mongoose');
 
 
 mongoose.connect(`${environment.db.url}/${environment.db.name}`, {useNewUrlParser: true}).then(async () => {
   for (let i = 0; i < 10; i++) {
-    new mongoose.model('Route', RouteSchema, environment.db.name)(<Route>{
+    new mongoose.model('Path', PathSchema, environment.db.name)(<Path>{
       path: {
         "type": "LineString",
         "coordinates": [
@@ -18,7 +18,7 @@ mongoose.connect(`${environment.db.url}/${environment.db.name}`, {useNewUrlParse
           [18.675384521484375,47.3704545156932]
         ]
       },
-      visibility: RouteVisibility.PUBLIC,
+      visibility: PathVisibility.PUBLIC,
 
     }).save();
   }

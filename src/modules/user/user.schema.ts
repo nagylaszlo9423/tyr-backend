@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
-import {Route} from "../route/route.schema";
 import {Group} from "../group/group.schema";
+import {Path} from "../path/path.schema";
 
 export enum UserRole {
   USER = 'USER', ADMIN = 'ADMIN'
@@ -11,7 +11,7 @@ export interface User extends mongoose.Document {
   password: string;
   role: UserRole;
   friends: User[] | string[];
-  routes: Route[] | string[];
+  paths: Path[] | string[];
   groups: Group[] | string[];
 }
 
@@ -20,6 +20,6 @@ export const UserSchema = new mongoose.Schema({
   password: {type: String, required: true, unique: true},
   role: {type: String, required: true, enum: ['USER', 'ADMIN'], default: 'USER'},
   friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-  routes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Route'}],
+  paths: [{type: mongoose.Schema.Types.ObjectId, ref: 'Path'}],
   groups: [{type: mongoose.Schema.Types.ObjectId, ref: 'Group'}]
 });

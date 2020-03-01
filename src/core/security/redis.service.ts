@@ -92,9 +92,9 @@ export class RedisService {
   }
 
   private decipherValue(value: EncryptedData): string {
-    if (!this.isEncryptedDataValid(value)) {
-      throw new UnauthorizedException();
-    }
+    // if (!this.isEncryptedDataValid(value)) {
+    //   throw new UnauthorizedException();
+    // }
     const authTag = Buffer.from(value.authTag, 'hex');
     const decipher = crypto.createDecipheriv(RedisService.cipherAlgorithm, Buffer.from(RedisService.cipherKey), RedisService.initVector);
     decipher.setAuthTag(authTag);
@@ -104,10 +104,9 @@ export class RedisService {
     return deciphered.toString();
   }
 
-  private isEncryptedDataValid(value: EncryptedData) {
-    console.log(value.created, this.created)
-    return value.created > this.created;
-  }
+  // private isEncryptedDataValid(value: EncryptedData) {
+  //   return value.created > this.created;
+  // }
 
   private retryStrategy(options: RetryStrategyOptions): number | Error {
     this.logger.error('Connection failed', undefined, RedisService.Context);

@@ -1,20 +1,20 @@
 import {TestGeoJsons} from "../../test-geo-jsons";
 import * as request from "supertest";
 import {e2eSuite} from "../e2e-suite";
-import {CreateRouteRequest} from "tyr-api";
+import {CreatePathRequest} from "../../../src/dtos/path/create-path.request";
 
 
-e2eSuite('RouteController', [
+e2eSuite('PathController', [
   {
-    name: 'should create route',
+    name: 'should create path',
     test: app => {
-      const data = new CreateRouteRequest();
-      data.title = 'route title';
+      const data = new CreatePathRequest();
+      data.title = 'path title';
       data.description = 'description';
       data.path = TestGeoJsons.path;
 
       request(app.getHttpServer())
-        .post('/route')
+        .post('/path')
         .send(data)
         .expect(200);
     }

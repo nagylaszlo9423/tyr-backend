@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 import {User} from "../user/user.schema";
-import {Route} from "../route/route.schema";
 import {GroupJoinPolicy} from "./group-join-policy";
+import {Path} from "../path/path.schema";
 
 export interface Group extends mongoose.Document {
   name: string;
@@ -9,7 +9,7 @@ export interface Group extends mongoose.Document {
   joinPolicy: GroupJoinPolicy;
   owner: User | string;
   members: User[] | string[];
-  routes: Route[] | string[];
+  paths: Path[] | string[];
 }
 
 export const GroupSchema = new mongoose.Schema({
@@ -18,5 +18,5 @@ export const GroupSchema = new mongoose.Schema({
   joinPolicy: {type: String, enum: Object.keys(GroupJoinPolicy), required: true, default: 'INVITE_ONLY'},
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-  routes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Route'}]
+  paths: [{type: mongoose.Schema.Types.ObjectId, ref: 'Path'}]
 });

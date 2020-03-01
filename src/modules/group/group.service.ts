@@ -74,7 +74,7 @@ export class GroupService extends BaseService<Group> {
       description: request.description,
       owner: owner,
       members: [],
-      routes: []
+      paths: []
     });
   }
 
