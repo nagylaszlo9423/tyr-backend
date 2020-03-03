@@ -8,13 +8,16 @@ import {Group} from "../group/group.schema";
 import {ContextService} from "../../core/services/context.service";
 import {LineString} from "../../core/schemas/line-string.schema";
 import {CreatedResponse} from "../../core/dto/created.response";
-import {CreatePathRequest} from "../../dtos/path/create-path.request";
 import {PathResponse} from "../../dtos/path/path-response";
 import {UserService} from "../user/user.service";
 import {ObjectId} from "../../db/mongoose";
 import {PathMapper} from "./path.mapper";
 import {Path, PathVisibility} from "./path.schema";
-import {UpdatePathRequest} from "../../dtos/path/update-path.request";
+import {PageResponse} from "../../core/dto/page.response";
+import {PaginationOptions} from "../../core/util/pagination/pagination-options";
+import {Page} from "../../core/util/pagination/page";
+import {User} from "../user/user.schema";
+import {PathRequest} from "../../dtos/path/path.request";
 
 @Injectable()
 export class PathService extends BaseService<Path> {
@@ -26,21 +29,21 @@ export class PathService extends BaseService<Path> {
     super(pathModel);
   }
 
-  async create(request: CreatePathRequest): Promise<CreatedResponse> {
+  async create(request: PathRequest): Promise<CreatedResponse> {
     const path = new this.model();
     path.path = new this.lineStringModel();
-    PathMapper.createRequestToModel(request, path);
+    PathMapper.requestToModel(request, path);
     path.owner = ObjectId(this.ctx.userId) as any;
     path.visibility = PathVisibility.PRIVATE;
     return CreatedResponse.of(await this._saveAndAudit(path, this.ctx.userId));
   }
 
-  async update(request: UpdatePathRequest, pathId: string): Promise<void> {
+  async update(request: PathRequest, pathId: string): Promise<void> {
     const path = await this._fetchById(pathId);
     if (path.owner.toString() !== this.ctx.userId) {
       throw new ForbiddenException();
     }
-    PathMapper.updateRequestToModel(request, path);
+    PathMapper.requestToModel(request, path);
     await this._saveAndAudit(path, this.ctx.userId);
   }
 
@@ -64,27 +67,10 @@ export class PathService extends BaseService<Path> {
     return PathMapper.modelToResponse(path, this.ctx.userId);
   }
 
-  async findAllAvailable() {
+  async findAllAvailableByFilters(options: PaginationOptions, filters: string[], searchExp?: string): Promise<PageResponse<PathResponse>> {
     const user = await this.userService.findById(this.ctx.userId);
-    const paths = await this.model.find().populate('group').or([
-      {'group.id': {$in: user.groups}},
-      {'owner': user._id}
-    ]).exec();
-    return PathMapper.modelsToResponses(paths, this.ctx.userId);
-  }
-
-  async findAllByCurrentUser() {
-    return PathMapper.modelsToResponses(await this.model.find({owner: this.ctx.userId}).exec(), this.ctx.userId);
-  }
-
-  async findAllByGroup(groupId: string): Promise<PathResponse[]> {
-    const group = await this.groupService._fetchById(groupId);
-    if (!this.isUserInGroup(group)) {
-      throw new GeneralException("NOT_MEMBER_OF_THE_GROUP");
-    }
-
-    const paths: Path[] = await this.model.find({group: groupId}).exec();
-    return PathMapper.modelsToResponses(paths, this.ctx.userId);
+    const results: Page<Path> = await this._findPage(options, this.constructQueryByFilters(filters, user, searchExp));
+    return PathMapper.modelsPageToResponse(results, user._id.toString());
   }
 
   async shareInGroup(pathId: string, groupId: string): Promise<void> {
@@ -112,5 +98,26 @@ export class PathService extends BaseService<Path> {
 
   private isUserInGroup(group: Group): boolean {
     return group && group.members.findIndex(_userId => _userId === this.ctx.userId) > -1;
+  }
+
+  private constructQueryByFilters(filters: string[], user: User, searchExp: string): any {
+    const query = {$or: []};
+    filters.forEach(filter => {
+      switch (filter) {
+        case 'own': query.$or.push({owner: user._id.toString()}); break;
+        case 'groups': query.$or.push({
+          group: {$in: user.groups},
+          owner: {$ne: user._id.toString()}
+        }); break;
+        case 'public': query.$or.push({
+          visibility: PathVisibility.PUBLIC,
+          owner: {$ne: user._id.toString()}
+        });
+      }
+    });
+    if (searchExp) {
+      query['$text'] = {$search: searchExp};
+    }
+    return query;
   }
 }

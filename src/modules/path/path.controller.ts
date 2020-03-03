@@ -1,9 +1,10 @@
-import {Body, Controller, Delete, Get, Param, Post, Put} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from "@nestjs/common";
 import {CreatedResponse} from "../../core/dto/created.response";
-import {CreatePathRequest} from "../../dtos/path/create-path.request";
 import {PathService} from "./path.service";
-import {UpdatePathRequest} from "../../dtos/path/update-path.request";
 import {PathResponse} from "../../dtos/path/path-response";
+import {PaginationOptions} from "../../core/util/pagination/pagination-options";
+import {PageResponse} from "../../core/dto/page.response";
+import {PathRequest} from "../../dtos/path/path.request";
 
 @Controller('/path')
 export class PathController {
@@ -12,39 +13,13 @@ export class PathController {
   }
 
   @Post()
-  async create(@Body() request: CreatePathRequest): Promise<CreatedResponse> {
+  async create(@Body() request: PathRequest): Promise<CreatedResponse> {
     return this.pathService.create(request);
   }
 
-  @Put('/:id')
-  async update(@Body() request: UpdatePathRequest,
-               @Param('id') pathId: string): Promise<void> {
-    return this.pathService.update(request, pathId);
-  }
+  @Post('/list/area')
+  findByArea() {
 
-  @Delete('/:id')
-  async delete(@Param() pathId: string): Promise<void> {
-    return this.pathService.deleteById(pathId);
-  }
-
-  @Get('/list')
-  findAllAvailable(): Promise<PathResponse[]> {
-    return this.pathService.findAllAvailable();
-  }
-
-  @Get('/list/:filter')
-  findByFilter(@Param('filter') filter: string): Promise<PathResponse[]> {
-    switch (filter) {
-      case 'most-popular': return Promise.resolve([]);
-      case 'near': return Promise.resolve([]);
-      case 'own':
-      default: return this.pathService.findAllByCurrentUser();
-    }
-  }
-
-  @Get('/:id')
-  async findById(@Param('id') pathId: string): Promise<PathResponse> {
-    return this.pathService.findById(pathId);
   }
 
   @Post('/:pathId/share-in-group/:groupId')
@@ -56,5 +31,29 @@ export class PathController {
   @Post('/:id')
   async publish(@Param('id') pathId: string): Promise<void> {
     return this.pathService.publish(pathId);
+  }
+
+  @Put('/:id')
+  async update(@Body() request: PathRequest,
+               @Param('id') pathId: string): Promise<void> {
+    return this.pathService.update(request, pathId);
+  }
+
+  @Delete('/:id')
+  async delete(@Param() pathId: string): Promise<void> {
+    return this.pathService.deleteById(pathId);
+  }
+
+  @Get('/list')
+  findAllAvailableByFilters(@Query('filters') filters: string[],
+                            @Query('page', ParseIntPipe) page: number,
+                            @Query('size', ParseIntPipe) size: number,
+                            @Query('search') searchExp: string): Promise<PageResponse<PathResponse>> {
+    return this.pathService.findAllAvailableByFilters(PaginationOptions.of(page, size), filters, searchExp);
+  }
+
+  @Get('/:id')
+  async findById(@Param('id') pathId: string): Promise<PathResponse> {
+    return this.pathService.findById(pathId);
   }
 }

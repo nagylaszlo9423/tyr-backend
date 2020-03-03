@@ -12,6 +12,7 @@ import {GroupResponse} from "../../dtos/group/group-response";
 import {GroupJoinPolicy} from "./group-join-policy";
 import {PageResponse} from "../../core/dto/page.response";
 import {GroupRequest} from "../../dtos/group/group.request";
+import {GroupMapper} from "./group.mapper";
 
 
 @Injectable()
@@ -22,11 +23,11 @@ export class GroupService extends BaseService<Group> {
   }
 
   findById(id: string): Promise<GroupResponse> {
-    return this._fetchById(id).then(this.modelToResponse);
+    return this._fetchById(id).then(GroupMapper.modelToResponse);
   }
 
   async findAllGroupsByPage(options: PaginationOptions): Promise<PageResponse<GroupResponse>> {
-    return mapResultsToPageResponse(await this._findPage(options), this.modelsToResponse.bind(this));
+    return mapResultsToPageResponse(await this._findPage(options), GroupMapper.modelsToResponse.bind(this));
   }
 
   async join(groupId: string) {
@@ -82,21 +83,5 @@ export class GroupService extends BaseService<Group> {
     model.name = request.name;
     model.description = request.description;
     model.joinPolicy = GroupJoinPolicy[request.joinPolicy];
-  }
-
-  private modelsToResponse(models: Group[]): GroupResponse[] {
-    return models.map(this.modelToResponse);
-  }
-
-  private modelToResponse(model: Group): GroupResponse {
-    const response = new GroupResponse();
-
-    response.id = model._id;
-    response.name = model.name;
-    response.joinPolicy = model.joinPolicy;
-    response.owner = model.owner as string;
-    response.description = model.description;
-
-    return response;
   }
 }

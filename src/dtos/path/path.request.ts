@@ -1,6 +1,6 @@
 import {LineStringDto} from "./line-string.dto";
 
-export class CreatePathRequest {
+export class PathRequest {
     title: string;
     description: string;
     path: LineStringDto;

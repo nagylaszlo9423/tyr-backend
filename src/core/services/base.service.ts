@@ -1,5 +1,5 @@
 import {NotFoundException} from "../../errors/errors";
-import {Document, Model} from "mongoose";
+import {Document, DocumentQuery, Model, Query} from "mongoose";
 import {Auditable, AuditManager} from "../util/auditable";
 import {PaginationOptions} from "../util/pagination/pagination-options";
 import {Page} from "../util/pagination/page";
@@ -32,14 +32,31 @@ export abstract class BaseService<T extends Document> {
     return model.save();
   }
 
-  public async _findPage(options: PaginationOptions): Promise<Page<T>> {
-    const results: T[] = await this.model.find().skip(options.skip()).limit(options.size).exec();
-    const total = await this.model.count({}).exec();
-    return new Page({
-      page: options.page,
-      size: options.size,
-      total: total,
-      items: results
+  public _findPage(options: PaginationOptions, conditions?: any, queryCallback?: (query: DocumentQuery<Page<T>, T>) => DocumentQuery<Page<T>, T>): Promise<Page<T>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const total = await this.model.countDocuments({}).exec();
+
+        let query = this.model
+          .find(conditions)
+          .skip(options.skip())
+          .limit(options.size)
+          .map(results => new Page({
+            page: options.page,
+            size: options.size,
+            total: total,
+            items: results
+          }));
+
+        if (queryCallback) {
+          query = queryCallback(query);
+        }
+
+        resolve(await query.exec());
+      } catch (e) {
+        reject(e);
+      }
     });
+
   }
 }

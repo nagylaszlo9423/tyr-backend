@@ -40,4 +40,4 @@ export const PathSchema = new mongoose.Schema({
   visibility: {type: String, enum: ['PUBLIC', 'GROUP', 'PRIVATE'], required: true, default: 'PRIVATE'},
   path: LineStringSchema,
   audit: AuditSchema
-});
+}).index({title: 1});
