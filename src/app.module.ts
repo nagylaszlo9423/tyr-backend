@@ -13,6 +13,7 @@ import {GroupModule} from "./modules/group/group.module";
 import {ArticleModule} from "./modules/article/article.module";
 import {ResourceModule} from "./modules/resource/resource.module";
 import {PathModule} from "./modules/path/path.module";
+import {CoreModule} from "./core/core.module";
 
 @Module({
   imports: [

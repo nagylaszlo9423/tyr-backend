@@ -5,6 +5,7 @@ import {PathResponse} from "../../dtos/path/path-response";
 import {PaginationOptions} from "../../core/util/pagination/pagination-options";
 import {PageResponse} from "../../core/dto/page.response";
 import {PathRequest} from "../../dtos/path/path.request";
+import {ArrayQueryPipe} from "../../core/pipes/array-query.pipe";
 
 @Controller('/path')
 export class PathController {
@@ -45,7 +46,7 @@ export class PathController {
   }
 
   @Get('/list')
-  findAllAvailableByFilters(@Query('filters') filters: string[],
+  findAllAvailableByFilters(@Query('filters', ArrayQueryPipe) filters: string[],
                             @Query('page', ParseIntPipe) page: number,
                             @Query('size', ParseIntPipe) size: number,
                             @Query('search') searchExp: string): Promise<PageResponse<PathResponse>> {

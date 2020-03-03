@@ -21,8 +21,8 @@ export class GeneralException extends HttpException {
 }
 
 export class BadRequestException extends HttpException {
-  constructor() {
-    super(new ErrorResponse('BAD_REQUEST'), 400);
+  constructor(message?: string) {
+    super(new ErrorResponse('BAD_REQUEST', message), 400);
   }
 }
 
