@@ -41,7 +41,7 @@ export class PathController {
   }
 
   @Delete('/:id')
-  async delete(@Param() pathId: string): Promise<void> {
+  async delete(@Param('id') pathId: string): Promise<void> {
     return this.pathService.deleteById(pathId);
   }
 
@@ -49,8 +49,9 @@ export class PathController {
   findAllAvailableByFilters(@Query('filters', ArrayQueryPipe) filters: string[],
                             @Query('page', ParseIntPipe) page: number,
                             @Query('size', ParseIntPipe) size: number,
-                            @Query('search') searchExp: string): Promise<PageResponse<PathResponse>> {
-    return this.pathService.findAllAvailableByFilters(PaginationOptions.of(page, size), filters, searchExp);
+                            @Query('search') searchExp: string,
+                            @Query('sortBy') sortBy: string): Promise<PageResponse<PathResponse>> {
+    return this.pathService.findAllAvailableByFilters(PaginationOptions.of(page, size), filters, sortBy, searchExp);
   }
 
   @Get('/:id')

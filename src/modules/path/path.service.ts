@@ -18,6 +18,7 @@ import {PaginationOptions} from "../../core/util/pagination/pagination-options";
 import {Page} from "../../core/util/pagination/page";
 import {User} from "../user/user.schema";
 import {PathRequest} from "../../dtos/path/path.request";
+import {PathSortOptions} from "./path-sort-options";
 
 @Injectable()
 export class PathService extends BaseService<Path> {
@@ -67,9 +68,13 @@ export class PathService extends BaseService<Path> {
     return PathMapper.modelToResponse(path, this.ctx.userId);
   }
 
-  async findAllAvailableByFilters(options: PaginationOptions, filters: string[], searchExp?: string): Promise<PageResponse<PathResponse>> {
+  async findAllAvailableByFilters(options: PaginationOptions, filters: string[], sortBy: string, searchExp?: string): Promise<PageResponse<PathResponse>> {
     const user = await this.userService.findById(this.ctx.userId);
-    const results: Page<Path> = await this._findPage(options, this.constructQueryByFilters(filters, user, searchExp));
+    const results: Page<Path> = await this._findPage(
+      options,
+      this.constructQueryByFilters(user, filters, sortBy, searchExp),
+      query => query.collation({ locale: "en" }).sort(this.constructSortByFilter(sortBy))
+    );
     return PathMapper.modelsPageToResponse(results, user._id.toString());
   }
 
@@ -100,19 +105,44 @@ export class PathService extends BaseService<Path> {
     return group && group.members.findIndex(_userId => _userId === this.ctx.userId) > -1;
   }
 
-  private constructQueryByFilters(filters: string[], user: User, searchExp: string): any {
+  private constructSortByFilter(sortBy: string): { [key: string]: 1 | -1 } {
+    switch (sortBy) {
+      default:
+      case PathSortOptions.LAST_CREATED:
+        return {'audit.createdAt': 1};
+      case PathSortOptions.OLDEST_CREATED:
+        return {'audit.createdAt': -1};
+      case PathSortOptions.LAST_MODIFIED:
+        return {'audit.modifiedAt': 1};
+      case PathSortOptions.OLDEST_MODIFIED:
+        return {'audit.modifiedAt': -1};
+      case PathSortOptions.NAME_ASC:
+        return {'title': 1};
+      case PathSortOptions.NAME_DESC:
+        return {'title': -1};
+      case PathSortOptions.VISIBILITY:
+        return {'visibility': 1};
+    }
+  }
+
+  private constructQueryByFilters(user: User, filters: string[], sortBy: string, searchExp: string): any {
     const query = {$or: []};
     filters.forEach(filter => {
       switch (filter) {
-        case 'own': query.$or.push({owner: user._id.toString()}); break;
-        case 'groups': query.$or.push({
-          group: {$in: user.groups},
-          owner: {$ne: user._id.toString()}
-        }); break;
-        case 'public': query.$or.push({
-          visibility: PathVisibility.PUBLIC,
-          owner: {$ne: user._id.toString()}
-        });
+        case 'own':
+          query.$or.push({owner: user._id.toString()});
+          break;
+        case 'groups':
+          query.$or.push({
+            group: {$in: user.groups},
+            owner: {$ne: user._id.toString()}
+          });
+          break;
+        case 'public':
+          query.$or.push({
+            visibility: PathVisibility.PUBLIC,
+            owner: {$ne: user._id.toString()}
+          });
       }
     });
     if (searchExp) {

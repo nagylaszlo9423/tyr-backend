@@ -11,8 +11,7 @@ export abstract class BaseService<T extends Document> {
   }
 
   public async _removeById(id: string): Promise<void> {
-    const model = await this._fetchById(id);
-    await model.remove();
+    await this.model.remove({_id: id}).exec();
   }
 
   public async _fetchById(id: string): Promise<T> {
