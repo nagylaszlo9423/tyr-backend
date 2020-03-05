@@ -2,7 +2,7 @@ import {Body, Controller, Get, Header, Headers, Param, Post, Query, Res} from "@
 import {Response} from 'express';
 import {AuthService} from "./auth.service";
 import {environment} from "../../environment/environment";
-import {BadRequestException} from "../../errors/errors";
+import {BadRequestException} from "../../core/errors/errors";
 import {TokenResponse} from "../../dtos/auth/token-response";
 import {LoginResponse} from "../../dtos/auth/login-response";
 import {LoginRequest} from "../../dtos/auth/login-request";

@@ -1,24 +1,33 @@
-import {NotFoundException} from "../../errors/errors";
+import {NotFoundException} from "../errors/errors";
 import {Document, DocumentQuery, Model, Query} from "mongoose";
 import {Auditable, AuditManager} from "../util/auditable";
 import {PaginationOptions} from "../util/pagination/pagination-options";
 import {Page} from "../util/pagination/page";
+import {DeletionResult} from "../dto/deletion.result";
+import {DeleteWriteOpResultObject} from 'mongodb';
 
+export type QueryCallback<E extends Document, T = E> = (query: DocumentQuery<T, E>) => DocumentQuery<T, E>;
 
 export abstract class BaseService<T extends Document> {
 
   protected constructor(protected model: Model<T>) {
   }
 
+  public _remove(conditions?: any): Promise<DeletionResult> {
+    return this.model.remove(conditions).exec().then(BaseService.toDeletionResult);
+  }
+
   public async _removeById(id: string): Promise<void> {
     await this.model.remove({_id: id}).exec();
   }
 
-  public async _fetchById(id: string): Promise<T> {
-    const model = await this.model.findById(id).exec();
+  public async _findById(id: string, conditions?: any, queryCallback?: QueryCallback<T>): Promise<T> {
+    const model = await BaseService.callQueryCallback(this.model.findOne({_id: id, ...conditions}), queryCallback).exec();
+
     if (!model) {
       throw new NotFoundException();
     }
+
     return model;
   }
 
@@ -31,7 +40,11 @@ export abstract class BaseService<T extends Document> {
     return model.save();
   }
 
-  public _findPage(options: PaginationOptions, conditions?: any, queryCallback?: (query: DocumentQuery<Page<T>, T>) => DocumentQuery<Page<T>, T>): Promise<Page<T>> {
+  public _find(conditions?: any, queryCallback?: QueryCallback<T, Array<T>>): Promise<Array<T>> {
+      return BaseService.callQueryCallback(this.model.find(conditions), queryCallback).exec();
+  }
+
+  public _findPage(options: PaginationOptions, conditions?: any, queryCallback?: QueryCallback<T, Page<T>>): Promise<Page<T>> {
     return new Promise(async (resolve, reject) => {
       try {
         const total = await this.model.countDocuments({}).exec();
@@ -47,15 +60,18 @@ export abstract class BaseService<T extends Document> {
             items: results
           }));
 
-        if (queryCallback) {
-          query = queryCallback(query);
-        }
-
-        resolve(await query.exec());
+        resolve(await BaseService.callQueryCallback(query, queryCallback).exec());
       } catch (e) {
         reject(e);
       }
     });
+  }
 
+  private static callQueryCallback<E extends Document, R = E>(query: DocumentQuery<R, E>, callback: QueryCallback<E, R>): DocumentQuery<R, E> {
+    return callback ? callback(query) : query;
+  }
+
+  protected static toDeletionResult(result: DeleteWriteOpResultObject['result']): DeletionResult {
+      return new DeletionResult({ok: result.ok === 1, count: result.n});
   }
 }

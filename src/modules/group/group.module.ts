@@ -1,4 +1,4 @@
-import {Module} from "@nestjs/common";
+import {Module, ParseIntPipe} from "@nestjs/common";
 import {MongooseModule} from "@nestjs/mongoose";
 import {GroupController} from "./group.controller";
 import {GroupService} from "./group.service";
@@ -12,7 +12,8 @@ import {GroupSchema} from "./group.schema";
   controllers: [GroupController],
   providers: [
     GroupService,
-    ContextService
+    ContextService,
+    ParseIntPipe
   ],
   exports: [GroupService]
 })

@@ -10,7 +10,7 @@ export function mapResultsToPageResponse<T, R>(results: Page<T>, mapper: (items:
   if (mapper) {
     response.items = mapper(results.items);
   } else {
-    response.items = results.items as any[];
+    response.items = [];
   }
 
   return response;

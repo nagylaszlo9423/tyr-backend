@@ -1,4 +1,4 @@
-import {GroupJoinPolicy} from "../../modules/group/group-join-policy";
+import {GroupJoinPolicy} from "../../modules/group/enums/group-join-policy";
 import {IsEnum} from "class-validator";
 
 

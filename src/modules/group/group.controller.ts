@@ -5,6 +5,9 @@ import {PaginationOptions} from "../../core/util/pagination/pagination-options";
 import {PageResponse} from "../../core/dto/page.response";
 import {GroupResponse} from "../../dtos/group/group-response";
 import {GroupRequest} from "../../dtos/group/group.request";
+import {ArrayQueryPipe} from "../../core/pipes/array-query.pipe";
+import {GroupFilter} from "./enums/group-filter";
+import {ParseIntArrayPipe} from "../../core/pipes/parse-int-array.pipe";
 
 
 @Controller('/group')
@@ -14,8 +17,12 @@ export class GroupController {
   }
 
   @Get('/page')
-  findAllGroupsPaged(@Query('page', ParseIntPipe) page: number, @Query('size', ParseIntPipe) size: number): Promise<PageResponse<GroupResponse>> {
-    return this.groupService.findAllGroupsByPage(PaginationOptions.of(page, size));
+  findAllGroupsPaged(@Query('filters', ParseIntArrayPipe) filters: GroupFilter[],
+                     @Query('page', ParseIntPipe) page: number,
+                     @Query('size', ParseIntPipe) size: number,
+                     @Query('search') searchExp: string,
+                     @Query('sortBy') sortBy: string): Promise<PageResponse<GroupResponse>> {
+    return this.groupService.findAllGroupsByPage(PaginationOptions.of(page, size), filters, searchExp, sortBy);
   }
 
   @Get('/:id')

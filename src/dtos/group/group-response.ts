@@ -1,4 +1,4 @@
-import {GroupJoinPolicy} from "../../modules/group/group-join-policy";
+import {GroupJoinPolicy} from "../../modules/group/enums/group-join-policy";
 
 
 export class GroupResponse {

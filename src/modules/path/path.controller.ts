@@ -1,11 +1,12 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from "@nestjs/common";
 import {CreatedResponse} from "../../core/dto/created.response";
 import {PathService} from "./path.service";
-import {PathResponse} from "../../dtos/path/path-response";
 import {PaginationOptions} from "../../core/util/pagination/pagination-options";
 import {PageResponse} from "../../core/dto/page.response";
 import {PathRequest} from "../../dtos/path/path.request";
 import {ArrayQueryPipe} from "../../core/pipes/array-query.pipe";
+import {PathResponse} from "../../dtos/path/path.response";
+import {ParseIntArrayPipe} from "../../core/pipes/parse-int-array.pipe";
 
 @Controller('/path')
 export class PathController {
@@ -45,8 +46,8 @@ export class PathController {
     return this.pathService.deleteById(pathId);
   }
 
-  @Get('/list')
-  findAllAvailableByFilters(@Query('filters', ArrayQueryPipe) filters: string[],
+  @Get('/page')
+  findAllAvailableByFilters(@Query('filters', ParseIntArrayPipe) filters: number[],
                             @Query('page', ParseIntPipe) page: number,
                             @Query('size', ParseIntPipe) size: number,
                             @Query('search') searchExp: string,

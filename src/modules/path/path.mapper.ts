@@ -2,12 +2,12 @@ import {GeojsonMapper} from "../../core/util/geojson.mapper";
 import {AuditMapper} from "../../core/util/audit.mapper";
 import {ResourceMapper} from "../resource/resource.mapper";
 import {ResourceItem} from "../resource/resource-item.schema";
-import {PathResponse} from "../../dtos/path/path-response";
 import {Path} from "./path.schema";
 import {Page} from "../../core/util/pagination/page";
 import {PageResponse} from "../../core/dto/page.response";
 import {mapResultsToPageResponse} from "../../core/util/pagination/pagination-mapper";
 import {PathRequest} from "../../dtos/path/path.request";
+import {PathResponse} from "../../dtos/path/path.response";
 
 export class PathMapper {
 
@@ -23,7 +23,7 @@ export class PathMapper {
     const result = new PathResponse();
 
     result.id = entity._id.toString();
-    result.title = entity.title;
+    result.name = entity.name;
     result.description = entity.description;
     result.path = GeojsonMapper.lineStringModelToResponse(entity.path);
     result.audit = AuditMapper.modelToResponse(entity.audit);
@@ -35,7 +35,7 @@ export class PathMapper {
   }
 
   static requestToModel(request: PathRequest, model: Path) {
-    model.title = request.title;
+    model.name = request.name;
     model.description = request.description;
     GeojsonMapper.lineStringRequestToModel(request.path, model.path);
   }

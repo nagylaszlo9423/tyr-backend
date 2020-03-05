@@ -1,5 +1,6 @@
 import {environment} from "../environment/environment";
-import {Path, PathSchema, PathVisibility} from "../modules/path/path.schema";
+import {Path, PathSchema} from "../modules/path/path.schema";
+import {PathVisibility} from "../modules/path/enums/path-visibility";
 
 const mongoose = require('mongoose');
 

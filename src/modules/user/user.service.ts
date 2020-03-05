@@ -2,7 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {User} from "./user.schema";
 import {Model} from 'mongoose';
-import {GeneralException} from "../../errors/errors";
+import {GeneralException} from "../../core/errors/errors";
 import * as crypto from 'crypto';
 import {BaseService} from "../../core/services/base.service";
 import {RegistrationRequest} from "../../dtos/auth/registration-request";
@@ -38,7 +38,7 @@ export class UserService extends BaseService<User> {
   }
 
   async findById(id: string): Promise<User> {
-    return this._fetchById(id);
+    return this._findById(id);
   }
 
   async findByEmail(email: string): Promise<User> {

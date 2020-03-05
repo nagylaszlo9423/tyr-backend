@@ -3,7 +3,7 @@ import {GroupResponse} from "../../dtos/group/group-response";
 
 export class GroupMapper {
   static modelsToResponse(models: Group[]): GroupResponse[] {
-    return models.map(this.modelToResponse);
+    return models.map(GroupMapper.modelToResponse);
   }
 
   static modelToResponse(model: Group): GroupResponse {

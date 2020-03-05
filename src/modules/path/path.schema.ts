@@ -5,22 +5,11 @@ import {Group} from "../group/group.schema";
 import {Auditable} from "../../core/util/auditable";
 import {LineString, LineStringSchema} from "../../core/schemas/line-string.schema";
 import {ResourceItem} from "../resource/resource-item.schema";
-
-export enum PathVisibility {
-  PUBLIC = 'PUBLIC',
-  GROUP = 'GROUP',
-  PRIVATE = 'PRIVATE'
-}
-
-export enum PathCategory {
-  BICYCLE = "BICYCLE",
-  SIGHTSEEING ="SIGHTSEEING",
-  HIKING = "HIKING",
-  OFF_ROAD = "OFF_ROAD"
-}
+import {PathVisibility} from "./enums/path-visibility";
+import {PathCategory} from "./enums/path-category";
 
 export interface Path extends mongoose.Document, Auditable {
-  title: string;
+  name: string;
   description: string;
   owner: User | mongoose.Schema.Types.ObjectId;
   group: Group | mongoose.Schema.Types.ObjectId;
@@ -31,13 +20,13 @@ export interface Path extends mongoose.Document, Auditable {
 }
 
 export const PathSchema = new mongoose.Schema({
-  title: {type: String, required: true},
+  name: {type: String, required: true},
   description: String,
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   group: {type: mongoose.Schema.Types.ObjectId, ref: 'Group'},
   images: [{type: mongoose.Schema.Types.ObjectId, ref: 'Resource'}],
-  categories: [{type: String, enum: ['BICYCLE', 'SIGHTSEEING', 'HIKING', 'OFF_ROAD']}],
-  visibility: {type: String, enum: ['PUBLIC', 'GROUP', 'PRIVATE'], required: true, default: 'PRIVATE'},
+  categories: [{type: Number, enum: Object.values(PathCategory)}],
+  visibility: {type: Number, enum: Object.values(PathVisibility), required: true, default: 'PRIVATE'},
   path: LineStringSchema,
   audit: AuditSchema
 }).index({title: 'text'});

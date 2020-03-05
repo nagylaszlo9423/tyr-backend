@@ -3,7 +3,7 @@ import {Injectable, Logger} from "@nestjs/common";
 import * as crypto from 'crypto';
 import {TokenBaseSchema} from "../../modules/oauth2/schemas/token-base.schema";
 import {EncryptedData} from "./encrypted-data";
-import {UnauthorizedException} from "../../errors/errors";
+import {UnauthorizedException} from "../errors/errors";
 import {environment} from "../../environment/environment";
 
 export type KeyPrefix = 'access' | 'refresh' | 'code';

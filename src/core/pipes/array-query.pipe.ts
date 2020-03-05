@@ -1,5 +1,5 @@
 import {ArgumentMetadata, Injectable, PipeTransform} from "@nestjs/common";
-import {BadRequestException} from "../../errors/errors";
+import {BadRequestException} from "../errors/errors";
 
 @Injectable()
 export class ArrayQueryPipe implements PipeTransform {
@@ -8,9 +8,10 @@ export class ArrayQueryPipe implements PipeTransform {
       return value;
     } else if (typeof value === 'string') {
       return [value];
+    } else if (value === undefined) {
+      return [];
     }
 
     throw new BadRequestException('Invalid array query parameter');
   }
-
 }

@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import {User} from "../user/user.schema";
-import {GroupJoinPolicy} from "./group-join-policy";
+import {GroupJoinPolicy} from "./enums/group-join-policy";
 import {Path} from "../path/path.schema";
 
 export interface Group extends mongoose.Document {
@@ -15,8 +15,8 @@ export interface Group extends mongoose.Document {
 export const GroupSchema = new mongoose.Schema({
   name: String,
   description: String,
-  joinPolicy: {type: String, enum: Object.keys(GroupJoinPolicy), required: true, default: 'INVITE_ONLY'},
+  joinPolicy: {type: Number, enum: Object.values(GroupJoinPolicy), required: true, default: GroupJoinPolicy.INVITE_ONLY},
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   paths: [{type: mongoose.Schema.Types.ObjectId, ref: 'Path'}]
-});
+}).index({name: 'text', joinPolicy: 1});

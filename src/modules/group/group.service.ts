@@ -1,18 +1,19 @@
-import {Injectable} from "@nestjs/common";
+import {Injectable, Query} from "@nestjs/common";
 import {BaseService} from "../../core/services/base.service";
 import {Group} from "./group.schema";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {ContextService} from "../../core/services/context.service";
 import {CreatedResponse} from "../../core/dto/created.response";
-import {ForbiddenException} from "../../errors/errors";
+import {ForbiddenException} from "../../core/errors/errors";
 import {mapResultsToPageResponse} from "../../core/util/pagination/pagination-mapper";
 import {PaginationOptions} from "../../core/util/pagination/pagination-options";
 import {GroupResponse} from "../../dtos/group/group-response";
-import {GroupJoinPolicy} from "./group-join-policy";
 import {PageResponse} from "../../core/dto/page.response";
 import {GroupRequest} from "../../dtos/group/group.request";
 import {GroupMapper} from "./group.mapper";
+import {GroupQueries} from "./group.queries";
+import {GroupFilter} from "./enums/group-filter";
 
 
 @Injectable()
@@ -23,15 +24,19 @@ export class GroupService extends BaseService<Group> {
   }
 
   findById(id: string): Promise<GroupResponse> {
-    return this._fetchById(id).then(GroupMapper.modelToResponse);
+    return this._findById(id).then(GroupMapper.modelToResponse);
   }
 
-  async findAllGroupsByPage(options: PaginationOptions): Promise<PageResponse<GroupResponse>> {
-    return mapResultsToPageResponse(await this._findPage(options), GroupMapper.modelsToResponse.bind(this));
+  async findAllGroupsByPage(options: PaginationOptions, filters: GroupFilter[], searchExp: string, sortBy: string): Promise<PageResponse<GroupResponse>> {
+    return mapResultsToPageResponse(await this._findPage(
+      options,
+      GroupQueries.queryAllByFilters(this.ctx.userId, filters, searchExp),
+      GroupQueries.sortByFilters.bind(this, sortBy)
+    ), GroupMapper.modelsToResponse.bind(this));
   }
 
   async join(groupId: string) {
-    const group = await this._fetchById(groupId);
+    const group = await this._findById(groupId);
     if (group.members.findIndex(userId => this.ctx.userId === userId) > -1) {
       return;
     }
@@ -40,7 +45,7 @@ export class GroupService extends BaseService<Group> {
   }
 
   async leave(groupId: string) {
-    const group = await this._fetchById(groupId);
+    const group = await this._findById(groupId);
     if (group.members.findIndex(userId => this.ctx.userId === userId) === -1) {
       return;
     }
@@ -55,13 +60,13 @@ export class GroupService extends BaseService<Group> {
   }
 
   async update(updateRequest: GroupRequest, groupId: string): Promise<void> {
-    const group = await this._fetchById(groupId);
+    const group = await this._findById(groupId);
     this.updateRequestToModel(updateRequest, group);
     await group.save();
   }
 
   async delete(groupId) {
-    const group = await this._fetchById(groupId);
+    const group = await this._findById(groupId);
     if (group.owner !== this.ctx.userId) {
       throw new ForbiddenException();
     }
@@ -82,6 +87,6 @@ export class GroupService extends BaseService<Group> {
   private updateRequestToModel(request: GroupRequest, model: Group) {
     model.name = request.name;
     model.description = request.description;
-    model.joinPolicy = GroupJoinPolicy[request.joinPolicy];
+    model.joinPolicy = request.joinPolicy;
   }
 }
