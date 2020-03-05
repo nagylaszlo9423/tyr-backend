@@ -19,19 +19,19 @@ export class GroupQueries {
         case GroupFilter.INVITE_ONLY:
           $or.push({
             joinPolicy: GroupJoinPolicy.INVITE_ONLY,
-            members: {$elemMatch: {$ne: userId}}
+            members: {$not: {$elemMatch: {$eq: userId}}}
           });
           break;
         case GroupFilter.REQUEST:
           $or.push({
             joinPolicy: GroupJoinPolicy.REQUEST,
-            members: {$elemMatch: {$ne: userId}}
+            members: {$not: {$elemMatch: {$eq: userId}}}
           });
           break;
         case GroupFilter.OPEN:
           $or.push({
             joinPolicy: GroupJoinPolicy.OPEN,
-            members: {$elemMatch: {$ne: userId}}
+            members: {$not: {$elemMatch: {$eq: userId}}}
           });
           break;
       }
