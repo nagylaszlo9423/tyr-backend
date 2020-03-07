@@ -5,7 +5,6 @@ import {PaginationOptions} from "../../core/util/pagination/pagination-options";
 import {PageResponse} from "../../core/dto/page.response";
 import {GroupResponse} from "../../dtos/group/group-response";
 import {GroupRequest} from "../../dtos/group/group.request";
-import {ArrayQueryPipe} from "../../core/pipes/array-query.pipe";
 import {GroupFilter} from "./enums/group-filter";
 import {ParseIntArrayPipe} from "../../core/pipes/parse-int-array.pipe";
 

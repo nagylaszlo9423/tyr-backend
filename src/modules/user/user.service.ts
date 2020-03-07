@@ -8,6 +8,11 @@ import {BaseService} from "../../core/services/base.service";
 import {RegistrationRequest} from "../../dtos/auth/registration-request";
 import {RegistrationResponse} from "../../dtos/auth/registration-response";
 import {LoginRequest} from "../../dtos/auth/login-request";
+import {PaginationOptions} from "../../core/util/pagination/pagination-options";
+import {PageResponse} from "../../core/dto/page.response";
+import {mapResultsToPageResponse} from "../../core/util/pagination/pagination-mapper";
+import {UserMapper} from "./user.mapper";
+import {GroupMemberResponse} from "../../dtos/user/group-member.response";
 
 @Injectable()
 export class UserService extends BaseService<User> {
@@ -43,6 +48,13 @@ export class UserService extends BaseService<User> {
 
   async findByEmail(email: string): Promise<User> {
     return this.model.findOne({email: email}).exec();
+  }
+
+  async findMembersByGroup(groupId: string, paginationOptions: PaginationOptions): Promise<PageResponse<GroupMemberResponse>> {
+    const results = await this._findPage(paginationOptions, {
+      groups: {$elemMatch: {$eq: groupId}}
+    });
+    return mapResultsToPageResponse(results, UserMapper.entityListToPublicResponse);
   }
 
   private static hashString(str: string): string {

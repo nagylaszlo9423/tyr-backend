@@ -14,6 +14,7 @@ import {GroupRequest} from "../../dtos/group/group.request";
 import {GroupMapper} from "./group.mapper";
 import {GroupQueries} from "./group.queries";
 import {GroupFilter} from "./enums/group-filter";
+import {User} from "../user/user.schema";
 
 
 @Injectable()
@@ -24,7 +25,7 @@ export class GroupService extends BaseService<Group> {
   }
 
   findById(id: string): Promise<GroupResponse> {
-    return this._findById(id).then(GroupMapper.modelToResponse);
+    return this._findById(id).then(_ => GroupMapper.modelToResponse(_, this.isEditable(_)));
   }
 
   async findAllGroupsByPage(options: PaginationOptions, filters: GroupFilter[], searchExp: string, sortBy: string): Promise<PageResponse<GroupResponse>> {
@@ -55,14 +56,14 @@ export class GroupService extends BaseService<Group> {
 
   async create(createRequest: GroupRequest): Promise<CreatedResponse> {
     const group = this.createRequestToModel(createRequest, this.ctx.userId);
-    await group.save();
+    await this._saveAndAudit(group, this.ctx.userId);
     return CreatedResponse.of(group);
   }
 
   async update(updateRequest: GroupRequest, groupId: string): Promise<void> {
     const group = await this._findById(groupId);
     this.updateRequestToModel(updateRequest, group);
-    await group.save();
+    await this._saveAndAudit(group, this.ctx.userId);
   }
 
   async delete(groupId) {
@@ -71,6 +72,17 @@ export class GroupService extends BaseService<Group> {
       throw new ForbiddenException();
     }
     await group.remove();
+  }
+
+  private isEditable(group: Group): boolean {
+    if (typeof group.members[0] === "object") {
+      const groupMembers = group.members as Array<User>;
+      return groupMembers.filter(_ => _._id === this.ctx.userId).length > -1;
+    } else if (typeof group.members[0] === "string") {
+      const groupMembers = group.members as Array<string>;
+      return groupMembers.indexOf(this.ctx.userId) > -1;
+    }
+    return false;
   }
 
   private createRequestToModel(request: GroupRequest, owner: string): Group {

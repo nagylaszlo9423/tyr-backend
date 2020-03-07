@@ -71,7 +71,7 @@ export abstract class BaseService<T extends Document> {
     return callback ? callback(query) : query;
   }
 
-  protected static toDeletionResult(result: DeleteWriteOpResultObject['result']): DeletionResult {
+  private static toDeletionResult(result: DeleteWriteOpResultObject['result']): DeletionResult {
       return new DeletionResult({ok: result.ok === 1, count: result.n});
   }
 }
