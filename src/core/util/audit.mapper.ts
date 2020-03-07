@@ -6,10 +6,12 @@ export class AuditMapper {
   static modelToResponse(model: Audit): AuditDto {
     const response = new AuditDto();
 
-    response.createdAt = model.createdAt.toISOString();
-    response.createdBy = model.createdBy;
-    response.modifiedAt = model.modifiedAt.toISOString();
-    response.modifiedBy = model.modifiedBy;
+    if (model) {
+      response.createdAt = model.createdAt?.toISOString();
+      response.createdBy = model.createdBy;
+      response.modifiedAt = model.modifiedAt?.toISOString();
+      response.modifiedBy = model.modifiedBy;
+    }
 
     return response;
   }

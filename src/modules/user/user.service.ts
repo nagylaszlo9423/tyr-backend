@@ -2,7 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {User} from "./user.schema";
 import {Model} from 'mongoose';
-import {GeneralException} from "../../core/errors/errors";
+import {ForbiddenException, GeneralException} from "../../core/errors/errors";
 import * as crypto from 'crypto';
 import {BaseService} from "../../core/services/base.service";
 import {RegistrationRequest} from "../../dtos/auth/registration-request";
@@ -13,10 +13,12 @@ import {PageResponse} from "../../core/dto/page.response";
 import {mapResultsToPageResponse} from "../../core/util/pagination/pagination-mapper";
 import {UserMapper} from "./user.mapper";
 import {GroupMemberResponse} from "../../dtos/user/group-member.response";
+import {GroupService} from "../group/group.service";
 
 @Injectable()
 export class UserService extends BaseService<User> {
-  constructor(@InjectModel('User') userModel: Model<User>) {
+  constructor(@InjectModel('User') userModel: Model<User>,
+              private groupService: GroupService) {
     super(userModel);
   }
 
@@ -51,6 +53,12 @@ export class UserService extends BaseService<User> {
   }
 
   async findMembersByGroup(groupId: string, paginationOptions: PaginationOptions): Promise<PageResponse<GroupMemberResponse>> {
+    const group = await this.groupService.findById(groupId);
+
+    if (!group.isEditable) {
+      throw new ForbiddenException();
+    }
+
     const results = await this._findPage(paginationOptions, {
       groups: {$elemMatch: {$eq: groupId}}
     });

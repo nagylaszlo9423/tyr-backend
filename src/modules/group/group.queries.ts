@@ -1,7 +1,6 @@
 import {GroupJoinPolicy} from "./enums/group-join-policy";
 import {Document, DocumentQuery} from "mongoose";
 import {PathSortOptions} from "../path/path-sort-options";
-import {ObjectId} from "../../db/mongoose";
 import {GroupFilter} from "./enums/group-filter";
 
 
@@ -45,7 +44,6 @@ export class GroupQueries {
       query.$text = {$search: searchExp};
     }
 
-    console.log(JSON.stringify(query));
     return query;
   }
 

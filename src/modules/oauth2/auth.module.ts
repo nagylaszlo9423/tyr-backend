@@ -9,6 +9,7 @@ import {Oauth2Controller} from "./oauth2.controller";
 import {UserService} from "../user/user.service";
 import {UserSchema} from "../user/user.schema";
 import {RedisService} from "../../core/security/redis.service";
+import {GroupModule} from "../group/group.module";
 
 
 @Module({
@@ -16,7 +17,8 @@ import {RedisService} from "../../core/security/redis.service";
     MongooseModule.forFeature([
       {name: 'User', schema: UserSchema}
     ]),
-    PassportModule.register({defaultStrategy: 'google', session: true})
+    PassportModule.register({defaultStrategy: 'google', session: true}),
+    GroupModule
   ],
   providers: [
     AuthService,

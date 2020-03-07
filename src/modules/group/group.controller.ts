@@ -40,13 +40,13 @@ export class GroupController {
   }
 
   @Post()
-  async create(@Body() createRequest: GroupRequest): Promise<CreatedResponse> {
+  async create(@Body() createRequest: GroupRequest): Promise<GroupResponse> {
     return this.groupService.create(createRequest);
   }
 
   @Put('/:id')
   async update(@Param('id') groupId: string,
-               @Body() updateRequest: GroupRequest): Promise<void> {
+               @Body() updateRequest: GroupRequest): Promise<GroupResponse> {
     return this.groupService.update(updateRequest, groupId);
   }
 

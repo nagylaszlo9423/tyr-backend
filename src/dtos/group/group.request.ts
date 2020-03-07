@@ -6,6 +6,6 @@ export class GroupRequest {
     name: string;
     description: string;
 
-    @IsEnum(Object.keys(GroupJoinPolicy))
+    @IsEnum(GroupJoinPolicy)
     joinPolicy: GroupJoinPolicy;
 }

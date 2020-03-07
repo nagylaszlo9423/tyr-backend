@@ -5,13 +5,16 @@ import {Path} from "../path/path.schema";
 import {Audit, AuditSchema} from "../../core/schemas/audit.schema";
 import {Auditable} from "../../core/util/auditable";
 
-export interface Group extends mongoose.Document, Auditable {
+export interface Group<
+  OWNER = mongoose.Types.ObjectId,
+  MEMBER = mongoose.Types.ObjectId,
+  PATH = mongoose.Types.ObjectId> extends mongoose.Document, Auditable {
   name: string;
   description: string;
   joinPolicy: GroupJoinPolicy;
-  owner: User | string;
-  members: User[] | string[];
-  paths: Path[] | string[];
+  owner: OWNER;
+  members: MEMBER[];
+  paths: PATH[];
   audit: Audit;
 }
 

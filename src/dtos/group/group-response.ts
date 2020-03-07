@@ -9,5 +9,6 @@ export class GroupResponse {
     joinPolicy: GroupJoinPolicy;
     owner: string;
     isEditable: boolean;
+    isJoinEnabled: boolean;
     audit: AuditDto;
 }
