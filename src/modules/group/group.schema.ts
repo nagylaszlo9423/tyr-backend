@@ -1,20 +1,17 @@
-import * as mongoose from "mongoose";
-import {User} from "../user/user.schema";
-import {GroupJoinPolicy} from "./enums/group-join-policy";
-import {Path} from "../path/path.schema";
-import {Audit, AuditSchema} from "../../core/schemas/audit.schema";
-import {Auditable} from "../../core/util/auditable";
+import * as mongoose from 'mongoose';
+import {User} from '../user/user.schema';
+import {GroupJoinPolicy} from './enums/group-join-policy';
+import {Path} from '../path/path.schema';
+import {Audit, AuditSchema} from '../../core/schemas/audit.schema';
+import {Auditable} from '../../core/util/auditable';
 
-export interface Group<
-  OWNER = mongoose.Types.ObjectId,
-  MEMBER = mongoose.Types.ObjectId,
-  PATH = mongoose.Types.ObjectId> extends mongoose.Document, Auditable {
+export interface Group extends mongoose.Document, Auditable {
   name: string;
   description: string;
   joinPolicy: GroupJoinPolicy;
-  owner: OWNER;
-  members: MEMBER[];
-  paths: PATH[];
+  owner: mongoose.Types.ObjectId;
+  members: mongoose.Types.ObjectId[];
+  paths: mongoose.Types.ObjectId[];
   audit: Audit;
 }
 
@@ -25,5 +22,5 @@ export const GroupSchema = new mongoose.Schema({
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   paths: [{type: mongoose.Schema.Types.ObjectId, ref: 'Path'}],
-  audit: AuditSchema
+  audit: AuditSchema,
 }).index({name: 'text', joinPolicy: 1});

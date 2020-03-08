@@ -1,6 +1,5 @@
-import {GroupJoinPolicy} from "../../modules/group/enums/group-join-policy";
-import {AuditDto} from "../../core/dto/audit.dto";
-
+import {GroupJoinPolicy} from '../../modules/group/enums/group-join-policy';
+import {AuditDto} from '../../core/dto/audit.dto';
 
 export class GroupResponse {
     id: string;
@@ -9,6 +8,6 @@ export class GroupResponse {
     joinPolicy: GroupJoinPolicy;
     owner: string;
     isEditable: boolean;
-    isJoinEnabled: boolean;
+    isMember: boolean;
     audit: AuditDto;
 }

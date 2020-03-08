@@ -6,9 +6,12 @@
   },
   "rules": {
     "quotemark": [true, "single"],
+    "no-trailing-whitespace": false,
+    "variable-name": false,
+    "max-line-length": false,
+    "no-string-literal": false,
     "member-access": [false],
     "ordered-imports": [false],
-    "max-line-length": [true, 150],
     "member-ordering": [false],
     "interface-name": [false],
     "arrow-parens": false,

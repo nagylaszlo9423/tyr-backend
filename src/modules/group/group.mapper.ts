@@ -1,14 +1,14 @@
-import {Group} from "./group.schema";
-import {GroupResponse} from "../../dtos/group/group-response";
-import {AuditMapper} from "../../core/util/audit.mapper";
-import {getDocumentId} from "../../core/util/db.helper";
+import {Group} from './group.schema';
+import {GroupResponse} from '../../dtos/group/group-response';
+import {AuditMapper} from '../../core/util/audit.mapper';
+import {getDocumentId} from '../../core/util/db.helper';
 
 export class GroupMapper {
-  static modelsToResponse(models: Group[], isEditable: (group: Group) => boolean, isJoinEnabled: (group: Group) => boolean): GroupResponse[] {
-    return models.map(group => GroupMapper.modelToResponse(group, isEditable, isJoinEnabled));
+  static modelsToResponse(models: Group[], isEditable: (group: Group) => boolean, isMember: (group: Group) => boolean): GroupResponse[] {
+    return models.map(group => GroupMapper.modelToResponse(group, isEditable, isMember));
   }
 
-  static modelToResponse(model: Group, isEditable: (group: Group) => boolean, isJoinEnabled: (group: Group) => boolean): GroupResponse {
+  static modelToResponse(model: Group, isEditable: (group: Group) => boolean, isMember: (group: Group) => boolean): GroupResponse {
     const response = new GroupResponse();
 
     response.id = model._id;
@@ -17,7 +17,7 @@ export class GroupMapper {
     response.owner = getDocumentId(model.owner);
     response.description = model.description;
     response.isEditable = isEditable(model);
-    response.isJoinEnabled = isJoinEnabled(model);
+    response.isMember = isMember(model);
     response.audit = AuditMapper.modelToResponse(model.audit);
 
     return response;

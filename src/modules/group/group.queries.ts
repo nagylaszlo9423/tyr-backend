@@ -1,8 +1,7 @@
-import {GroupJoinPolicy} from "./enums/group-join-policy";
-import {Document, DocumentQuery} from "mongoose";
-import {PathSortOptions} from "../path/path-sort-options";
-import {GroupFilter} from "./enums/group-filter";
-
+import {GroupJoinPolicy} from './enums/group-join-policy';
+import {Document, DocumentQuery} from 'mongoose';
+import {PathSortOptions} from '../path/path-sort-options';
+import {GroupFilter} from './enums/group-filter';
 
 export class GroupQueries {
   constructor() {}
@@ -18,19 +17,19 @@ export class GroupQueries {
         case GroupFilter.INVITE_ONLY:
           $or.push({
             joinPolicy: GroupJoinPolicy.INVITE_ONLY,
-            members: {$not: {$elemMatch: {$eq: userId}}}
+            members: {$not: {$elemMatch: {$eq: userId}}},
           });
           break;
         case GroupFilter.REQUEST:
           $or.push({
             joinPolicy: GroupJoinPolicy.REQUEST,
-            members: {$not: {$elemMatch: {$eq: userId}}}
+            members: {$not: {$elemMatch: {$eq: userId}}},
           });
           break;
         case GroupFilter.OPEN:
           $or.push({
             joinPolicy: GroupJoinPolicy.OPEN,
-            members: {$not: {$elemMatch: {$eq: userId}}}
+            members: {$not: {$elemMatch: {$eq: userId}}},
           });
           break;
       }
@@ -60,12 +59,12 @@ export class GroupQueries {
       case PathSortOptions.OLDEST_MODIFIED:
         sortCondition = {'audit.modifiedAt': -1}; break;
       case PathSortOptions.NAME_ASC:
-        sortCondition = {'name': 1}; break;
+        sortCondition = {name: 1}; break;
       case PathSortOptions.NAME_DESC:
-        sortCondition = {'name': -1}; break;
+        sortCondition = {name: -1}; break;
       case PathSortOptions.VISIBILITY:
-        sortCondition = {'visibility': 1}; break;
+        sortCondition = {visibility: 1}; break;
     }
-    return query.collation({ locale: "en" }).sort(sortCondition);
+    return query.collation({ locale: 'en' }).sort(sortCondition);
   }
 }

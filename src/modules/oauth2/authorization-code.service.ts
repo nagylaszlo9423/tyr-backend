@@ -1,11 +1,10 @@
-import {Injectable} from "@nestjs/common";
-import {AuthorizationCode} from "./schemas/authorization-code.schema";
-import * as crypto from 'crypto'
-import {environment} from "../../environment/environment";
-import {UserService} from "../user/user.service";
-import {RedisService} from "../../core/security/redis.service";
-import {GeneralException, NotFoundException} from "../../core/errors/errors";
-
+import {Injectable} from '@nestjs/common';
+import {AuthorizationCode} from './schemas/authorization-code.schema';
+import * as crypto from 'crypto';
+import {environment} from '../../environment/environment';
+import {UserService} from '../user/user.service';
+import {RedisService} from '../../core/security/redis.service';
+import {GeneralException, NotFoundException} from '../../core/errors/errors';
 
 @Injectable()
 export class AuthorizationCodeService {
@@ -22,16 +21,20 @@ export class AuthorizationCodeService {
     authorizationCode.userId = userId;
     authorizationCode.clientId = clientId;
     authorizationCode.redirectUri = redirectUri;
-    await this.redisService.addTokenAndSetExpiration(authorizationCode.value, authorizationCode, 'code', AuthorizationCodeService.expirationInSeconds)
+    await this.redisService.addTokenAndSetExpiration(
+        authorizationCode.value,
+        authorizationCode,
+        'code',
+        AuthorizationCodeService.expirationInSeconds);
     return authorizationCode.value;
   }
 
   async getUserIdForAuthorizationCode(code: string, clientId: string, redirectUri: string): Promise<string> {
     const authorizationCode = await this.redisService.getToken<AuthorizationCode>(code, 'code').catch(() => {
-      throw new GeneralException("INVALID_AUTHORIZATION_CODE");
+      throw new GeneralException('INVALID_AUTHORIZATION_CODE');
     });
-    if (authorizationCode.clientId != clientId || authorizationCode.redirectUri != redirectUri) {
-      throw new GeneralException("INVALID_AUTHORIZATION_CODE");
+    if (authorizationCode.clientId !== clientId || authorizationCode.redirectUri !== redirectUri) {
+      throw new GeneralException('INVALID_AUTHORIZATION_CODE');
     }
     const user = await this.userService.findById(authorizationCode.userId).catch(() => {
       throw new NotFoundException('User not found!');
