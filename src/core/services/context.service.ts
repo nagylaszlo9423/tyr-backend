@@ -1,5 +1,5 @@
-import {Inject, Injectable, Request, Scope} from "@nestjs/common";
-import {REQUEST} from "@nestjs/core";
+import {Inject, Injectable, Request, Scope} from '@nestjs/common';
+import {REQUEST} from '@nestjs/core';
 
 @Injectable({scope: Scope.REQUEST})
 export class ContextService {

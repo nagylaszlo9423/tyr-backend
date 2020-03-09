@@ -1,18 +1,18 @@
-import {GeojsonMapper} from "../../core/util/geojson.mapper";
-import {AuditMapper} from "../../core/util/audit.mapper";
-import {ResourceMapper} from "../resource/resource.mapper";
-import {ResourceItem} from "../resource/resource-item.schema";
-import {Path} from "./path.schema";
-import {Page} from "../../core/util/pagination/page";
-import {PageResponse} from "../../core/dto/page.response";
-import {mapResultsToPageResponse} from "../../core/util/pagination/pagination-mapper";
-import {PathRequest} from "../../dtos/path/path.request";
-import {PathResponse} from "../../dtos/path/path.response";
+import {GeojsonMapper} from '../../core/util/geojson.mapper';
+import {AuditMapper} from '../../core/util/audit.mapper';
+import {ResourceMapper} from '../resource/resource.mapper';
+import {ResourceItem} from '../resource/resource-item.schema';
+import {Path} from './path.schema';
+import {Page} from '../../core/util/pagination/page';
+import {PageResponse} from '../../core/dto/page.response';
+import {mapResultsToPageResponse} from '../../core/util/pagination/pagination-mapper';
+import {PathRequest} from '../../dtos/path/path.request';
+import {PathResponse} from '../../dtos/path/path.response';
 
 export class PathMapper {
 
   static modelsPageToResponse(page: Page<Path>, owner: string): PageResponse<PathResponse> {
-    return mapResultsToPageResponse(page, items => this.modelsToResponses(items, owner))
+    return mapResultsToPageResponse(page, items => this.modelsToResponses(items, owner));
   }
 
   static modelsToResponses(entities: Path[], owner: string): PathResponse[] {

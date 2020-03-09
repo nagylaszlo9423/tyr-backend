@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {ValidationPipe} from "@nestjs/common";
-import {environment} from "./environment/environment";
-import {GeneralExceptionFilter} from "./core/exceptions/general-exception.filter";
+import {ValidationPipe} from '@nestjs/common';
+import {environment} from './environment/environment';
+import {GeneralExceptionFilter} from './core/exceptions/general-exception.filter';
 import * as helmet from 'helmet';
 import * as csurf from 'csurf';
 

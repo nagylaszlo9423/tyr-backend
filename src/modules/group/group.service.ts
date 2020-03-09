@@ -1,10 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import {BaseService} from '../../core/services/base.service';
-import {Group} from './group.schema';
+import {GroupDoc} from './group.schema';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
 import {ContextService} from '../../core/services/context.service';
-import {ForbiddenException} from '../../core/errors/errors';
+import {ForbiddenException, GeneralException} from '../../core/errors/errors';
 import {mapResultsToPageResponse} from '../../core/util/pagination/pagination-mapper';
 import {PaginationOptions} from '../../core/util/pagination/pagination-options';
 import {GroupResponse} from '../../dtos/group/group-response';
@@ -15,12 +15,17 @@ import {GroupQueries} from './group.queries';
 import {GroupFilter} from './enums/group-filter';
 import {ObjectId} from '../../db/mongoose';
 import {getDocumentId} from '../../core/util/db.helper';
+import {JoinStatusService} from './join-request/join-status.service';
+import {JoinStatus} from './join-request/join-status';
 import {GroupJoinPolicy} from './enums/group-join-policy';
+import {GroupCause} from '../../core/errors/cause/group.cause';
+import {JoinStatusResponse} from '../../dtos/group/join-status.response';
 
 @Injectable()
-export class GroupService extends BaseService<Group> {
-  constructor(@InjectModel('Group') model: Model<Group>,
-              private ctx: ContextService) {
+export class GroupService extends BaseService<GroupDoc> {
+  constructor(@InjectModel('Group') model: Model<GroupDoc>,
+              private ctx: ContextService,
+              private joinRequestService: JoinStatusService) {
     super(model);
   }
 
@@ -36,22 +41,34 @@ export class GroupService extends BaseService<Group> {
     ), items => GroupMapper.modelsToResponse(items, this.isEditable.bind(this), this.isMember.bind(this)));
   }
 
-  async join(groupId: string) {
+  async join(groupId: string): Promise<JoinStatusResponse> {
     const group = await this._findById(groupId);
-    if (group.members.findIndex(userId => this.ctx.userId === getDocumentId(userId)) > -1) {
-      return;
+
+    if (this.isMember(group)) {
+      throw new GeneralException(GroupCause.ALREADY_MEMBER_OF_GROUP);
     }
+
+    if (group.joinPolicy === GroupJoinPolicy.INVITE_ONLY) {
+      throw new GeneralException(GroupCause.JOIN_IS_NOT_PERMITTED);
+    }
+
     group.members.push(ObjectId(this.ctx.userId));
     await group.save();
+
+    return await this.joinRequestService.createRequest(groupId, JoinStatus.ACCEPTED);
   }
 
-  async leave(groupId: string) {
+  async leave(groupId: string): Promise<JoinStatusResponse> {
     const group = await this._findById(groupId);
-    if (group.members.map(getDocumentId).findIndex(userId => this.ctx.userId === userId) === -1) {
-      return;
+
+    if (!this.isMember(group)) {
+      throw new GeneralException(GroupCause.NOT_MEMBER_OF_GROUP);
     }
+
     group.members = group.members.filter(userId => userId.toString() !== this.ctx.userId);
     await group.save();
+
+    return await this.joinRequestService.leave(groupId);
   }
 
   async create(createRequest: GroupRequest): Promise<GroupResponse> {
@@ -75,16 +92,16 @@ export class GroupService extends BaseService<Group> {
     await group.remove();
   }
 
-  private isEditable(group: Group): boolean {
+  private isEditable(group: GroupDoc): boolean {
     return getDocumentId(group.owner) === this.ctx.userId;
   }
 
-  private isMember(group: Group): boolean {
+  private isMember(group: GroupDoc): boolean {
     return getDocumentId(group.owner) === this.ctx.userId ||
       group.members.map(getDocumentId).indexOf(this.ctx.userId) > -1;
   }
 
-  private createRequestToModel(request: GroupRequest, owner: string): Group {
+  private createRequestToModel(request: GroupRequest, owner: string): GroupDoc {
     return new this.model({
       name: request.name,
       joinPolicy: request.joinPolicy,
@@ -92,10 +109,10 @@ export class GroupService extends BaseService<Group> {
       owner: ObjectId(owner),
       members: [],
       paths: [],
-    } as Group);
+    } as GroupDoc);
   }
 
-  private updateRequestToModel(request: GroupRequest, model: Group) {
+  private updateRequestToModel(request: GroupRequest, model: GroupDoc) {
     model.name = request.name;
     model.description = request.description;
     model.joinPolicy = request.joinPolicy;

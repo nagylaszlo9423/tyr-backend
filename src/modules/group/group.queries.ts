@@ -4,7 +4,7 @@ import {PathSortOptions} from '../path/path-sort-options';
 import {GroupFilter} from './enums/group-filter';
 
 export class GroupQueries {
-  constructor() {}
+  private constructor() {}
 
   static queryAllByFilters(userId: string, filters: number[], searchExp: string): any {
     const query: any = {};

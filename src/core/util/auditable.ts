@@ -1,10 +1,9 @@
-import {Audit, AuditSchema} from "../schemas/audit.schema";
-import * as mongoose from "mongoose";
-import {environment} from "../../environment/environment";
-
+import {Audit, AuditSchema} from '../schemas/audit.schema';
+import * as mongoose from 'mongoose';
+import {environment} from '../../environment/environment';
 
 export interface Auditable {
-  audit: Audit
+  audit: Audit;
   _userId: string;
 }
 

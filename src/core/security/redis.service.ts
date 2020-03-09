@@ -1,10 +1,9 @@
 import {Callback, createClient, RedisClient, RetryStrategyOptions} from 'redis';
-import {Injectable, Logger} from "@nestjs/common";
+import {Injectable, Logger} from '@nestjs/common';
 import * as crypto from 'crypto';
-import {TokenBaseSchema} from "../../modules/oauth2/schemas/token-base.schema";
-import {EncryptedData} from "./encrypted-data";
-import {UnauthorizedException} from "../errors/errors";
-import {environment} from "../../environment/environment";
+import {TokenBaseSchema} from '../../modules/oauth2/schemas/token-base.schema';
+import {EncryptedData} from './encrypted-data';
+import {environment} from '../../environment/environment';
 
 export type KeyPrefix = 'access' | 'refresh' | 'code';
 
@@ -41,7 +40,7 @@ export class RedisService {
           value.expirationDate = expirationDate;
           resolve(_key);
         })))
-      ))
+      ));
   }
 
   getToken<T extends TokenBaseSchema>(key: string, prefix: KeyPrefix): Promise<T> {
@@ -83,7 +82,7 @@ export class RedisService {
 
   private cipherValue(value: string): EncryptedData {
     const cipher = crypto.createCipheriv(RedisService.cipherAlgorithm, Buffer.from(RedisService.cipherKey), RedisService.initVector);
-    let encrypted = cipher.update(value, 'utf8');
+    const encrypted = cipher.update(value, 'utf8');
     cipher.final();
     return new EncryptedData({
       data: encrypted.toString('hex'),
@@ -99,7 +98,7 @@ export class RedisService {
     const decipher = crypto.createDecipheriv(RedisService.cipherAlgorithm, Buffer.from(RedisService.cipherKey), RedisService.initVector);
     decipher.setAuthTag(authTag);
     const encryptedValue = Buffer.from(value.data, 'hex');
-    let deciphered = decipher.update(encryptedValue);
+    const deciphered = decipher.update(encryptedValue);
     decipher.final();
     return deciphered.toString();
   }
@@ -121,6 +120,6 @@ export class RedisService {
         return reject(err);
       }
       return onSuccess(reply);
-    })
+    });
   }
 }

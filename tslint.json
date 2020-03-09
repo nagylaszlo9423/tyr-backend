@@ -5,6 +5,9 @@
     "no-unused-expression": true
   },
   "rules": {
+    "object-literal-shorthand": false,
+    "trailing-comma": false,
+    "max-classes-per-file": false,
     "quotemark": [true, "single"],
     "no-trailing-whitespace": false,
     "variable-name": false,

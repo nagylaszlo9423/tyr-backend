@@ -4,8 +4,9 @@ import {GroupJoinPolicy} from './enums/group-join-policy';
 import {Path} from '../path/path.schema';
 import {Audit, AuditSchema} from '../../core/schemas/audit.schema';
 import {Auditable} from '../../core/util/auditable';
+import {ModelNames} from '../../db/model-names';
 
-export interface Group extends mongoose.Document, Auditable {
+export interface GroupDoc extends mongoose.Document, Auditable {
   name: string;
   description: string;
   joinPolicy: GroupJoinPolicy;
@@ -15,12 +16,14 @@ export interface Group extends mongoose.Document, Auditable {
   audit: Audit;
 }
 
-export const GroupSchema = new mongoose.Schema({
+export const GroupSchemaDoc = {
   name: String,
   description: String,
   joinPolicy: {type: Number, enum: Object.values(GroupJoinPolicy), required: true, default: GroupJoinPolicy.INVITE_ONLY},
-  owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-  members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-  paths: [{type: mongoose.Schema.Types.ObjectId, ref: 'Path'}],
+  owner: {type: mongoose.Schema.Types.ObjectId, ref: ModelNames.User},
+  members: [{type: mongoose.Schema.Types.ObjectId, ref: ModelNames.User}],
+  paths: [{type: mongoose.Schema.Types.ObjectId, ref: ModelNames.Path}],
   audit: AuditSchema,
-}).index({name: 'text', joinPolicy: 1});
+};
+
+export const GroupSchema = new mongoose.Schema(GroupSchemaDoc).index({name: 'text', joinPolicy: 1});

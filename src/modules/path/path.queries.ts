@@ -1,9 +1,8 @@
-import {User} from "../user/user.schema";
-import {Document, DocumentQuery} from "mongoose";
-import {PathSortOptions} from "./path-sort-options";
-import {PathVisibility} from "./enums/path-visibility";
-import {PathFilter} from "./enums/path-filter";
-
+import {User} from '../user/user.schema';
+import {Document, DocumentQuery} from 'mongoose';
+import {PathSortOptions} from './path-sort-options';
+import {PathVisibility} from './enums/path-visibility';
+import {PathFilter} from './enums/path-filter';
 
 export class PathQueries {
   constructor() {}
@@ -51,12 +50,12 @@ export class PathQueries {
       case PathSortOptions.OLDEST_MODIFIED:
         sortCondition = {'audit.modifiedAt': -1}; break;
       case PathSortOptions.NAME_ASC:
-        sortCondition = {'name': 1}; break;
+        sortCondition = {name: 1}; break;
       case PathSortOptions.NAME_DESC:
-        sortCondition = {'name': -1}; break;
+        sortCondition = {name: -1}; break;
       case PathSortOptions.VISIBILITY:
-        sortCondition = {'visibility': 1}; break;
+        sortCondition = {visibility: 1}; break;
     }
-    return query.collation({ locale: "en" }).sort(sortCondition);
+    return query.collation({ locale: 'en' }).sort(sortCondition);
   }
 }

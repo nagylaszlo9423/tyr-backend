@@ -14,7 +14,7 @@ export class EncryptedData {
     const data = new EncryptedData(JSON.parse(jsonString));
 
     if (!data.authTag || !data.data) {
-      throw new Error('Encrypted data parse failed')
+      throw new Error('Encrypted data parse failed');
     }
 
     return data;

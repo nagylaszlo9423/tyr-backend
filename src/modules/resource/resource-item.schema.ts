@@ -1,5 +1,5 @@
-import * as mongoose from "mongoose";
-import {Auditable} from "../../core/util/auditable";
+import * as mongoose from 'mongoose';
+import {Auditable} from '../../core/util/auditable';
 
 export interface ResourceItem extends mongoose.Document, Auditable {
   url: string;

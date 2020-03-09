@@ -1,6 +1,7 @@
 import {Catch, ArgumentsHost, HttpException, ExceptionFilter} from '@nestjs/common';
 import {Response} from 'express';
-import {ErrorResponse} from "../errors/error.response";
+import {ErrorResponse} from '../errors/error.response';
+import {GeneralCause} from '../errors/cause/general.cause';
 
 @Catch(HttpException)
 export class GeneralExceptionFilter implements ExceptionFilter {
@@ -9,7 +10,7 @@ export class GeneralExceptionFilter implements ExceptionFilter {
     try {
       return response.status(exception.getStatus()).json(exception.getResponse());
     } catch (e) {
-      return response.status(500).json(new ErrorResponse('INTERNAL_SERVER_ERROR'));
+      return response.status(500).json(new ErrorResponse(GeneralCause.INTERNAL_SERVER_ERROR));
     }
   }
 }

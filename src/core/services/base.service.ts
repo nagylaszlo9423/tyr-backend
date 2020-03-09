@@ -1,9 +1,9 @@
-import {NotFoundException} from "../errors/errors";
-import {Document, DocumentQuery, Model, Query} from "mongoose";
-import {Auditable, AuditManager} from "../util/auditable";
-import {PaginationOptions} from "../util/pagination/pagination-options";
-import {Page} from "../util/pagination/page";
-import {DeletionResult} from "../dto/deletion.result";
+import {NotFoundException} from '../errors/errors';
+import {Document, DocumentQuery, Model} from 'mongoose';
+import {Auditable, AuditManager} from '../util/auditable';
+import {PaginationOptions} from '../util/pagination/pagination-options';
+import {Page} from '../util/pagination/page';
+import {DeletionResult} from '../dto/deletion.result';
 import {DeleteWriteOpResultObject} from 'mongodb';
 
 export type QueryCallback<E extends Document, T = E> = (query: DocumentQuery<T, E>) => DocumentQuery<T, E>;
@@ -21,8 +21,12 @@ export abstract class BaseService<T extends Document> {
     await this.model.remove({_id: id}).exec();
   }
 
-  public async _findById(id: string, conditions?: any, queryCallback?: QueryCallback<T>): Promise<T> {
-    const model = await BaseService.callQueryCallback(this.model.findOne({_id: id, ...conditions}), queryCallback).exec();
+  public _findById(id: string, conditions?: any, queryCallback?: QueryCallback<T>): Promise<T> {
+    return this._findOne({_id: id, ...conditions}, queryCallback);
+  }
+
+  public async _findOne(conditions?: any, queryCallback?: QueryCallback<T>): Promise<T> {
+    const model = await BaseService.callQueryCallback(this.model.findOne(conditions), queryCallback).exec();
 
     if (!model) {
       throw new NotFoundException();
@@ -40,7 +44,7 @@ export abstract class BaseService<T extends Document> {
     return model.save();
   }
 
-  public _find(conditions?: any, queryCallback?: QueryCallback<T, Array<T>>): Promise<Array<T>> {
+  public _find(conditions?: any, queryCallback?: QueryCallback<T, T[]>): Promise<T[]> {
       return BaseService.callQueryCallback(this.model.find(conditions), queryCallback).exec();
   }
 
@@ -49,7 +53,7 @@ export abstract class BaseService<T extends Document> {
       try {
         const total = await this.model.countDocuments({}).exec();
 
-        let query = this.model
+        const query = this.model
           .find(conditions)
           .skip(options.skip())
           .limit(options.size)

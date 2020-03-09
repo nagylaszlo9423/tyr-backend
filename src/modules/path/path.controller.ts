@@ -1,12 +1,11 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from "@nestjs/common";
-import {CreatedResponse} from "../../core/dto/created.response";
-import {PathService} from "./path.service";
-import {PaginationOptions} from "../../core/util/pagination/pagination-options";
-import {PageResponse} from "../../core/dto/page.response";
-import {PathRequest} from "../../dtos/path/path.request";
-import {ArrayQueryPipe} from "../../core/pipes/array-query.pipe";
-import {PathResponse} from "../../dtos/path/path.response";
-import {ParseIntArrayPipe} from "../../core/pipes/parse-int-array.pipe";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from '@nestjs/common';
+import {CreatedResponse} from '../../core/dto/created.response';
+import {PathService} from './path.service';
+import {PaginationOptions} from '../../core/util/pagination/pagination-options';
+import {PageResponse} from '../../core/dto/page.response';
+import {PathRequest} from '../../dtos/path/path.request';
+import {PathResponse} from '../../dtos/path/path.response';
+import {ParseIntArrayPipe} from '../../core/pipes/parse-int-array.pipe';
 
 @Controller('/path')
 export class PathController {

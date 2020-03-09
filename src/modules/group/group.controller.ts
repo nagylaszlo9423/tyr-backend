@@ -1,13 +1,12 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from "@nestjs/common";
-import {GroupService} from "./group.service";
-import {CreatedResponse} from "../../core/dto/created.response";
-import {PaginationOptions} from "../../core/util/pagination/pagination-options";
-import {PageResponse} from "../../core/dto/page.response";
-import {GroupResponse} from "../../dtos/group/group-response";
-import {GroupRequest} from "../../dtos/group/group.request";
-import {GroupFilter} from "./enums/group-filter";
-import {ParseIntArrayPipe} from "../../core/pipes/parse-int-array.pipe";
-
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from '@nestjs/common';
+import {GroupService} from './group.service';
+import {PaginationOptions} from '../../core/util/pagination/pagination-options';
+import {PageResponse} from '../../core/dto/page.response';
+import {GroupResponse} from '../../dtos/group/group-response';
+import {GroupRequest} from '../../dtos/group/group.request';
+import {GroupFilter} from './enums/group-filter';
+import {ParseIntArrayPipe} from '../../core/pipes/parse-int-array.pipe';
+import {JoinStatusResponse} from '../../dtos/group/join-status.response';
 
 @Controller('/group')
 export class GroupController {
@@ -30,12 +29,12 @@ export class GroupController {
   }
 
   @Post('/:id/join')
-  join(@Param('id') groupId: string) {
+  join(@Param('id') groupId: string): Promise<JoinStatusResponse> {
     return this.groupService.join(groupId);
   }
 
   @Post('/:id/leave')
-  leave(@Param('id') groupId: string) {
+  leave(@Param('id') groupId: string): Promise<JoinStatusResponse> {
     return this.groupService.leave(groupId);
   }
 

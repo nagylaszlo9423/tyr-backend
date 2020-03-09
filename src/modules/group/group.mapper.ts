@@ -1,14 +1,14 @@
-import {Group} from './group.schema';
+import {GroupDoc} from './group.schema';
 import {GroupResponse} from '../../dtos/group/group-response';
 import {AuditMapper} from '../../core/util/audit.mapper';
 import {getDocumentId} from '../../core/util/db.helper';
 
 export class GroupMapper {
-  static modelsToResponse(models: Group[], isEditable: (group: Group) => boolean, isMember: (group: Group) => boolean): GroupResponse[] {
+  static modelsToResponse(models: GroupDoc[], isEditable: (group: GroupDoc) => boolean, isMember: (group: GroupDoc) => boolean): GroupResponse[] {
     return models.map(group => GroupMapper.modelToResponse(group, isEditable, isMember));
   }
 
-  static modelToResponse(model: Group, isEditable: (group: Group) => boolean, isMember: (group: Group) => boolean): GroupResponse {
+  static modelToResponse(model: GroupDoc, isEditable: (group: GroupDoc) => boolean, isMember: (group: GroupDoc) => boolean): GroupResponse {
     const response = new GroupResponse();
 
     response.id = model._id;

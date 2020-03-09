@@ -1,12 +1,12 @@
-import {Injectable} from "@nestjs/common";
-import {AccessToken} from "./schemas/access-token.shema";
-import {RefreshToken} from "./schemas/refresh-token.schema";
+import {Injectable} from '@nestjs/common';
+import {AccessToken} from './schemas/access-token.shema';
+import {RefreshToken} from './schemas/refresh-token.schema';
 import * as crypto from 'crypto';
-import {environment} from "../../environment/environment";
-import {GeneralException} from "../../core/errors/errors";
-import {RedisService} from "../../core/security/redis.service";
-import {TokenResponse} from "../../dtos/auth/token-response";
-
+import {environment} from '../../environment/environment';
+import {GeneralException} from '../../core/errors/errors';
+import {RedisService} from '../../core/security/redis.service';
+import {TokenResponse} from '../../dtos/auth/token-response';
+import {AuthCause} from '../../core/errors/cause/auth.cause';
 
 @Injectable()
 export class TokenService {
@@ -21,7 +21,7 @@ export class TokenService {
     const refreshToken: RefreshToken = await this.redisService.getToken(refreshTokenValue, 'refresh');
     const accessToken: AccessToken = await this.redisService.getToken(refreshToken.value, 'access');
     if (refreshToken.expirationDate < new Date()) {
-      throw new GeneralException("INVALID_TOKEN");
+      throw new GeneralException(AuthCause.INVALID_TOKEN);
     }
     const userId = accessToken.userId;
     const clientId = accessToken.clientId;

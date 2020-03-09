@@ -1,4 +1,4 @@
-import {TokenBaseSchema} from "./token-base.schema";
+import {TokenBaseSchema} from './token-base.schema';
 
 export class RefreshToken implements TokenBaseSchema {
   userId: string;

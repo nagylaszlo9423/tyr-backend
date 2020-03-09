@@ -5,6 +5,7 @@ import {environment} from '../../environment/environment';
 import {UserService} from '../user/user.service';
 import {RedisService} from '../../core/security/redis.service';
 import {GeneralException, NotFoundException} from '../../core/errors/errors';
+import {AuthCause} from '../../core/errors/cause/auth.cause';
 
 @Injectable()
 export class AuthorizationCodeService {
@@ -31,10 +32,10 @@ export class AuthorizationCodeService {
 
   async getUserIdForAuthorizationCode(code: string, clientId: string, redirectUri: string): Promise<string> {
     const authorizationCode = await this.redisService.getToken<AuthorizationCode>(code, 'code').catch(() => {
-      throw new GeneralException('INVALID_AUTHORIZATION_CODE');
+      throw new GeneralException(AuthCause.INVALID_AUTHORIZATION_CODE);
     });
     if (authorizationCode.clientId !== clientId || authorizationCode.redirectUri !== redirectUri) {
-      throw new GeneralException('INVALID_AUTHORIZATION_CODE');
+      throw new GeneralException(AuthCause.INVALID_AUTHORIZATION_CODE);
     }
     const user = await this.userService.findById(authorizationCode.userId).catch(() => {
       throw new NotFoundException('User not found!');

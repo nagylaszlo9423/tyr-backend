@@ -1,13 +1,12 @@
-import {Injectable} from "@nestjs/common";
-import {UserService} from "../user/user.service";
-import {AuthorizationCodeService} from "./authorization-code.service";
-import {TokenService} from "./token.service";
-import {LoginRequest} from "../../dtos/auth/login-request";
-import {LoginResponse} from "../../dtos/auth/login-response";
-import {TokenResponse} from "../../dtos/auth/token-response";
-import {RegistrationResponse} from "../../dtos/auth/registration-response";
-import {RegistrationRequest} from "../../dtos/auth/registration-request";
-
+import {Injectable} from '@nestjs/common';
+import {UserService} from '../user/user.service';
+import {AuthorizationCodeService} from './authorization-code.service';
+import {TokenService} from './token.service';
+import {LoginRequest} from '../../dtos/auth/login-request';
+import {LoginResponse} from '../../dtos/auth/login-response';
+import {TokenResponse} from '../../dtos/auth/token-response';
+import {RegistrationResponse} from '../../dtos/auth/registration-response';
+import {RegistrationRequest} from '../../dtos/auth/registration-request';
 
 @Injectable()
 export class AuthService {

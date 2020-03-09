@@ -1,13 +1,13 @@
-import {Body, Controller, Get, Header, Headers, Param, Post, Query, Res} from "@nestjs/common";
+import {Body, Controller, Get, Header, Headers, Param, Post, Query, Res} from '@nestjs/common';
 import {Response} from 'express';
-import {AuthService} from "./auth.service";
-import {environment} from "../../environment/environment";
-import {BadRequestException} from "../../core/errors/errors";
-import {TokenResponse} from "../../dtos/auth/token-response";
-import {LoginResponse} from "../../dtos/auth/login-response";
-import {LoginRequest} from "../../dtos/auth/login-request";
-import {LogoutRequest} from "../../dtos/auth/logout-request";
-import {RegistrationRequest} from "../../dtos/auth/registration-request";
+import {AuthService} from './auth.service';
+import {environment} from '../../environment/environment';
+import {BadRequestException} from '../../core/errors/errors';
+import {TokenResponse} from '../../dtos/auth/token-response';
+import {LoginResponse} from '../../dtos/auth/login-response';
+import {LoginRequest} from '../../dtos/auth/login-request';
+import {LogoutRequest} from '../../dtos/auth/logout-request';
+import {RegistrationRequest} from '../../dtos/auth/registration-request';
 
 @Controller('/oauth')
 export class Oauth2Controller {
@@ -36,7 +36,7 @@ export class Oauth2Controller {
         @Query('client_id') clientId?: string,
         @Query('refresh_token') refreshToken?: string): Promise<TokenResponse> {
     if (grantType !== 'authorization_code' && grantType !== 'refresh_token' || !clientId) {
-      throw new BadRequestException()
+      throw new BadRequestException();
     }
     if (grantType === 'authorization_code' && code && redirectUri) {
       return this.authService.exchangeAuthorizationCodeForTokens(code, clientId, redirectUri);
@@ -54,13 +54,13 @@ export class Oauth2Controller {
 
   @Post('/logout')
   logout(@Body() request: LogoutRequest) {
-    if (!request.accessToken) throw new BadRequestException();
+    if (!request.accessToken) { throw new BadRequestException(); }
     return this.authService.logout(request.accessToken);
   }
 
   @Post('/logout/all')
   logoutEverywhere(@Body() request: LogoutRequest) {
-    if (!request.accessToken) throw new BadRequestException();
+    if (!request.accessToken) { throw new BadRequestException(); }
     return this.authService.logoutEverywhere(request.accessToken);
   }
 

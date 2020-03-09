@@ -14,6 +14,7 @@ import {mapResultsToPageResponse} from '../../core/util/pagination/pagination-ma
 import {UserMapper} from './user.mapper';
 import {GroupMemberResponse} from '../../dtos/user/group-member.response';
 import {GroupService} from '../group/group.service';
+import {AuthCause} from '../../core/errors/cause/auth.cause';
 
 @Injectable()
 export class UserService extends BaseService<User> {
@@ -25,7 +26,7 @@ export class UserService extends BaseService<User> {
   async register(request: RegistrationRequest): Promise<RegistrationResponse> {
     const existingUser: User = await this.findByEmail(request.email);
     if (existingUser) {
-      throw new GeneralException('EMAIL_ALREADY_REGISTERED');
+      throw new GeneralException(AuthCause.EMAIL_ALREADY_REGISTERED);
     }
     const newUser: User = new this.model();
     newUser.email = request.email;
@@ -39,7 +40,7 @@ export class UserService extends BaseService<User> {
   async login(request: LoginRequest): Promise<string> {
     const user = await this.findByEmail(request.email);
     if (!user || user.password !== UserService.hashString(request.password)) {
-      throw new GeneralException('LOGIN_DENIED');
+      throw new GeneralException(AuthCause.LOGIN_DENIED);
     }
     return user._id;
   }
@@ -62,7 +63,7 @@ export class UserService extends BaseService<User> {
     const results = await this._findPage(paginationOptions, {
       groups: {$elemMatch: {$eq: groupId}},
     });
-    return mapResultsToPageResponse(results, UserMapper.entityListToPublicResponse);
+    return mapResultsToPageResponse(results, UserMapper.modelListToPublicResponse);
   }
 
   private static hashString(str: string): string {

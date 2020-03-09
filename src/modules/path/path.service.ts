@@ -4,7 +4,7 @@ import {Injectable} from '@nestjs/common';
 import {BaseService} from '../../core/services/base.service';
 import {GroupService} from '../group/group.service';
 import {ForbiddenException, GeneralException} from '../../core/errors/errors';
-import {Group} from '../group/group.schema';
+import {GroupDoc} from '../group/group.schema';
 import {ContextService} from '../../core/services/context.service';
 import {LineString} from '../../core/schemas/line-string.schema';
 import {CreatedResponse} from '../../core/dto/created.response';
@@ -19,6 +19,8 @@ import {PathRequest} from '../../dtos/path/path.request';
 import {PathQueries} from './path.queries';
 import {PathResponse} from '../../dtos/path/path.response';
 import {PathVisibility} from './enums/path-visibility';
+import {PathCause} from '../../core/errors/cause/path.cause';
+import {GroupCause} from '../../core/errors/cause/group.cause';
 
 @Injectable()
 export class PathService extends BaseService<Path> {
@@ -58,7 +60,7 @@ export class PathService extends BaseService<Path> {
 
   async findById(pathId: string): Promise<PathResponse> {
     const path = await this.model.findById(pathId).populate('group').exec();
-    const group = path.group as Group;
+    const group = path.group as GroupDoc;
     if (path.visibility === PathVisibility.PRIVATE && path.owner.toString() !== this.ctx.userId) {
       throw new ForbiddenException();
     }
@@ -82,7 +84,7 @@ export class PathService extends BaseService<Path> {
     const path = await this._findById(pathId);
     const group = await this.groupService._findById(groupId);
     if (!this.isUserInGroup(group)) {
-      throw new GeneralException('NOT_MEMBER_OF_THE_GROUP');
+      throw new GeneralException(GroupCause.NOT_MEMBER_OF_GROUP);
     }
     path.visibility = PathVisibility.GROUP;
     path.group = group;
@@ -92,7 +94,7 @@ export class PathService extends BaseService<Path> {
   async publish(pathId: string): Promise<void> {
     const path = await this._findById(pathId);
     if (path.visibility === PathVisibility.PUBLIC) {
-      throw new GeneralException('PATH_ALREADY_PUBLISHED');
+      throw new GeneralException(PathCause.PATH_ALREADY_PUBLISHED);
     }
     if (path.owner.toString() !== this.ctx.userId) {
       throw new ForbiddenException();
@@ -101,7 +103,7 @@ export class PathService extends BaseService<Path> {
     await this._saveAndAudit(path, this.ctx.userId);
   }
 
-  private isUserInGroup(group: Group): boolean {
+  private isUserInGroup(group: GroupDoc): boolean {
     return group && group.members.findIndex(_userId => _userId.toString() === this.ctx.userId) > -1;
   }
 }

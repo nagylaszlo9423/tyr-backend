@@ -1,9 +1,10 @@
-import {CallHandler, NestInterceptor} from "@nestjs/common/interfaces/features/nest-interceptor.interface";
-import {ExecutionContext, Injectable, Logger} from "@nestjs/common";
-import {RedisService} from "./redis.service";
-import {AccessToken} from "../../modules/oauth2/schemas/access-token.shema";
-import {Request, Response} from "express";
-import {ErrorResponse} from "../errors/error.response";
+import {CallHandler, NestInterceptor} from '@nestjs/common/interfaces/features/nest-interceptor.interface';
+import {ExecutionContext, Injectable, Logger} from '@nestjs/common';
+import {RedisService} from './redis.service';
+import {AccessToken} from '../../modules/oauth2/schemas/access-token.shema';
+import {Request, Response} from 'express';
+import {ErrorResponse} from '../errors/error.response';
+import {GeneralCause} from '../errors/cause/general.cause';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
@@ -18,8 +19,8 @@ export class AuthInterceptor implements NestInterceptor {
       try {
         await this.authorize(request);
       } catch (e) {
-        this.logger.error(e, undefined,'AuthInterceptor');
-        response.status(401).json(new ErrorResponse('UNAUTHORIZED'));
+        this.logger.error(e, undefined, 'AuthInterceptor');
+        response.status(401).json(new ErrorResponse(GeneralCause.UNAUTHORIZED));
         return;
       }
     }
