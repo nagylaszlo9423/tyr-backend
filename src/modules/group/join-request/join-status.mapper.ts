@@ -9,11 +9,10 @@ export class JoinStatusMapper {
 
   static modelToResponse(doc: JoinStatusDoc): JoinStatusResponse {
     return new JoinStatusResponse({
-      groupId: doc.group.toString(),
-      requesterId: doc.requester.toString(),
+      groupId: doc._id.group.toString(),
       status: doc.status,
       audit: AuditMapper.modelToResponse(doc.audit),
-      user: UserMapper.modelToPublicUserResponse(doc.requester)
+      user: UserMapper.modelToPublicUserResponse(doc._id.user)
     });
   }
 

@@ -1,7 +1,6 @@
 
-
 export enum GroupJoinPolicy {
-  INVITE_ONLY,
+  CLOSED,
   REQUEST,
   OPEN
 }

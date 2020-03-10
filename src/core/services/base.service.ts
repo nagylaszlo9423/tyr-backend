@@ -22,17 +22,21 @@ export abstract class BaseService<T extends Document> {
   }
 
   public _findById(id: string, conditions?: any, queryCallback?: QueryCallback<T>): Promise<T> {
-    return this._findOne({_id: id, ...conditions}, queryCallback);
+    return this._findOneOrNotFound({_id: id, ...conditions}, queryCallback);
   }
 
-  public async _findOne(conditions?: any, queryCallback?: QueryCallback<T>): Promise<T> {
-    const model = await BaseService.callQueryCallback(this.model.findOne(conditions), queryCallback).exec();
+  public async _findOneOrNotFound(conditions?: any, queryCallback?: QueryCallback<T>): Promise<T | null> {
+    const doc = this._findOne(conditions, queryCallback);
 
-    if (!model) {
+    if (!doc) {
       throw new NotFoundException();
     }
 
-    return model;
+    return doc;
+  }
+
+  public async _findOne(conditions?: any, queryCallback?: QueryCallback<T>): Promise<T | null> {
+    return await BaseService.callQueryCallback(this.model.findOne(conditions), queryCallback).exec();
   }
 
   public async _saveAndAudit(model: T & Auditable, userId: string): Promise<T> {

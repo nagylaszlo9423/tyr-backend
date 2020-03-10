@@ -1,7 +1,5 @@
 import * as mongoose from 'mongoose';
-import {User} from '../user/user.schema';
 import {GroupJoinPolicy} from './enums/group-join-policy';
-import {Path} from '../path/path.schema';
 import {Audit, AuditSchema} from '../../core/schemas/audit.schema';
 import {Auditable} from '../../core/util/auditable';
 import {ModelNames} from '../../db/model-names';
@@ -12,6 +10,7 @@ export interface GroupDoc extends mongoose.Document, Auditable {
   joinPolicy: GroupJoinPolicy;
   owner: mongoose.Types.ObjectId;
   members: mongoose.Types.ObjectId[];
+  bannedUsers: mongoose.Types.ObjectId[];
   paths: mongoose.Types.ObjectId[];
   audit: Audit;
 }
@@ -19,9 +18,10 @@ export interface GroupDoc extends mongoose.Document, Auditable {
 export const GroupSchemaDoc = {
   name: String,
   description: String,
-  joinPolicy: {type: Number, enum: Object.values(GroupJoinPolicy), required: true, default: GroupJoinPolicy.INVITE_ONLY},
+  joinPolicy: {type: Number, enum: Object.values(GroupJoinPolicy), required: true, default: GroupJoinPolicy.CLOSED},
   owner: {type: mongoose.Schema.Types.ObjectId, ref: ModelNames.User},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: ModelNames.User}],
+  bannedUsers: [{type: mongoose.Schema.Types.ObjectId, ref: ModelNames.User}],
   paths: [{type: mongoose.Schema.Types.ObjectId, ref: ModelNames.Path}],
   audit: AuditSchema,
 };

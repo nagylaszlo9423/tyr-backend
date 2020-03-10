@@ -14,12 +14,6 @@ export class GroupQueries {
         case GroupFilter.MEMBER:
           $or.push({members: {$elemMatch: {$eq: userId}}});
           break;
-        case GroupFilter.INVITE_ONLY:
-          $or.push({
-            joinPolicy: GroupJoinPolicy.INVITE_ONLY,
-            members: {$not: {$elemMatch: {$eq: userId}}},
-          });
-          break;
         case GroupFilter.REQUEST:
           $or.push({
             joinPolicy: GroupJoinPolicy.REQUEST,

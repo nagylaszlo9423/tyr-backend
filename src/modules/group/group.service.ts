@@ -16,7 +16,7 @@ import {GroupFilter} from './enums/group-filter';
 import {ObjectId} from '../../db/mongoose';
 import {getDocumentId} from '../../core/util/db.helper';
 import {JoinStatusService} from './join-request/join-status.service';
-import {JoinStatus} from './join-request/join-status';
+import {JoinStatus} from './enums/join-status';
 import {GroupJoinPolicy} from './enums/group-join-policy';
 import {GroupCause} from '../../core/errors/cause/group.cause';
 import {JoinStatusResponse} from '../../dtos/group/join-status.response';
@@ -30,15 +30,21 @@ export class GroupService extends BaseService<GroupDoc> {
   }
 
   findById(id: string): Promise<GroupResponse> {
-    return this._findById(id).then(_ => GroupMapper.modelToResponse(_, this.isEditable.bind(this), this.isMember.bind(this)));
+    return this._findById(id).then(_ => GroupMapper.modelToResponse(_,
+      group => this.isEditable(group),
+      group => this.isMember(group))
+    );
   }
 
   async findAllGroupsByPage(options: PaginationOptions, filters: GroupFilter[], searchExp: string, sortBy: string): Promise<PageResponse<GroupResponse>> {
     return mapResultsToPageResponse(await this._findPage(
       options,
       GroupQueries.queryAllByFilters(this.ctx.userId, filters, searchExp),
-      GroupQueries.sortByFilters.bind(this, sortBy),
-    ), items => GroupMapper.modelsToResponse(items, this.isEditable.bind(this), this.isMember.bind(this)));
+      query => GroupQueries.sortByFilters(sortBy, query),
+      ), items => GroupMapper.modelsToResponse(items,
+      _ => this.isEditable(_),
+      _ => this.isMember(_))
+    );
   }
 
   async join(groupId: string): Promise<JoinStatusResponse> {
@@ -48,14 +54,15 @@ export class GroupService extends BaseService<GroupDoc> {
       throw new GeneralException(GroupCause.ALREADY_MEMBER_OF_GROUP);
     }
 
-    if (group.joinPolicy === GroupJoinPolicy.INVITE_ONLY) {
+    if (group.joinPolicy === GroupJoinPolicy.CLOSED) {
       throw new GeneralException(GroupCause.JOIN_IS_NOT_PERMITTED);
     }
 
+    const result = await this.joinRequestService.createJoinStatus(groupId, this.ctx.userId, JoinStatus.ACCEPTED);
     group.members.push(ObjectId(this.ctx.userId));
     await group.save();
 
-    return await this.joinRequestService.createRequest(groupId, JoinStatus.ACCEPTED);
+    return result;
   }
 
   async leave(groupId: string): Promise<JoinStatusResponse> {
@@ -65,30 +72,66 @@ export class GroupService extends BaseService<GroupDoc> {
       throw new GeneralException(GroupCause.NOT_MEMBER_OF_GROUP);
     }
 
+    const result = await this.joinRequestService.leave(groupId);
+
     group.members = group.members.filter(userId => userId.toString() !== this.ctx.userId);
     await group.save();
 
-    return await this.joinRequestService.leave(groupId);
+    return result;
+  }
+
+  async acceptJoinRequest(groupId: string, userId: string): Promise<void> {
+    const groupDoc = await this._findById(groupId);
+    this.checkIfOwner(groupDoc);
+    await this.joinRequestService.accept(groupId, userId);
+  }
+
+  async declineJoinRequest(groupId: string, userId: string): Promise<void> {
+    const groupDoc = await this._findById(groupId);
+    this.checkIfOwner(groupDoc);
+    await this.joinRequestService.decline(groupId, userId);
+  }
+
+  async banUser(groupId: string, userId: string): Promise<void> {
+    const group = await this._findById(groupId);
+    this.checkIfOwner(group);
+    await this.joinRequestService.banUser(groupId, userId);
+    group.members = group.members.filter(_userId => _userId.toString() !== userId);
+    group.bannedUsers.push(ObjectId(userId));
+    await this._saveAndAudit(group, this.ctx.userId);
+  }
+
+  async allowUser(groupId: string, userId: string): Promise<void> {
+    const group = await this._findById(groupId);
+    this.checkIfOwner(group);
+    await this.joinRequestService.allowUser(groupId, userId);
+    group.bannedUsers = group.bannedUsers.filter(_userId => _userId.toString() !== userId);
+    await this._saveAndAudit(group, this.ctx.userId);
   }
 
   async create(createRequest: GroupRequest): Promise<GroupResponse> {
     const group = this.createRequestToModel(createRequest, this.ctx.userId);
     await this._saveAndAudit(group, this.ctx.userId);
-    return GroupMapper.modelToResponse(group, this.isEditable.bind(this), this.isMember.bind(this));
+    return GroupMapper.modelToResponse(group,
+      _ => this.isEditable(_),
+      _ => this.isMember(_)
+    );
   }
 
   async update(updateRequest: GroupRequest, groupId: string): Promise<GroupResponse> {
     let group = await this._findById(groupId);
+    this.checkIfOwner(group);
+
     this.updateRequestToModel(updateRequest, group);
     group = await this._saveAndAudit(group, this.ctx.userId);
-    return GroupMapper.modelToResponse(group, this.isEditable.bind(this), this.isMember.bind(this));
+    return GroupMapper.modelToResponse(group,
+      _ => this.isEditable(_),
+      _ => this.isMember(_));
   }
 
   async delete(groupId) {
     const group = await this._findById(groupId);
-    if (group.owner.toString() !== this.ctx.userId) {
-      throw new ForbiddenException();
-    }
+    this.checkIfOwner(group);
     await group.remove();
   }
 
@@ -99,6 +142,16 @@ export class GroupService extends BaseService<GroupDoc> {
   private isMember(group: GroupDoc): boolean {
     return getDocumentId(group.owner) === this.ctx.userId ||
       group.members.map(getDocumentId).indexOf(this.ctx.userId) > -1;
+  }
+
+  private checkIfOwner(group: GroupDoc): void {
+    if (!this.isOwner(group)) {
+      throw new ForbiddenException();
+    }
+  }
+
+  private isOwner(group: GroupDoc): boolean {
+    return group.owner.toString() === this.ctx.userId;
   }
 
   private createRequestToModel(request: GroupRequest, owner: string): GroupDoc {

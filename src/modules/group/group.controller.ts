@@ -23,34 +23,58 @@ export class GroupController {
     return this.groupService.findAllGroupsByPage(PaginationOptions.of(page, size), filters, searchExp, sortBy);
   }
 
-  @Get('/:id')
-  findById(@Param('id') id: string): Promise<GroupResponse> {
-    return this.groupService.findById(id);
-  }
-
-  @Post('/:id/join')
-  join(@Param('id') groupId: string): Promise<JoinStatusResponse> {
-    return this.groupService.join(groupId);
-  }
-
-  @Post('/:id/leave')
-  leave(@Param('id') groupId: string): Promise<JoinStatusResponse> {
-    return this.groupService.leave(groupId);
+  @Get('/:groupId')
+  findById(@Param('groupId') groupId: string): Promise<GroupResponse> {
+    return this.groupService.findById(groupId);
   }
 
   @Post()
-  async create(@Body() createRequest: GroupRequest): Promise<GroupResponse> {
+  create(@Body() createRequest: GroupRequest): Promise<GroupResponse> {
     return this.groupService.create(createRequest);
   }
 
-  @Put('/:id')
-  async update(@Param('id') groupId: string,
-               @Body() updateRequest: GroupRequest): Promise<GroupResponse> {
+  @Put('/:groupId')
+  update(@Param('groupId') groupId: string,
+         @Body() updateRequest: GroupRequest): Promise<GroupResponse> {
     return this.groupService.update(updateRequest, groupId);
   }
 
-  @Delete('/:id')
-  async deleteGroup(@Param('id') groupId: string): Promise<void> {
+  @Delete('/:groupId')
+  deleteGroup(@Param('groupId') groupId: string): Promise<void> {
     return this.groupService.delete(groupId);
+  }
+
+  @Post('/:groupId/join')
+  join(@Param('groupId') groupId: string): Promise<JoinStatusResponse> {
+    return this.groupService.join(groupId);
+  }
+
+  @Post('/:groupId/leave')
+  leave(@Param('groupId') groupId: string): Promise<JoinStatusResponse> {
+    return this.groupService.leave(groupId);
+  }
+
+  @Post('/:groupId/join-request/accept/:userId')
+  acceptJoinRequest(@Param('groupId') groupId: string,
+                    @Param('userId') userId: string) {
+    return this.groupService.acceptJoinRequest(groupId, userId);
+  }
+
+  @Post('/:groupId/join-request/decline/:userId')
+  declineJoinRequest(@Param('groupId') groupId: string,
+                     @Param('userId') userId: string) {
+    return this.groupService.declineJoinRequest(groupId, userId);
+  }
+
+  @Post('/:groupId/ban/:userId')
+  banUser(@Param('groupId') groupId: string,
+          @Param('userId') userId: string): Promise<void> {
+    return this.groupService.banUser(groupId, userId);
+  }
+
+  @Post('/:groupId/allow/:userId')
+  allowUser(@Param('groupId') groupId: string,
+            @Param('userId') userId: string): Promise<void> {
+    return this.groupService.allowUser(groupId, userId);
   }
 }
