@@ -1,11 +1,14 @@
-import {Controller, Get, Param, ParseIntPipe, Query} from '@nestjs/common';
+import {Controller, Get} from '@nestjs/common';
 import {UserService} from './user.service';
-import {PageResponse} from '../../core/dto/page.response';
-import {PaginationOptions} from '../../core/util/pagination/pagination-options';
-import {GroupMemberResponse} from '../../dtos/user/group-member.response';
+import {ProfileInfoResponse} from '../../dtos/user/profile-info.response';
 
 @Controller('/user')
 export class UserController {
 
   constructor(private userService: UserService) {}
+
+  @Get('/profile/info')
+  getProfileInfo(): Promise<ProfileInfoResponse> {
+    return this.userService.getProfileInfo();
+  }
 }

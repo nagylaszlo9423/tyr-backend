@@ -4,6 +4,7 @@ import {GroupMemberResponse} from '../../dtos/user/group-member.response';
 import {PublicUserResponse} from '../../dtos/user/public-user.response';
 import {isDocOf} from '../../core/util/db.helper';
 import {InternalServerErrorException} from '../../core/errors/errors';
+import {ProfileInfoResponse} from '../../dtos/user/profile-info.response';
 
 export class UserMapper {
 
@@ -21,9 +22,16 @@ export class UserMapper {
       throw new InternalServerErrorException(`The following object is not a user: ${user}`);
     }
 
-    return new PublicUserResponse({
+    return {
       id: user.id,
-    });
+    };
+  }
+
+  static modelToProfileInfoResponse(user: User): ProfileInfoResponse {
+    return {
+      id: user.id,
+      email: user.email
+    };
   }
 
 }

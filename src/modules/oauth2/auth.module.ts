@@ -11,6 +11,7 @@ import {UserSchema} from '../user/user.schema';
 import {RedisService} from '../../core/security/redis.service';
 import {GroupModule} from '../group/group.module';
 import {ModelNames} from '../../db/model-names';
+import {CoreModule} from '../../core/core.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {ModelNames} from '../../db/model-names';
       {name: ModelNames.User, schema: UserSchema}
     ]),
     PassportModule.register({defaultStrategy: 'google', session: true}),
+    CoreModule,
     GroupModule
   ],
   providers: [

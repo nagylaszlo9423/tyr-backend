@@ -9,10 +9,14 @@ import {RegistrationRequest} from '../../dtos/auth/registration-request';
 import {RegistrationResponse} from '../../dtos/auth/registration-response';
 import {LoginRequest} from '../../dtos/auth/login-request';
 import {AuthCause} from '../../core/errors/cause/auth.cause';
+import {ContextService} from '../../core/services/context.service';
+import {UserMapper} from './user.mapper';
+import {ProfileInfoResponse} from '../../dtos/user/profile-info.response';
 
 @Injectable()
 export class UserService extends BaseService<User> {
-  constructor(@InjectModel('User') userModel: Model<User>) {
+  constructor(@InjectModel('User') userModel: Model<User>,
+              private ctx: ContextService) {
     super(userModel);
   }
 
@@ -44,6 +48,11 @@ export class UserService extends BaseService<User> {
 
   async findByEmail(email: string): Promise<User> {
     return this.model.findOne({email}).exec();
+  }
+
+  async getProfileInfo(): Promise<ProfileInfoResponse> {
+    const user = await this._findById(this.ctx.userId);
+    return UserMapper.modelToProfileInfoResponse(user);
   }
 
   private static hashString(str: string): string {
