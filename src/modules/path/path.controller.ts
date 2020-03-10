@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, ValidationPipe} from '@nestjs/common';
 import {CreatedResponse} from '../../core/dto/created.response';
 import {PathService} from './path.service';
 import {PaginationOptions} from '../../core/util/pagination/pagination-options';
@@ -6,6 +6,7 @@ import {PageResponse} from '../../core/dto/page.response';
 import {PathRequest} from '../../dtos/path/path.request';
 import {PathResponse} from '../../dtos/path/path.response';
 import {ParseIntArrayPipe} from '../../core/pipes/parse-int-array.pipe';
+import {FindPathsInAreaRequest} from '../../dtos/path/find-paths-in-area.request';
 
 @Controller('/path')
 export class PathController {
@@ -43,6 +44,11 @@ export class PathController {
   @Delete('/:id')
   async delete(@Param('id') pathId: string): Promise<void> {
     return this.pathService.deleteById(pathId);
+  }
+
+  @Post('/area')
+  findAllAvailableByArea(@Body(ValidationPipe) body: FindPathsInAreaRequest): Promise<PathResponse[]> {
+    return this.pathService.findAllAvailableByArea(body);
   }
 
   @Get('/page')

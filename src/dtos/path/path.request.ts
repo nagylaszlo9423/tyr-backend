@@ -1,7 +1,7 @@
-import {LineStringDto} from "./line-string.dto";
+import {GeoFeatureDto} from './geo-feature.dto';
 
 export class PathRequest {
     name: string;
     description: string;
-    path: LineStringDto;
+    path: GeoFeatureDto;
 }

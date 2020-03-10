@@ -21,6 +21,8 @@ import {PathResponse} from '../../dtos/path/path.response';
 import {PathVisibility} from './enums/path-visibility';
 import {PathCause} from '../../core/errors/cause/path.cause';
 import {GroupCause} from '../../core/errors/cause/group.cause';
+import {FindPathsInAreaRequest} from '../../dtos/path/find-paths-in-area.request';
+import {FeatureType} from '../../core/feature-type.enum';
 
 @Injectable()
 export class PathService extends BaseService<Path> {
@@ -68,6 +70,18 @@ export class PathService extends BaseService<Path> {
       throw new ForbiddenException();
     }
     return PathMapper.modelToResponse(path, this.ctx.userId);
+  }
+
+  async findAllAvailableByArea(body: FindPathsInAreaRequest): Promise<PathResponse[]> {
+    const user = await this.userService.findById(this.ctx.userId);
+    if (body.feature.type === FeatureType.POLYGON) {
+      throw new GeneralException(PathCause.INVALID_GEO_FEATURE_TYPE);
+    }
+    const results = await this.model.find({
+      path: {$geoWithin: {$polygon: body.feature.coordinates}},
+      ...PathQueries.queryAllAvailable(user)
+    }).exec();
+    return results.map(_ => PathMapper.modelToResponse(_, this.ctx.userId));
   }
 
   async findAllAvailableByFilters(options: PaginationOptions, filters: number[], sortBy: string, searchExp?: string): Promise<PageResponse<PathResponse>> {

@@ -1,15 +1,14 @@
-import {LineString} from "../schemas/line-string.schema";
-import {LineStringDto} from "../../dtos/path/line-string.dto";
-
+import {LineString} from '../schemas/line-string.schema';
+import {GeoFeatureDto} from '../../dtos/path/geo-feature.dto';
 
 export class GeojsonMapper {
 
-  static lineStringRequestToModel(request: LineStringDto, model: LineString) {
+  static lineStringRequestToModel(request: GeoFeatureDto, model: LineString) {
     model.coordinates = request.coordinates;
   }
 
-  static lineStringModelToResponse(model: LineString): LineStringDto {
-    const response = new LineStringDto();
+  static lineStringModelToResponse(model: LineString): GeoFeatureDto {
+    const response = new GeoFeatureDto();
 
     response.type = model.type;
     response.coordinates = model.coordinates;

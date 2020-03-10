@@ -7,6 +7,16 @@ import {PathFilter} from './enums/path-filter';
 export class PathQueries {
   constructor() {}
 
+  static queryAllAvailable(user: User): any {
+    return {
+      $or: [
+        {owner: user._id.toString()},
+        {group: {$in: user.groups}},
+        {visibility: PathVisibility.PUBLIC}
+      ]
+    };
+  }
+
   static queryByFilters(user: User, filters: number[], searchExp: string): any {
     const query: any = {};
     const $or = [];
