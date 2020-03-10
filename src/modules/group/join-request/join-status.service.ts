@@ -12,6 +12,7 @@ import {JoinStatusResponse} from '../../../dtos/group/join-status.response';
 import {JoinStatusMapper} from './join-status.mapper';
 import {GeneralException} from '../../../core/errors/errors';
 import {GroupCause} from '../../../core/errors/cause/group.cause';
+import {Page} from '../../../core/util/pagination/page';
 
 @Injectable()
 export class JoinStatusService extends BaseService<JoinStatusDoc> {
@@ -46,12 +47,12 @@ export class JoinStatusService extends BaseService<JoinStatusDoc> {
     return JoinStatusMapper.modelToResponse(result);
   }
 
-  findRequestsPageForGroup(groupId: string, paginationOptions: PaginationOptions): Promise<PageResponse<JoinStatusDoc>> {
+  findRequestsPageForGroup(groupId: string, paginationOptions: PaginationOptions): Promise<Page<JoinStatusDoc>> {
     return this._findPage(paginationOptions, {status: JoinStatus.PENDING, group: groupId},
       query => query.populate('user'));
   }
 
-  findRequestsPageForUser(paginationOptions: PaginationOptions) {
+  findRequestsPageForUser(paginationOptions: PaginationOptions): Promise<Page<JoinStatusDoc>> {
     return this._findPage(paginationOptions, {
       user: this.ctx.userId,
       $or: [

@@ -4,9 +4,6 @@ import {AuditMapper} from '../../core/util/audit.mapper';
 import {getDocumentId} from '../../core/util/db.helper';
 
 export class GroupMapper {
-  static modelsToResponse(models: GroupDoc[], isEditable: (group: GroupDoc) => boolean, isMember: (group: GroupDoc) => boolean): GroupResponse[] {
-    return models.map(group => GroupMapper.modelToResponse(group, isEditable, isMember));
-  }
 
   static modelToResponse(model: GroupDoc, isEditable: (group: GroupDoc) => boolean, isMember: (group: GroupDoc) => boolean): GroupResponse {
     const response = new GroupResponse();
@@ -22,4 +19,5 @@ export class GroupMapper {
 
     return response;
   }
+
 }

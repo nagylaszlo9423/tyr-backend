@@ -7,6 +7,7 @@ import {GroupRequest} from '../../dtos/group/group.request';
 import {GroupFilter} from './enums/group-filter';
 import {ParseIntArrayPipe} from '../../core/pipes/parse-int-array.pipe';
 import {JoinStatusResponse} from '../../dtos/group/join-status.response';
+import {GroupMemberResponse} from '../../dtos/user/group-member.response';
 
 @Controller('/group')
 export class GroupController {
@@ -76,5 +77,25 @@ export class GroupController {
   allowUser(@Param('groupId') groupId: string,
             @Param('userId') userId: string): Promise<void> {
     return this.groupService.allowUser(groupId, userId);
+  }
+
+  @Get('/user/requests/page')
+  findRequestsPageForUser(@Query('page', ParseIntPipe) page: number,
+                          @Query('size', ParseIntPipe) size: number): Promise<PageResponse<JoinStatusResponse>> {
+    return this.groupService.findRequestsPageForUser(PaginationOptions.of(page, size));
+  }
+
+  @Get('/:groupId/requests/page')
+  findRequestsPageForGroup(@Param('groupId') groupId: string,
+                           @Query('page', ParseIntPipe) page: number,
+                           @Query('size', ParseIntPipe) size: number): Promise<PageResponse<JoinStatusResponse>> {
+    return this.groupService.findRequestsPageForGroup(groupId, PaginationOptions.of(page, size));
+  }
+
+  @Get('/:groupId/members/page')
+  findMembersByGroup(@Param('groupId') groupId: string,
+                     @Query('page', ParseIntPipe) page: number,
+                     @Query('size', ParseIntPipe) size: number): Promise<PageResponse<GroupMemberResponse>> {
+    return this.groupService.findMembersByGroup(groupId, PaginationOptions.of(page, size));
   }
 }

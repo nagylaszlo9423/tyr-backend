@@ -7,13 +7,15 @@ import {GroupSchema} from './group.schema';
 import {JoinStatusSchema} from './join-request/join-status.schema';
 import {JoinStatusService} from './join-request/join-status.service';
 import {ModelNames} from '../../db/model-names';
+import {UserModule} from '../user/user.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {name: ModelNames.Group, schema: GroupSchema},
       {name: ModelNames.JoinStatus, schema: JoinStatusSchema},
-      ]),
+    ]),
+    UserModule
   ],
   controllers: [GroupController],
   providers: [

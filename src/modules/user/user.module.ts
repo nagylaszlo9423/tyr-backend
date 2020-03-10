@@ -8,8 +8,7 @@ import {ModelNames} from '../../db/model-names';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name: ModelNames.User, schema: UserSchema}]),
-    GroupModule
+    MongooseModule.forFeature([{name: ModelNames.User, schema: UserSchema}])
   ],
   controllers: [UserController],
   providers: [UserService],

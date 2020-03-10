@@ -9,10 +9,6 @@ export class UserMapper {
 
   private constructor() {}
 
-  static modelListToPublicResponse(user: User[]): GroupMemberResponse[] {
-    return user.map(UserMapper.modelToGroupMemberResponse);
-  }
-
   static modelToGroupMemberResponse(user: User): GroupMemberResponse {
     return new GroupMemberResponse({
       id: user._id,

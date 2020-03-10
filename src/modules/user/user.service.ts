@@ -2,24 +2,17 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {User} from './user.schema';
 import {Model} from 'mongoose';
-import {ForbiddenException, GeneralException} from '../../core/errors/errors';
+import {GeneralException} from '../../core/errors/errors';
 import * as crypto from 'crypto';
 import {BaseService} from '../../core/services/base.service';
 import {RegistrationRequest} from '../../dtos/auth/registration-request';
 import {RegistrationResponse} from '../../dtos/auth/registration-response';
 import {LoginRequest} from '../../dtos/auth/login-request';
-import {PaginationOptions} from '../../core/util/pagination/pagination-options';
-import {PageResponse} from '../../core/dto/page.response';
-import {mapResultsToPageResponse} from '../../core/util/pagination/pagination-mapper';
-import {UserMapper} from './user.mapper';
-import {GroupMemberResponse} from '../../dtos/user/group-member.response';
-import {GroupService} from '../group/group.service';
 import {AuthCause} from '../../core/errors/cause/auth.cause';
 
 @Injectable()
 export class UserService extends BaseService<User> {
-  constructor(@InjectModel('User') userModel: Model<User>,
-              private groupService: GroupService) {
+  constructor(@InjectModel('User') userModel: Model<User>) {
     super(userModel);
   }
 
@@ -51,19 +44,6 @@ export class UserService extends BaseService<User> {
 
   async findByEmail(email: string): Promise<User> {
     return this.model.findOne({email}).exec();
-  }
-
-  async findMembersByGroup(groupId: string, paginationOptions: PaginationOptions): Promise<PageResponse<GroupMemberResponse>> {
-    const group = await this.groupService.findById(groupId);
-
-    if (!group.isEditable) {
-      throw new ForbiddenException();
-    }
-
-    const results = await this._findPage(paginationOptions, {
-      groups: {$elemMatch: {$eq: groupId}},
-    });
-    return mapResultsToPageResponse(results, UserMapper.modelListToPublicResponse);
   }
 
   private static hashString(str: string): string {

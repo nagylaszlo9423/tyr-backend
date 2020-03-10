@@ -20,12 +20,17 @@ import {JoinStatus} from './enums/join-status';
 import {GroupJoinPolicy} from './enums/group-join-policy';
 import {GroupCause} from '../../core/errors/cause/group.cause';
 import {JoinStatusResponse} from '../../dtos/group/join-status.response';
+import {JoinStatusMapper} from './join-request/join-status.mapper';
+import {GroupMemberResponse} from '../../dtos/user/group-member.response';
+import {UserMapper} from '../user/user.mapper';
+import {UserService} from '../user/user.service';
 
 @Injectable()
 export class GroupService extends BaseService<GroupDoc> {
   constructor(@InjectModel('Group') model: Model<GroupDoc>,
               private ctx: ContextService,
-              private joinRequestService: JoinStatusService) {
+              private joinRequestService: JoinStatusService,
+              private userService: UserService) {
     super(model);
   }
 
@@ -41,10 +46,28 @@ export class GroupService extends BaseService<GroupDoc> {
       options,
       GroupQueries.queryAllByFilters(this.ctx.userId, filters, searchExp),
       query => GroupQueries.sortByFilters(sortBy, query),
-      ), items => GroupMapper.modelsToResponse(items,
+      ), items => GroupMapper.modelToResponse(items,
       _ => this.isEditable(_),
       _ => this.isMember(_))
     );
+  }
+
+  async findRequestsPageForGroup(groupId: string, paginationOptions: PaginationOptions): Promise<PageResponse<JoinStatusResponse>> {
+    return mapResultsToPageResponse(await this.joinRequestService.findRequestsPageForGroup(groupId, paginationOptions), JoinStatusMapper.modelToResponse);
+  }
+
+  async findRequestsPageForUser(paginationOptions: PaginationOptions): Promise<PageResponse<JoinStatusResponse>> {
+    return mapResultsToPageResponse(await this.joinRequestService.findRequestsPageForUser(paginationOptions), JoinStatusMapper.modelToResponse);
+  }
+
+  async findMembersByGroup(groupId: string, paginationOptions: PaginationOptions): Promise<PageResponse<GroupMemberResponse>> {
+    const group = await this._findById(groupId);
+    this.checkIfOwner(group);
+
+    const results = await this.userService._findPage(paginationOptions, {
+      groups: {$elemMatch: {$eq: groupId}},
+    });
+    return mapResultsToPageResponse(results, UserMapper.modelToGroupMemberResponse);
   }
 
   async join(groupId: string): Promise<JoinStatusResponse> {

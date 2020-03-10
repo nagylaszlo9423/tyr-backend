@@ -12,11 +12,7 @@ import {PathResponse} from '../../dtos/path/path.response';
 export class PathMapper {
 
   static modelsPageToResponse(page: Page<Path>, owner: string): PageResponse<PathResponse> {
-    return mapResultsToPageResponse(page, items => this.modelsToResponses(items, owner));
-  }
-
-  static modelsToResponses(entities: Path[], owner: string): PathResponse[] {
-    return entities.map(entity => PathMapper.modelToResponse(entity, owner));
+    return mapResultsToPageResponse(page, items => this.modelToResponse(items, owner));
   }
 
   static modelToResponse(entity: Path, owner: string): PathResponse {

@@ -8,11 +8,4 @@ import {GroupMemberResponse} from '../../dtos/user/group-member.response';
 export class UserController {
 
   constructor(private userService: UserService) {}
-
-  @Get('/group-members/:groupId/page')
-  findMembersByGroup(@Param('groupId') groupId: string,
-                     @Query('page', ParseIntPipe) page: number,
-                     @Query('size', ParseIntPipe) size: number): Promise<PageResponse<GroupMemberResponse>> {
-    return this.userService.findMembersByGroup(groupId, PaginationOptions.of(page, size));
-  }
 }
