@@ -14,7 +14,7 @@ import {PathModule} from './modules/path/path.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(`${environment.db.url}/${environment.db.name}`, {useNewUrlParser: true, useUnifiedTopology: true}),
+    MongooseModule.forRoot(`${environment.db.url}/${environment.db.name}`, {user: environment.db.username, pass: environment.db.password, useNewUrlParser: true, useUnifiedTopology: true}),
     ScheduleModule.register(),
     AuthModule,
     PathModule,

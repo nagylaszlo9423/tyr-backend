@@ -9,7 +9,9 @@ export const defaultEnvironment: Environment = {
   logLevel: ['debug', 'log', 'warn', 'error', 'verbose'],
   db: {
     name: 'tyr_dev_db',
-    url: 'mongodb://localhost'
+    url: 'mongodb://localhost',
+    username: 'tyr-admin',
+    password: 'Asdqwe123'
   },
   frontend: {
     url: 'http://localhost:3000',

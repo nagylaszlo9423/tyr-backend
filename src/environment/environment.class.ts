@@ -7,7 +7,9 @@ export class Environment {
   logLevel?: LogLevel[] = ['debug', 'log', 'warn', 'error', 'verbose'];
   db?: {
     name?: string,
-    url?: string
+    url?: string,
+    username: string,
+    password: string
   };
   frontend?: {
     url?: string,

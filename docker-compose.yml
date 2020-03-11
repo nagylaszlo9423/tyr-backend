@@ -1,0 +1,18 @@
+version: "3"
+services:
+  tyr-mongo-db:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tyr-admin
+      MONGO_INITDB_ROOT_PASSWORD: Asdqwe123
+    restart: always
+  tyr-redis-db:
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+    - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+
+
