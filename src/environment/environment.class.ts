@@ -1,13 +1,18 @@
-import {LogLevel} from "@nestjs/common";
-import {defaultEnvironment} from "./default.environment";
+import {LogLevel} from '@nestjs/common';
+import {defaultEnvironment} from './default.environment';
 import {merge} from 'lodash';
+
+export function getConnectionString(): string {
+  return `mongodb://${this.db.host}:${this.db.port}`;
+}
 
 export class Environment {
   port?: number = 3001;
   logLevel?: LogLevel[] = ['debug', 'log', 'warn', 'error', 'verbose'];
   db?: {
-    name?: string,
-    url?: string,
+    name: string,
+    host: string,
+    port: number,
     username: string,
     password: string
   };
@@ -41,8 +46,14 @@ export class Environment {
     user?: []
   };
 
+  getConnectionString(): string {
+    return getConnectionString.bind(this)();
+  }
+
   constructor(init?: Partial<Environment>) {
-    init = init || {};
-    Object.assign(this, merge(defaultEnvironment, init));
+    if (init !== this) {
+      init = init || {};
+      Object.assign(this, merge(defaultEnvironment, init));
+    }
   }
 }

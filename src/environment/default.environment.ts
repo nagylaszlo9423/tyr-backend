@@ -1,4 +1,4 @@
-import {Environment} from "./environment.class";
+import {Environment, getConnectionString} from './environment.class';
 
 function hoursToMillis(hours: number): number {
   return hours * 60 * 60 * 1000;
@@ -9,7 +9,8 @@ export const defaultEnvironment: Environment = {
   logLevel: ['debug', 'log', 'warn', 'error', 'verbose'],
   db: {
     name: 'tyr_dev_db',
-    url: 'mongodb://localhost',
+    host: 'localhost',
+    port: 27017,
     username: 'tyr-admin',
     password: 'Asdqwe123'
   },
@@ -41,5 +42,8 @@ export const defaultEnvironment: Environment = {
   roles: {
     admin: [],
     user: []
+  },
+  getConnectionString(): string {
+    return getConnectionString.bind(this)();
   }
 };

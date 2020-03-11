@@ -11,10 +11,11 @@ import {GroupModule} from './modules/group/group.module';
 import {ArticleModule} from './modules/article/article.module';
 import {ResourceModule} from './modules/resource/resource.module';
 import {PathModule} from './modules/path/path.module';
+import {mongooseOptions} from './mongoose-options';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(`${environment.db.url}/${environment.db.name}`, {user: environment.db.username, pass: environment.db.password, useNewUrlParser: true, useUnifiedTopology: true}),
+    MongooseModule.forRoot(environment.getConnectionString(), mongooseOptions),
     ScheduleModule.register(),
     AuthModule,
     PathModule,

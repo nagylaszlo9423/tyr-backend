@@ -1,6 +1,4 @@
-import {Environment} from "./environment.class";
-
-
+import {Environment} from './environment.class';
 
 export const LocalEnvironment = new Environment({
   security: {
