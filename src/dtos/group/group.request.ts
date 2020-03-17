@@ -1,6 +1,5 @@
-import {GroupJoinPolicy} from "../../modules/group/enums/group-join-policy";
-import {IsEnum} from "class-validator";
-
+import {GroupJoinPolicy} from '../../modules/group/enums/group-join-policy';
+import {IsEnum} from 'class-validator';
 
 export class GroupRequest {
     name: string;

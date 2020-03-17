@@ -74,11 +74,11 @@ export class PathService extends BaseService<Path> {
 
   async findAllAvailableByArea(body: FindPathsInAreaRequest): Promise<PathResponse[]> {
     const user = await this.userService.findById(this.ctx.userId);
-    if (body.feature.type === FeatureType.POLYGON) {
+    if (body.feature.type !== FeatureType.POLYGON) {
       throw new GeneralException(PathCause.INVALID_GEO_FEATURE_TYPE);
     }
     const results = await this.model.find({
-      path: {$geoWithin: {$polygon: body.feature.coordinates}},
+      path: {$geoWithin: {$geometry: body.feature}},
       ...PathQueries.queryAllAvailable(user)
     }).exec();
     return results.map(_ => PathMapper.modelToResponse(_, this.ctx.userId));

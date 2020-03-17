@@ -11,6 +11,7 @@
     "start": "nest start --watch --webpack",
     "start:prod": "nest start",
     "start:debug": "nest start --debug --watch",
+    "start:services": "docker-compose -f ./config/services.docker-compose.yml up",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",

@@ -1,6 +1,4 @@
 
-
-
 export enum FeatureType {
   POLYGON = 'Polygon',
   POINT = 'Point',

@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, ValidationPipe} from '@nestjs/common';
 import {GroupService} from './group.service';
 import {PaginationOptions} from '../../core/util/pagination/pagination-options';
 import {PageResponse} from '../../core/dto/page.response';
@@ -30,13 +30,13 @@ export class GroupController {
   }
 
   @Post()
-  create(@Body() createRequest: GroupRequest): Promise<GroupResponse> {
+  create(@Body(ValidationPipe) createRequest: GroupRequest): Promise<GroupResponse> {
     return this.groupService.create(createRequest);
   }
 
   @Put('/:groupId')
   update(@Param('groupId') groupId: string,
-         @Body() updateRequest: GroupRequest): Promise<GroupResponse> {
+         @Body(ValidationPipe) updateRequest: GroupRequest): Promise<GroupResponse> {
     return this.groupService.update(updateRequest, groupId);
   }
 

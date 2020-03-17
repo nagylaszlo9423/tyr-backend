@@ -14,14 +14,14 @@ export class PathController {
   constructor(private pathService: PathService) {
   }
 
+  @Post('/area')
+  findAllAvailableByArea(@Body(ValidationPipe) body: FindPathsInAreaRequest): Promise<PathResponse[]> {
+    return this.pathService.findAllAvailableByArea(body);
+  }
+
   @Post()
   async create(@Body() request: PathRequest): Promise<CreatedResponse> {
     return this.pathService.create(request);
-  }
-
-  @Post('/list/area')
-  findByArea() {
-
   }
 
   @Post('/:pathId/share-in-group/:groupId')
@@ -44,11 +44,6 @@ export class PathController {
   @Delete('/:id')
   async delete(@Param('id') pathId: string): Promise<void> {
     return this.pathService.deleteById(pathId);
-  }
-
-  @Post('/area')
-  findAllAvailableByArea(@Body(ValidationPipe) body: FindPathsInAreaRequest): Promise<PathResponse[]> {
-    return this.pathService.findAllAvailableByArea(body);
   }
 
   @Get('/page')
