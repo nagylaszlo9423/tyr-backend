@@ -1,5 +1,5 @@
-import {AuditDto} from '../../core/dto/audit.dto';
-import {ResourceItemResponse} from '../../core/dto/resource-item.response';
+import {AuditDto} from '../audit.dto';
+import {ResourceItemResponse} from '../resource-item.response';
 import {PathVisibility} from '../../modules/path/enums/path-visibility';
 import {GeoFeatureDto} from './geo-feature.dto';
 

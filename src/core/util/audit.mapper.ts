@@ -1,6 +1,5 @@
-import {Audit} from "../schemas/audit.schema";
-import {AuditDto} from "../dto/audit.dto";
-
+import {Audit} from '../schemas/audit.schema';
+import {AuditDto} from '../../dtos/audit.dto';
 
 export class AuditMapper {
   static modelToResponse(model: Audit): AuditDto {

@@ -4,7 +4,7 @@ import {ResourceMapper} from '../resource/resource.mapper';
 import {ResourceItem} from '../resource/resource-item.schema';
 import {Path} from './path.schema';
 import {Page} from '../../core/util/pagination/page';
-import {PageResponse} from '../../core/dto/page.response';
+import {PageResponse} from '../../dtos/page.response';
 import {mapResultsToPageResponse} from '../../core/util/pagination/pagination-mapper';
 import {PathRequest} from '../../dtos/path/path.request';
 import {PathResponse} from '../../dtos/path/path.response';

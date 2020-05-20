@@ -10,11 +10,11 @@ export class Environment {
   port?: number = 3001;
   logLevel?: LogLevel[] = ['debug', 'log', 'warn', 'error', 'verbose'];
   db?: {
-    name: string,
-    host: string,
-    port: number,
-    username: string,
-    password: string
+    name?: string,
+    host?: string,
+    port?: number,
+    username?: string,
+    password?: string
   };
   frontend?: {
     url?: string,

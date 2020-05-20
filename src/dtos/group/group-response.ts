@@ -1,5 +1,5 @@
 import {GroupJoinPolicy} from '../../modules/group/enums/group-join-policy';
-import {AuditDto} from '../../core/dto/audit.dto';
+import {AuditDto} from '../audit.dto';
 
 export class GroupResponse {
     id: string;

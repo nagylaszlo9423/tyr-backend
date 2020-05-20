@@ -1,13 +1,10 @@
-import * as mongoose from "mongoose";
-import {environment} from "../../environment/environment";
-import {Schema} from "mongoose";
-import {audit} from "rxjs/operators";
+import * as mongoose from 'mongoose';
 
 export interface Audit extends mongoose.Document {
-  createdBy: string,
-  createdAt: Date,
-  modifiedBy: string,
-  modifiedAt: Date
+  createdBy: string;
+  createdAt: Date;
+  modifiedBy: string;
+  modifiedAt: Date;
 }
 
 export const AuditSchema = new mongoose.Schema({

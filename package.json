@@ -6,18 +6,19 @@
   "license": "MIT",
   "scripts": {
     "build": "nest build --webpack",
-    "build:prod": "cross-envNODE_ENV=production npm run build",
+    "build:prod": "cross-env NODE_ENV=production npm run build",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "nest start --watch --webpack",
     "start:prod": "nest start",
     "start:debug": "nest start --debug --watch",
-    "start:services": "docker-compose -f ./config/services.docker-compose.yml up",
+    "start:services": "docker-compose -f ./config/services.docker-compose.yml up -d",
+    "stop:services": "docker-compose -f ./config/services.docker-compose.yml stop",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^6.11.11",
@@ -54,7 +55,9 @@
     "@types/passport-oauth2": "^1.4.8",
     "@types/redis": "^2.8.16",
     "@types/supertest": "2.0.7",
+    "builder-pattern": "^1.2.4",
     "clean-webpack-plugin": "^3.0.0",
+    "cross-env": "^7.0.2",
     "jest": "25.1.0",
     "nodemon": "^2.0.2",
     "prettier": "1.17.0",

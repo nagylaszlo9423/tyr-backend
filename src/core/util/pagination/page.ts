@@ -1,6 +1,5 @@
-import {PageResponse} from "../../dto/page.response";
-import {ObjectInitializer} from "../object-initializer";
-
+import {PageResponse} from '../../../dtos/page.response';
+import {ObjectInitializer} from '../object-initializer';
 
 export class Page<T> extends ObjectInitializer<Page<T>> {
   page: number;

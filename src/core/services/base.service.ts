@@ -3,7 +3,7 @@ import {Document, DocumentQuery, Model} from 'mongoose';
 import {Auditable, AuditManager} from '../util/auditable';
 import {PaginationOptions} from '../util/pagination/pagination-options';
 import {Page} from '../util/pagination/page';
-import {DeletionResult} from '../dto/deletion.result';
+import {DeletionResult} from '../../dtos/deletion.result';
 import {DeleteWriteOpResultObject} from 'mongodb';
 
 export type QueryCallback<E extends Document, T = E> = (query: DocumentQuery<T, E>) => DocumentQuery<T, E>;

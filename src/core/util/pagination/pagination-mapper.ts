@@ -1,4 +1,4 @@
-import {PageResponse} from '../../dto/page.response';
+import {PageResponse} from '../../../dtos/page.response';
 import {Page} from './page';
 
 export function mapResultsToPageResponse<T, R>(results: Page<T>, mapper: (items: T) => R): PageResponse<R> {

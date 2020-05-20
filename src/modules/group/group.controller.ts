@@ -1,7 +1,7 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, ValidationPipe} from '@nestjs/common';
 import {GroupService} from './group.service';
 import {PaginationOptions} from '../../core/util/pagination/pagination-options';
-import {PageResponse} from '../../core/dto/page.response';
+import {PageResponse} from '../../dtos/page.response';
 import {GroupResponse} from '../../dtos/group/group-response';
 import {GroupRequest} from '../../dtos/group/group.request';
 import {GroupFilter} from './enums/group-filter';

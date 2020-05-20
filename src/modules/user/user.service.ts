@@ -12,10 +12,11 @@ import {AuthCause} from '../../core/errors/cause/auth.cause';
 import {ContextService} from '../../core/services/context.service';
 import {UserMapper} from './user.mapper';
 import {ProfileInfoResponse} from '../../dtos/user/profile-info.response';
+import {ModelNames} from '../../db/model-names';
 
 @Injectable()
 export class UserService extends BaseService<User> {
-  constructor(@InjectModel('User') userModel: Model<User>,
+  constructor(@InjectModel(ModelNames.User) userModel: Model<User>,
               private ctx: ContextService) {
     super(userModel);
   }

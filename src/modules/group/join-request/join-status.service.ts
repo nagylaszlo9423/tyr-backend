@@ -4,7 +4,6 @@ import {Model} from 'mongoose';
 import {JoinStatusDoc} from './join-status.schema';
 import {BaseService} from '../../../core/services/base.service';
 import {PaginationOptions} from '../../../core/util/pagination/pagination-options';
-import {PageResponse} from '../../../core/dto/page.response';
 import {ContextService} from '../../../core/services/context.service';
 import {JoinStatus} from '../enums/join-status';
 import {ObjectId} from '../../../db/mongoose';

@@ -1,5 +1,5 @@
 import {ResourceItem} from './resource-item.schema';
-import {ResourceItemResponse} from '../../core/dto/resource-item.response';
+import {ResourceItemResponse} from '../../dtos/resource-item.response';
 
 export class ResourceMapper {
   static modelsToResponse(model: ResourceItem[]): ResourceItemResponse[] {

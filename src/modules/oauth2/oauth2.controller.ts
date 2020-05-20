@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Header, Headers, Param, Post, Query, Res} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Query, Res} from '@nestjs/common';
 import {Response} from 'express';
 import {AuthService} from './auth.service';
 import {environment} from '../../environment/environment';
@@ -69,7 +69,7 @@ export class Oauth2Controller {
 
   }
 
-  @Post('register')
+  @Post('/register')
   register(@Body() request: RegistrationRequest) {
     return this.authService.register(request);
   }

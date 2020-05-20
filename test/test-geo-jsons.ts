@@ -1,9 +1,7 @@
-import {LineStringDto} from "tyr-api";
-
 
 export const TestGeoJsons = {
-  path: <LineStringDto>{
-    type: "LineString",
+  path: {
+    type: 'LineString',
     coordinates: [
       [
         19.276371002197266,
@@ -34,5 +32,5 @@ export const TestGeoJsons = {
         47.48820900629741
       ]
     ]
-  }
+  } as LineStringDto
 };

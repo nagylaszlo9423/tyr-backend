@@ -8,7 +8,7 @@ import {ForbiddenException, GeneralException} from '../../core/errors/errors';
 import {mapResultsToPageResponse} from '../../core/util/pagination/pagination-mapper';
 import {PaginationOptions} from '../../core/util/pagination/pagination-options';
 import {GroupResponse} from '../../dtos/group/group-response';
-import {PageResponse} from '../../core/dto/page.response';
+import {PageResponse} from '../../dtos/page.response';
 import {GroupRequest} from '../../dtos/group/group.request';
 import {GroupMapper} from './group.mapper';
 import {GroupQueries} from './group.queries';
