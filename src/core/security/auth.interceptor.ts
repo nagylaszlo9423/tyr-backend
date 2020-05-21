@@ -6,7 +6,6 @@ import {Request, Response} from 'express';
 import {ErrorResponse} from '../errors/error.response';
 import {GeneralCause} from '../errors/cause/general.cause';
 import {environment} from '../../environment/environment';
-import {finalize} from 'rxjs/operators';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
@@ -14,7 +13,7 @@ export class AuthInterceptor implements NestInterceptor {
 
   constructor(private redisService: RedisService,
               private logger: Logger) {
-    this.logger.setContext(AuthInterceptor.loggerContext)
+    this.logger.setContext(AuthInterceptor.loggerContext);
   }
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<any> {

@@ -1,5 +1,5 @@
-import {ArgumentMetadata, Injectable, PipeTransform} from "@nestjs/common";
-import {BadRequestException} from "../errors/errors";
+import {ArgumentMetadata, Injectable, PipeTransform} from '@nestjs/common';
+import {BadRequestException} from '../errors/exceptions';
 
 @Injectable()
 export class ArrayQueryPipe implements PipeTransform {

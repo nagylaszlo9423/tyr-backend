@@ -1,4 +1,4 @@
-import {NotFoundException} from '../errors/errors';
+import {NotFoundException} from '../errors/exceptions';
 import {Document, DocumentQuery, Model} from 'mongoose';
 import {Auditable, AuditManager} from '../util/auditable';
 import {PaginationOptions} from '../util/pagination/pagination-options';

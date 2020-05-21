@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {ValidationPipe} from '@nestjs/common';
+import {Logger, ValidationPipe} from '@nestjs/common';
 import {environment} from './environment/environment';
 import {GeneralExceptionFilter} from './core/exceptions/general-exception.filter';
 import * as helmet from 'helmet';
@@ -19,7 +19,8 @@ async function bootstrap() {
     app.enableCors();
   }
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new GeneralExceptionFilter());
+  const logger = app.select(AppModule).get(Logger);
+  app.useGlobalFilters(new GeneralExceptionFilter(logger));
   await app.listen(environment.port);
 
   if (module.hot) {
