@@ -11,6 +11,7 @@ import {AuthCodeExchangeMessage} from './messages/auth-code-exchange.message';
 import {environment} from '../../environment/environment';
 import {GoogleOauthService} from './social/google-oauth.service';
 import {UnauthorizedException} from '../../core/errors/exceptions';
+import {FacebookOauthService} from './social/facebook-oauth.service';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,8 @@ export class AuthService {
   constructor(private userService: UserService,
               private authCodeService: AuthorizationCodeService,
               private tokenService: TokenService,
-              private googleOauthService: GoogleOauthService) {
+              private googleOauthService: GoogleOauthService,
+              private facebookOauthService: FacebookOauthService) {
   }
 
   async login(request: LoginRequest): Promise<LoginResponse> {
@@ -32,6 +34,8 @@ export class AuthService {
 
   async exchangeAuthCodeForTokens(message: AuthCodeExchangeMessage): Promise<TokenResponse> {
     switch (message.clientId) {
+      case environment.security.oauth.facebook.clientId:
+        return this.facebookOauthService.registerOrLoginSocialUser(message);
       case environment.security.oauth.google.clientId:
         return this.googleOauthService.registerOrLoginSocialUser(message);
       case environment.security.oauth.self.clientId:

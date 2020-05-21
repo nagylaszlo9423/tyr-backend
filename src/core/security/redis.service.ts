@@ -5,7 +5,7 @@ import {TokenBaseSchema} from '../../modules/oauth2/schemas/token-base.schema';
 import {EncryptedData} from './encrypted-data';
 import {environment} from '../../environment/environment';
 
-export type KeyPrefix = 'access' | 'refresh' | 'code' | 'access:google' | 'refresh:google';
+export type KeyPrefix = 'access' | 'refresh' | 'code' | 'access:google' | 'refresh:google' | 'access:facebook';
 
 @Injectable()
 export class RedisService {

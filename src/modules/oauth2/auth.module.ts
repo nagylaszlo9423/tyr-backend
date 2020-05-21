@@ -13,6 +13,7 @@ import {ModelNames} from '../../db/model-names';
 import {CoreModule} from '../../core/core.module';
 import {GoogleOauthService} from './social/google-oauth.service';
 import {UserModule} from '../user/user.module';
+import {FacebookOauthService} from './social/facebook-oauth.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import {UserModule} from '../user/user.module';
     AuthorizationCodeService,
     TokenService,
     GoogleOauthService,
+    FacebookOauthService,
     RedisService,
     Logger
   ],

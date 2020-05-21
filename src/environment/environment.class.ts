@@ -28,7 +28,11 @@ export class Environment {
       }
       google?: {
         clientId?: string,
-        client_secret?: string
+        clientSecret?: string
+      }
+      facebook?: {
+        clientId?: string,
+        clientSecret?: string
       }
     },
     accessToken?: {

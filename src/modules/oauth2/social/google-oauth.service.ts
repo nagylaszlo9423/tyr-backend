@@ -33,7 +33,7 @@ export class GoogleOauthService {
     const response = await this.httpService.post<GoogleTokenResponse>(
       `https://oauth2.googleapis.com/token?` +
       `client_id=${message.clientId}&` +
-      `client_secret=${environment.security.oauth.google.client_secret}&` +
+      `client_secret=${environment.security.oauth.google.clientSecret}&` +
       `redirect_uri=${message.redirectUri}&` +
       `code=${message.code}&grant_type=authorization_code`
     ).toPromise();

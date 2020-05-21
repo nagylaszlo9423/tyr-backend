@@ -26,7 +26,11 @@ export const defaultEnvironment: Environment = {
       },
       google: {
         clientId: '126368579163-6iom3cb435gq9p0snnvap8k38don9gn1.apps.googleusercontent.com',
-        client_secret: 'lKugpnk_U7COwuB4kNATEZ84'
+        clientSecret: 'lKugpnk_U7COwuB4kNATEZ84'
+      },
+      facebook: {
+        clientId: '2157192967885035',
+        clientSecret: '13c5adcb735c792d46b6543e1cb3a266'
       }
     },
     accessToken: {
