@@ -4,7 +4,7 @@ import {GroupDoc} from './group.schema';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
 import {ContextService} from '../../core/services/context.service';
-import {ForbiddenException, GeneralException} from '../../core/errors/errors';
+import {ForbiddenException, GeneralException} from '../../core/errors/exceptions';
 import {mapResultsToPageResponse} from '../../core/util/pagination/pagination-mapper';
 import {PaginationOptions} from '../../core/util/pagination/pagination-options';
 import {GroupResponse} from '../../dtos/group/group-response';

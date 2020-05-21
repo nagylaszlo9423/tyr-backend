@@ -34,4 +34,7 @@ import {mongooseOptions} from './mongoose-options';
   ],
 })
 export class AppModule {
+  constructor(private logger: Logger) {
+    logger.log(`Current environment: ${environment.env}`);
+  }
 }

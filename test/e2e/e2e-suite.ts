@@ -2,45 +2,48 @@ import {INestApplication} from '@nestjs/common';
 import {Test, TestingModule} from '@nestjs/testing';
 import {AppModule} from '../../src/app.module';
 import {TestCase} from './test-case';
-import {dropCollections} from '../../src/db/drop-collections';
-import {TestEnvironment} from '../../src/environment/test.environment';
 import {AuthenticationHelper} from './helper/authentication.helper';
+import {environment} from '../../src/environment/environment';
+import {DbUtils} from '../../src/db/db-utils';
 
-export function e2eSuite(name: string, tests: TestCase[]) {
+interface E2eSuiteOptions {
+  authenticateNewUser?: boolean;
+}
+
+export function e2eSuite(name: string, options: E2eSuiteOptions, tests: TestCase[]) {
   let app: INestApplication;
   let authHelper: AuthenticationHelper;
 
   describe(name, () => {
-    beforeAll(async () => {
-      await dropCollections(TestEnvironment.db.name);
-      const moduleFixture: TestingModule = await Test.createTestingModule({
-        imports: [AppModule]
-      }).compile();
+    beforeAll((done) => {
+      (async () => {
+        await DbUtils.dropDb(environment.db.name);
+        const moduleFixture: TestingModule = await Test.createTestingModule({
+          imports: [AppModule]
+        }).compile();
 
-      app = moduleFixture.createNestApplication();
-      await app.init();
-      authHelper = new AuthenticationHelper(app);
-      await authHelper.registerUser();
+        app = moduleFixture.createNestApplication(undefined, {
+          logger: environment.logLevel
+        });
+        await app.init();
+        authHelper = new AuthenticationHelper(app, name);
+        if (options?.authenticateNewUser) {
+          await authHelper.registerUser();
+          await authHelper.login();
+        }
+      })().then(done);
     });
 
     tests.forEach(test => {
-      it(test.name, async (done) => {
-        try {
-          if (test.authenticateUser) {
-            await authHelper.login();
-          }
-
-          await test.test(app, authHelper);
-          return done();
-        } catch (e) {
-          return done(e);
-        }
+      it(test.name, (done) => {
+        test.test(app, authHelper).then(done).catch(done);
       });
     });
 
-    afterAll(async () => {
-      await app.close();
+    afterAll((done) => {
+      (async () => {
+        await app.close();
+      })().then(done);
     });
   });
-
 }

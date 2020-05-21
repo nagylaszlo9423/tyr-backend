@@ -3,7 +3,7 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Injectable} from '@nestjs/common';
 import {BaseService} from '../../core/services/base.service';
 import {GroupService} from '../group/group.service';
-import {ForbiddenException, GeneralException} from '../../core/errors/errors';
+import {ForbiddenException, GeneralException} from '../../core/errors/exceptions';
 import {GroupDoc} from '../group/group.schema';
 import {ContextService} from '../../core/services/context.service';
 import {LineString} from '../../core/schemas/line-string.schema';

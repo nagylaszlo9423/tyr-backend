@@ -3,7 +3,7 @@ import {AccessToken} from './schemas/access-token.shema';
 import {RefreshToken} from './schemas/refresh-token.schema';
 import * as crypto from 'crypto';
 import {environment} from '../../environment/environment';
-import {GeneralException} from '../../core/errors/errors';
+import {GeneralException} from '../../core/errors/exceptions';
 import {RedisService} from '../../core/security/redis.service';
 import {TokenResponse} from '../../dtos/auth/token-response';
 import {AuthCause} from '../../core/errors/cause/auth.cause';

@@ -3,7 +3,7 @@ import {User, UserSchemaDef} from './user.schema';
 import {GroupMemberResponse} from '../../dtos/user/group-member.response';
 import {PublicUserResponse} from '../../dtos/user/public-user.response';
 import {isDocOf} from '../../core/util/db.helper';
-import {InternalServerErrorException} from '../../core/errors/errors';
+import {InternalServerErrorException} from '../../core/errors/exceptions';
 import {ProfileInfoResponse} from '../../dtos/user/profile-info.response';
 
 export class UserMapper {

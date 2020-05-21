@@ -1,6 +1,7 @@
 import {Environment} from './environment.class';
 
-export const TestEnvironment = new Environment({
+export const TestEnvironment = () => new Environment({
+  env: 'test',
   db: {
     name: 'test-db'
   },

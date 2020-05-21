@@ -8,7 +8,7 @@
     "object-literal-shorthand": false,
     "trailing-comma": false,
     "max-classes-per-file": false,
-    "quotemark": [true, "single"],
+    "quotemark": [true, "single", "double"],
     "no-trailing-whitespace": false,
     "variable-name": false,
     "max-line-length": false,

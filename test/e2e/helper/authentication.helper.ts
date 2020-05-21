@@ -20,7 +20,7 @@ export class AuthenticationHelper {
   private static userIndex = 0;
   private testUser: TestUser;
 
-  constructor(private app: INestApplication) {
+  constructor(private app: INestApplication, private testSuiteName: string) {
     this.testUser = new TestUser();
   }
 
@@ -33,14 +33,14 @@ export class AuthenticationHelper {
     this.testUser.userId = response.userId;
   }
 
-  public async login(): Promise<void> {
+  public async login(): Promise<TokenResponse> {
     const response = await asyncTest<LoginResponse>(request(this.app.getHttpServer())
       .post('/oauth/login')
       .send(this.loginRequest)
       .expect(201));
     this.testUser.authCode = response.code;
 
-    this.testUser.tokens = await asyncTest<TokenResponse>(request(this.app.getHttpServer())
+    return this.testUser.tokens = await asyncTest<TokenResponse>(request(this.app.getHttpServer())
       .post('/oauth/token')
       .query(this.tokenQuery)
       .expect(201));
@@ -54,8 +54,8 @@ export class AuthenticationHelper {
 
   public createRegistrationRequest(): RegistrationRequest {
     AuthenticationHelper.userIndex++;
-    this.testUser.email = `test-mail${AuthenticationHelper.userIndex}@nestjstest.com`;
-    this.testUser.password = `test-pass${AuthenticationHelper.userIndex}`;
+    this.testUser.email = `test-mail-${this.testSuiteName}-${AuthenticationHelper.userIndex}@nestjstest.com`;
+    this.testUser.password = `test-pass-${this.testSuiteName}-${AuthenticationHelper.userIndex}`;
 
     return Builder<RegistrationRequest>()
       .email(this.testUser.email)

@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {User} from './user.schema';
 import {Model} from 'mongoose';
-import {GeneralException} from '../../core/errors/errors';
+import {GeneralException} from '../../core/errors/exceptions';
 import * as crypto from 'crypto';
 import {BaseService} from '../../core/services/base.service';
 import {RegistrationRequest} from '../../dtos/auth/registration-request';

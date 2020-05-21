@@ -9,7 +9,7 @@ import {JoinStatus} from '../enums/join-status';
 import {ObjectId} from '../../../db/mongoose';
 import {JoinStatusResponse} from '../../../dtos/group/join-status.response';
 import {JoinStatusMapper} from './join-status.mapper';
-import {GeneralException} from '../../../core/errors/errors';
+import {GeneralException} from '../../../core/errors/exceptions';
 import {GroupCause} from '../../../core/errors/cause/group.cause';
 import {Page} from '../../../core/util/pagination/page';
 

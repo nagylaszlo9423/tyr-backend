@@ -5,6 +5,7 @@ function hoursToMillis(hours: number): number {
 }
 
 export const defaultEnvironment: Environment = {
+  env: 'default',
   port: 3001,
   logLevel: ['debug', 'log', 'warn', 'error', 'verbose'],
   db: {

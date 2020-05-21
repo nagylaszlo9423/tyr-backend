@@ -1,6 +1,7 @@
 import {Environment} from './environment.class';
 
-export const LocalEnvironment = new Environment({
+export const LocalEnvironment = () => new Environment({
+  env: 'local',
   security: {
     encryption: {
       cipherKey: 'ea11509230502c6fe6f9576a46989f94',

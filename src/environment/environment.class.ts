@@ -7,8 +7,9 @@ export function getConnectionString(): string {
 }
 
 export class Environment {
+  env: string;
   port?: number = 3001;
-  logLevel?: LogLevel[] = ['debug', 'log', 'warn', 'error', 'verbose'];
+  logLevel?: LogLevel[] | boolean = ['debug', 'log', 'warn', 'error', 'verbose'];
   db?: {
     name?: string,
     host?: string,

@@ -2,7 +2,7 @@ import {Body, Controller, Get, Param, Post, Query, Res} from '@nestjs/common';
 import {Response} from 'express';
 import {AuthService} from './auth.service';
 import {environment} from '../../environment/environment';
-import {BadRequestException} from '../../core/errors/errors';
+import {BadRequestException} from '../../core/errors/exceptions';
 import {TokenResponse} from '../../dtos/auth/token-response';
 import {LoginResponse} from '../../dtos/auth/login-response';
 import {LoginRequest} from '../../dtos/auth/login-request';
