@@ -6,6 +6,7 @@ import {UserService} from '../user/user.service';
 import {RedisService} from '../../core/security/redis.service';
 import {GeneralException, NotFoundException} from '../../core/errors/exceptions';
 import {AuthCause} from '../../core/errors/cause/auth.cause';
+import {AuthCodeExchangeMessage} from './messages/auth-code-exchange.message';
 
 @Injectable()
 export class AuthorizationCodeService {
@@ -30,17 +31,17 @@ export class AuthorizationCodeService {
     return authorizationCode.value;
   }
 
-  async getUserIdForAuthorizationCode(code: string, clientId: string, redirectUri: string): Promise<string> {
-    const authorizationCode = await this.redisService.getToken<AuthorizationCode>(code, 'code').catch(() => {
+  async getUserIdForAuthorizationCode(message: AuthCodeExchangeMessage): Promise<string> {
+    const authorizationCode = await this.redisService.getToken<AuthorizationCode>(message.code, 'code').catch(() => {
       throw new GeneralException(AuthCause.INVALID_AUTHORIZATION_CODE);
     });
-    if (authorizationCode.clientId !== clientId || authorizationCode.redirectUri !== redirectUri) {
+    if (authorizationCode.clientId !== message.clientId || authorizationCode.redirectUri !== message.redirectUri) {
       throw new GeneralException(AuthCause.INVALID_AUTHORIZATION_CODE);
     }
     const user = await this.userService.findById(authorizationCode.userId).catch(() => {
       throw new NotFoundException('User not found!');
     });
-    await this.redisService.removeToken(code, 'code');
+    await this.redisService.removeToken(message.code, 'code');
     return user.id;
   }
 }

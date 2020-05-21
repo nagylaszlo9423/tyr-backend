@@ -20,6 +20,15 @@ export const defaultEnvironment: Environment = {
     loginPage: 'http://localhost:3000/login'
   },
   security: {
+    oauth: {
+      self: {
+        clientId: 'tyr-app-client'
+      },
+      google: {
+        clientId: '126368579163-6iom3cb435gq9p0snnvap8k38don9gn1.apps.googleusercontent.com',
+        client_secret: 'lKugpnk_U7COwuB4kNATEZ84'
+      }
+    },
     accessToken: {
       length: 128,
       expiresInMinutes: 500,

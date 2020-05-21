@@ -1,7 +1,6 @@
-import {Logger, MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
+import {HttpModule, Logger, MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import {PassportModule} from '@nestjs/passport';
 import {MongooseModule} from '@nestjs/mongoose';
-import {GoogleOauthMiddleware} from './middlewares/google-oauth.middleware';
 import {AuthService} from './auth.service';
 import {AuthorizationCodeService} from './authorization-code.service';
 import {TokenService} from './token.service';
@@ -12,21 +11,22 @@ import {RedisService} from '../../core/security/redis.service';
 import {GroupModule} from '../group/group.module';
 import {ModelNames} from '../../db/model-names';
 import {CoreModule} from '../../core/core.module';
+import {GoogleOauthService} from './social/google-oauth.service';
+import {UserModule} from '../user/user.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      {name: ModelNames.User, schema: UserSchema}
-    ]),
     PassportModule.register({defaultStrategy: 'google', session: true}),
     CoreModule,
-    GroupModule
+    HttpModule,
+    GroupModule,
+    UserModule
   ],
   providers: [
     AuthService,
     AuthorizationCodeService,
     TokenService,
-    UserService,
+    GoogleOauthService,
     RedisService,
     Logger
   ],
@@ -34,10 +34,5 @@ import {CoreModule} from '../../core/core.module';
     Oauth2Controller
   ]
 })
-export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): any {
-    consumer
-      .apply(GoogleOauthMiddleware)
-      .forRoutes('/oauth/google');
-  }
+export class AuthModule {
 }

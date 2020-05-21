@@ -6,5 +6,6 @@ export const ModelNames = {
   Path: 'Path',
   Article: 'Article',
   ResourceItem: 'ResourceItem',
-  LineString: 'LineString'
+  LineString: 'LineString',
+  ExternalUserInfo: 'ExternalUserInfo'
 };

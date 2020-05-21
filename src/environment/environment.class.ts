@@ -22,6 +22,15 @@ export class Environment {
     loginPage?: string
   };
   security?: {
+    oauth?: {
+      self?: {
+        clientId?: string
+      }
+      google?: {
+        clientId?: string,
+        client_secret?: string
+      }
+    },
     accessToken?: {
       length?: number,
       expiresInMinutes?: number,

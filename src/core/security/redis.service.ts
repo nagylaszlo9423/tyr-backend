@@ -5,7 +5,7 @@ import {TokenBaseSchema} from '../../modules/oauth2/schemas/token-base.schema';
 import {EncryptedData} from './encrypted-data';
 import {environment} from '../../environment/environment';
 
-export type KeyPrefix = 'access' | 'refresh' | 'code';
+export type KeyPrefix = 'access' | 'refresh' | 'code' | 'access:google' | 'refresh:google';
 
 @Injectable()
 export class RedisService {
@@ -29,18 +29,23 @@ export class RedisService {
     this.created = new Date();
   }
 
-  addTokenAndSetExpiration<T extends TokenBaseSchema>(key: string|string[], value: T, prefix: KeyPrefix, expireInSecond?: number): Promise<string> {
+  addTokenAndSetExpiration<T extends TokenBaseSchema>(key: string | string[], value: T, prefix: KeyPrefix, expireInSecond?: number): Promise<string> {
     const _key = this.createKey(key, prefix);
     this.logger.debug(`set ${_key}`, RedisService.Context);
     return new Promise<string>((resolve, reject) =>
-      this.redisClient.set(_key, this.cipherValue(JSON.stringify(value)).toString(), this.handle(reject, () =>
-        this.redisClient.expire(_key, expireInSecond, this.handle(reject, () => {
-          const expirationDate = new Date();
-          expirationDate.setSeconds(expirationDate.getSeconds() + expireInSecond);
-          value.expirationDate = expirationDate;
+      this.redisClient.set(_key, this.cipherValue(JSON.stringify(value)).toString(), this.handle(reject, () => {
+        if (expireInSecond) {
+          this.redisClient.expire(_key, expireInSecond, this.handle(reject, () => {
+            const expirationDate = new Date();
+            expirationDate.setSeconds(expirationDate.getSeconds() + expireInSecond);
+            value.expirationDate = expirationDate;
+            resolve(_key);
+          }));
+        } else {
           resolve(_key);
-        })))
-      ));
+        }
+      }))
+    );
   }
 
   getToken<T extends TokenBaseSchema>(key: string, prefix: KeyPrefix): Promise<T> {
@@ -59,7 +64,7 @@ export class RedisService {
       })));
   }
 
-  removeToken(key: string|string[], prefix: KeyPrefix): Promise<void> {
+  removeToken(key: string | string[], prefix: KeyPrefix): Promise<void> {
     const _key = this.createKey(key, prefix);
     this.logger.debug(`del ${_key}`, RedisService.Context);
     return new Promise<void>((resolve, reject) =>
@@ -71,7 +76,7 @@ export class RedisService {
       }));
   }
 
-  private createKey(key: string|string[], prefix: KeyPrefix): string {
+  private createKey(key: string | string[], prefix: KeyPrefix): string {
     const _key = typeof key === 'string' ? key : key.reduce((previousValue, currentValue) => previousValue + currentValue);
     return `${prefix}:${this.hashKey(_key)}`;
   }
@@ -91,9 +96,6 @@ export class RedisService {
   }
 
   private decipherValue(value: EncryptedData): string {
-    // if (!this.isEncryptedDataValid(value)) {
-    //   throw new UnauthorizedException();
-    // }
     const authTag = Buffer.from(value.authTag, 'hex');
     const decipher = crypto.createDecipheriv(RedisService.cipherAlgorithm, Buffer.from(RedisService.cipherKey), RedisService.initVector);
     decipher.setAuthTag(authTag);
@@ -102,10 +104,6 @@ export class RedisService {
     decipher.final();
     return deciphered.toString();
   }
-
-  // private isEncryptedDataValid(value: EncryptedData) {
-  //   return value.created > this.created;
-  // }
 
   private retryStrategy(options: RetryStrategyOptions): number | Error {
     this.logger.error('Connection failed', undefined, RedisService.Context);

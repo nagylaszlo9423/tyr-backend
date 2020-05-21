@@ -13,10 +13,14 @@ import {ContextService} from '../../core/services/context.service';
 import {UserMapper} from './user.mapper';
 import {ProfileInfoResponse} from '../../dtos/user/profile-info.response';
 import {ModelNames} from '../../db/model-names';
+import {RegisterGoogleUserMessage} from './messages/register-google-user.message';
+import {ExternalUserInfo} from './external-user-info.schema';
+import {RegisterGoogleUserResult} from './messages/register-google-user.result';
 
 @Injectable()
 export class UserService extends BaseService<User> {
   constructor(@InjectModel(ModelNames.User) userModel: Model<User>,
+              @InjectModel(ModelNames.ExternalUserInfo) private externalUserInfoModel: Model<ExternalUserInfo>,
               private ctx: ContextService) {
     super(userModel);
   }
@@ -30,9 +34,21 @@ export class UserService extends BaseService<User> {
     newUser.email = request.email;
     newUser.password = UserService.hashString(request.password);
     await newUser.save();
-    return {
-      userId: newUser._id,
-    };
+    return {userId: newUser._id};
+  }
+
+  async registerOrLoginGoogleUser(message: RegisterGoogleUserMessage): Promise<RegisterGoogleUserResult> {
+    const existingUser: User = await this.findByEmail(message.email);
+    if (existingUser) {
+      return {userId: existingUser.id};
+    }
+    const externalUserInfo = new this.externalUserInfoModel();
+    externalUserInfo.id = message.externalId;
+    const newUser: User = new this.model();
+    newUser.email = message.email;
+    newUser.externalUserInfo = externalUserInfo;
+    await newUser.save();
+    return {userId: newUser.id};
   }
 
   async login(request: LoginRequest): Promise<string> {

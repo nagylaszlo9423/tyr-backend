@@ -7,13 +7,18 @@ import {LoginResponse} from '../../dtos/auth/login-response';
 import {TokenResponse} from '../../dtos/auth/token-response';
 import {RegistrationResponse} from '../../dtos/auth/registration-response';
 import {RegistrationRequest} from '../../dtos/auth/registration-request';
+import {AuthCodeExchangeMessage} from './messages/auth-code-exchange.message';
+import {environment} from '../../environment/environment';
+import {GoogleOauthService} from './social/google-oauth.service';
+import {UnauthorizedException} from '../../core/errors/exceptions';
 
 @Injectable()
 export class AuthService {
 
   constructor(private userService: UserService,
               private authCodeService: AuthorizationCodeService,
-              private tokenService: TokenService) {
+              private tokenService: TokenService,
+              private googleOauthService: GoogleOauthService) {
   }
 
   async login(request: LoginRequest): Promise<LoginResponse> {
@@ -25,9 +30,16 @@ export class AuthService {
     return response;
   }
 
-  async exchangeAuthorizationCodeForTokens(code: string, clientId: string, redirectUri: string): Promise<TokenResponse> {
-    const userId = await this.authCodeService.getUserIdForAuthorizationCode(code, clientId, redirectUri);
-    return this.tokenService.createTokens(userId, clientId);
+  async exchangeAuthCodeForTokens(message: AuthCodeExchangeMessage): Promise<TokenResponse> {
+    switch (message.clientId) {
+      case environment.security.oauth.google.clientId:
+        return this.googleOauthService.registerOrLoginSocialUser(message);
+      case environment.security.oauth.self.clientId:
+        const userId = await this.authCodeService.getUserIdForAuthorizationCode(message);
+        return this.tokenService.createTokens(userId, message.clientId);
+      default:
+        throw new UnauthorizedException();
+    }
   }
 
   async refreshTokens(refreshToken: string): Promise<TokenResponse> {

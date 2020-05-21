@@ -39,7 +39,7 @@ export class Oauth2Controller {
       throw new BadRequestException();
     }
     if (grantType === 'authorization_code' && code && redirectUri) {
-      return this.authService.exchangeAuthorizationCodeForTokens(code, clientId, redirectUri);
+      return this.authService.exchangeAuthCodeForTokens({code, clientId, redirectUri});
     }
     if (grantType === 'refresh_token' && refreshToken) {
      return this.authService.refreshTokens(refreshToken);
@@ -62,11 +62,6 @@ export class Oauth2Controller {
   logoutEverywhere(@Body() request: LogoutRequest) {
     if (!request.accessToken) { throw new BadRequestException(); }
     return this.authService.logoutEverywhere(request.accessToken);
-  }
-
-  @Post('/login/:provider(google|facebook)')
-  loginSocial(@Param('provider') provider: string) {
-
   }
 
   @Post('/register')

@@ -5,11 +5,15 @@ import {UserService} from './user.service';
 import {UserController} from './user.controller';
 import {ModelNames} from '../../db/model-names';
 import {CoreModule} from '../../core/core.module';
+import {ExternalUserInfoSchema} from './external-user-info.schema';
 
 @Module({
   imports: [
     CoreModule,
-    MongooseModule.forFeature([{name: ModelNames.User, schema: UserSchema}])
+    MongooseModule.forFeature([
+      {name: ModelNames.User, schema: UserSchema},
+      {name: ModelNames.ExternalUserInfo, schema: ExternalUserInfoSchema}
+    ])
   ],
   controllers: [UserController],
   providers: [UserService],

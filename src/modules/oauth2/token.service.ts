@@ -19,7 +19,7 @@ export class TokenService {
 
   async renewToken(refreshTokenValue: string): Promise<TokenResponse> {
     const refreshToken: RefreshToken = await this.redisService.getToken(refreshTokenValue, 'refresh');
-    const accessToken: AccessToken = await this.redisService.getToken(refreshToken.value, 'access');
+    const accessToken: AccessToken = await this.redisService.getToken(refreshToken.accessTokenValue, 'access');
     if (refreshToken.expirationDate < new Date()) {
       throw new GeneralException(AuthCause.INVALID_TOKEN);
     }
