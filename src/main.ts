@@ -5,12 +5,14 @@ import {environment} from './environment/environment';
 import {GeneralExceptionFilter} from './core/exceptions/general-exception.filter';
 import * as helmet from 'helmet';
 import * as csurf from 'csurf';
+import {httpsOptions} from './https-options';
 
 declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: environment.logLevel
+    logger: environment.logLevel,
+    httpsOptions
   });
   if (process.env.NODE_ENV === 'production') {
     app.use(csurf());

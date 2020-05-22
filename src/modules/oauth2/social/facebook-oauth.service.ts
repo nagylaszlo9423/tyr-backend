@@ -1,20 +1,26 @@
 import {HttpService, Injectable} from '@nestjs/common';
 import {AuthCodeExchangeMessage} from '../messages/auth-code-exchange.message';
 import {TokenResponse} from '../../../dtos/auth/token-response';
-import {FacebookTokenResponse} from '../../../dtos/auth/facebook-token.response';
-import {FacebookUserInfoResponse} from '../../../dtos/auth/facebook-user-info.response';
+import {FacebookTokenResponse} from '../../../dtos/auth/facebook/facebook-token.response';
+import {FacebookUserInfoResponse} from '../../../dtos/auth/facebook/facebook-user-info.response';
 import {UserService} from '../../user/user.service';
 import {RegisterGoogleUserMessage} from '../../user/messages/register-google-user.message';
 import {TokenService} from '../token.service';
 import {RedisService} from '../../../core/security/redis.service';
+import {GeneralException} from '../../../core/errors/exceptions';
+import {GeneralCause} from '../../../core/errors/cause/general.cause';
+import {environment} from '../../../environment/environment';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class FacebookOauthService {
+  private static readonly hashAlgorithm = 'sha256';
 
   constructor(private httpService: HttpService,
               private userService: UserService,
               private tokenService: TokenService,
-              private redisService: RedisService) {}
+              private redisService: RedisService) {
+  }
 
   async registerOrLoginSocialUser(message: AuthCodeExchangeMessage): Promise<TokenResponse> {
     const externalTokens = await this.exchangeAuthCode(message);
@@ -28,22 +34,19 @@ export class FacebookOauthService {
   }
 
   async exchangeAuthCode(message: AuthCodeExchangeMessage): Promise<FacebookTokenResponse> {
-    const response = await this.httpService.post<FacebookTokenResponse>(
-      `https://www.facebook.com/v7.0/dialog/oauth?` +
-      `client_id=${message.clientId}&` +
-      `redirect_uri=${message.redirectUri}&` +
-      `code=${message.code}`
-    ).toPromise();
-
-    return response.data;
+    try {
+      return this.httpService.get<FacebookTokenResponse>(this.getTokenUrl(message)).toPromise().then(_ => _.data);
+    } catch (e) {
+      throw new GeneralException(GeneralCause.DEPENDANT_SERVICE_ERROR);
+    }
   }
 
   async getUserInfo(accessToken: string): Promise<FacebookUserInfoResponse> {
-    const response = await this.httpService.get<FacebookUserInfoResponse>(
-      `https://graph.facebook.com/me?fields=name,id,email,profile_pic&access_token=${accessToken}`
-    ).toPromise();
-
-    return response.data;
+    try {
+      return await this.httpService.get<FacebookUserInfoResponse>(this.getUserInfoUrl(accessToken)).toPromise().then(_ => _.data);
+    } catch (e) {
+      throw new GeneralException(GeneralCause.DEPENDANT_SERVICE_ERROR);
+    }
   }
 
   private mapUserInfoToRegistrationMessage(userInfo: FacebookUserInfoResponse): RegisterGoogleUserMessage {
@@ -52,6 +55,22 @@ export class FacebookOauthService {
       email: userInfo.email,
       picture: userInfo.profile_pic
     };
+  }
+
+  private getTokenUrl(message: AuthCodeExchangeMessage): string {
+    return `https://graph.facebook.com/v7.0/oauth/access_token?` +
+      `client_id=${message.clientId}&` +
+      `client_secret=${environment.security.oauth.facebook.clientSecret}&` +
+      `redirect_uri=${message.redirectUri}&` +
+      `code=${message.code}`;
+  }
+
+  private getUserInfoUrl(accessToken: string): string {
+    return `https://graph.facebook.com/me?fields=name,id,email,picture.type(large)&access_token=${accessToken}&appsecret_proof=${this.getAppSecretProof(accessToken)}`;
+  }
+
+  private getAppSecretProof(accessToken: string): string {
+    return crypto.createHmac(FacebookOauthService.hashAlgorithm, environment.security.oauth.facebook.clientSecret).update(accessToken).digest('hex');
   }
 
 }

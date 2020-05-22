@@ -1,11 +1,14 @@
 const relativePath = require('./relative-path');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
+const buildFolder = 'dist';
 
 module.exports = {
   entry: [relativePath('src/main.ts')],
   target: 'node',
   output: {
-    path: relativePath('dist'),
+    path: relativePath(buildFolder),
     filename: 'main.js'
   },
   module: {
@@ -29,6 +32,11 @@ module.exports = {
   },
   devtool: '#eval-source-map',
   plugins: [
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: relativePath('.ssh'), to: relativePath(buildFolder + '/.ssh') }
+      ]
+    })
   ]
 };

@@ -1,4 +1,4 @@
-import {Logger, Module} from '@nestjs/common';
+import {Logger, Module, OnApplicationBootstrap} from '@nestjs/common';
 import {MongooseModule} from '@nestjs/mongoose';
 import {AuthModule} from './modules/oauth2/auth.module';
 import {UserModule} from './modules/user/user.module';
@@ -33,8 +33,11 @@ import {mongooseOptions} from './mongoose-options';
     }
   ],
 })
-export class AppModule {
+export class AppModule implements OnApplicationBootstrap {
   constructor(private logger: Logger) {
-    logger.log(`Current environment: ${environment.env}`);
+  }
+
+  onApplicationBootstrap(): any {
+    this.logger.log(`Current environment: ${environment.env}`);
   }
 }

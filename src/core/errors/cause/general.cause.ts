@@ -8,5 +8,6 @@ export class GeneralCause {
   static readonly NOT_FOUND = new ErrorCause('NOT_FOUND');
   static readonly UNAUTHORIZED = new ErrorCause('UNAUTHORIZED');
   static readonly BAD_REQUEST = new ErrorCause('BAD_REQUEST');
+  static readonly DEPENDANT_SERVICE_ERROR = new ErrorCause('DEPENDANT_SERVICE_ERROR');
 
 }

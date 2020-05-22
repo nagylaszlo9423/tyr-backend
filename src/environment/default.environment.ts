@@ -16,8 +16,8 @@ export const defaultEnvironment: Environment = {
     password: 'Asdqwe123'
   },
   frontend: {
-    url: 'http://localhost:3000',
-    loginPage: 'http://localhost:3000/login'
+    url: 'http://127.0.0.1:3000',
+    loginPage: 'http://127.0.0.1:3000/login'
   },
   security: {
     oauth: {

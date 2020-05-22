@@ -30,10 +30,10 @@ export class UserService extends BaseService<User> {
     if (existingUser) {
       throw new GeneralException(AuthCause.EMAIL_ALREADY_REGISTERED);
     }
-    const newUser: User = new this.model();
+    let newUser: User = new this.model();
     newUser.email = request.email;
     newUser.password = UserService.hashString(request.password);
-    await newUser.save();
+    newUser = await newUser.save();
     return {userId: newUser._id};
   }
 
@@ -43,7 +43,7 @@ export class UserService extends BaseService<User> {
       return {userId: existingUser.id};
     }
     const externalUserInfo = new this.externalUserInfoModel();
-    externalUserInfo.id = message.externalId;
+    externalUserInfo.externalId = message.externalId;
     const newUser: User = new this.model();
     newUser.email = message.email;
     newUser.externalUserInfo = externalUserInfo;
@@ -73,6 +73,6 @@ export class UserService extends BaseService<User> {
   }
 
   private static hashString(str: string): string {
-    return crypto.createHash('sha256').update(str).digest().toString();
+    return crypto.createHash('sha256').update(str).digest('hex').toString();
   }
 }

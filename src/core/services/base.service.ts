@@ -1,5 +1,5 @@
 import {NotFoundException} from '../errors/exceptions';
-import {Document, DocumentQuery, Model} from 'mongoose';
+import {Document, DocumentQuery, FilterQuery, Model} from 'mongoose';
 import {Auditable, AuditManager} from '../util/auditable';
 import {PaginationOptions} from '../util/pagination/pagination-options';
 import {Page} from '../util/pagination/page';
@@ -10,15 +10,14 @@ export type QueryCallback<E extends Document, T = E> = (query: DocumentQuery<T, 
 
 export abstract class BaseService<T extends Document> {
 
-  protected constructor(protected model: Model<T>) {
-  }
+  protected constructor(protected model: Model<T>) {}
 
-  public _remove(conditions?: any): Promise<DeletionResult> {
+  public _remove(conditions?: FilterQuery<T>): Promise<DeletionResult> {
     return this.model.remove(conditions).exec().then(BaseService.toDeletionResult);
   }
 
   public async _removeById(id: string): Promise<void> {
-    await this.model.remove({_id: id}).exec();
+    await this.model.remove({_id: id} as any).exec();
   }
 
   public _findById(id: string, conditions?: any, queryCallback?: QueryCallback<T>): Promise<T> {

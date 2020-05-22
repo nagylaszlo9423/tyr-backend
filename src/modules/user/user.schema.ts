@@ -12,9 +12,9 @@ export interface User extends mongoose.Document {
   password: string;
   picture: string;
   role: UserRole;
-  friends: mongoose.Types.ObjectId;
-  paths: mongoose.Types.ObjectId;
-  groups: mongoose.Types.ObjectId;
+  friends: mongoose.Types.ObjectId[];
+  paths: mongoose.Types.ObjectId[];
+  groups: mongoose.Types.ObjectId[];
   externalUserInfo: ExternalUserInfo;
 }
 
