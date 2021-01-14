@@ -1,5 +1,5 @@
 import {User} from '../user/user.schema';
-import {Document, DocumentQuery} from 'mongoose';
+import {Document, Query} from 'mongoose';
 import {PathSortOptions} from './path-sort-options';
 import {PathVisibility} from './enums/path-visibility';
 import {PathFilter} from './enums/path-filter';
@@ -47,7 +47,7 @@ export class PathQueries {
     return query;
   }
 
-  static sortByFilters<E extends Document, T = E>(sortBy: string, query: DocumentQuery<T, E>): DocumentQuery<T, E> {
+  static sortByFilters<E extends Document, T = E>(sortBy: string, query: Query<T, E>): Query<T, E> {
     let sortCondition;
     switch (sortBy) {
       default:

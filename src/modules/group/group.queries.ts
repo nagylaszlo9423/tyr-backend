@@ -1,5 +1,5 @@
 import {GroupJoinPolicy} from './enums/group-join-policy';
-import {Document, DocumentQuery} from 'mongoose';
+import {Document, Query} from 'mongoose';
 import {PathSortOptions} from '../path/path-sort-options';
 import {GroupFilter} from './enums/group-filter';
 
@@ -40,7 +40,7 @@ export class GroupQueries {
     return query;
   }
 
-  static sortByFilters<E extends Document, T = E>(sortBy: string, query: DocumentQuery<T, E>): DocumentQuery<T, E> {
+  static sortByFilters<E extends Document, T = E>(sortBy: string, query: Query<T, E>): Query<T, E> {
     let sortCondition;
     switch (sortBy) {
       default:

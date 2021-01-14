@@ -1,12 +1,12 @@
 import {NotFoundException} from '../errors/exceptions';
-import {Document, DocumentQuery, FilterQuery, Model} from 'mongoose';
+import {Document, Query,FilterQuery, Model} from 'mongoose';
 import {Auditable, AuditManager} from '../util/auditable';
 import {PaginationOptions} from '../util/pagination/pagination-options';
 import {Page} from '../util/pagination/page';
 import {DeletionResult} from '../../dtos/deletion.result';
 import {DeleteWriteOpResultObject} from 'mongodb';
 
-export type QueryCallback<E extends Document, T = E> = (query: DocumentQuery<T, E>) => DocumentQuery<T, E>;
+export type QueryCallback<E extends Document, T = E> = (query: Query<T, E>) => Query<T, E>;
 
 export abstract class BaseService<T extends Document> {
 
@@ -51,30 +51,31 @@ export abstract class BaseService<T extends Document> {
       return BaseService.callQueryCallback(this.model.find(conditions), queryCallback).exec();
   }
 
-  public _findPage(options: PaginationOptions, conditions?: any, queryCallback?: QueryCallback<T, Page<T>>): Promise<Page<T>> {
+  public _findPage(options: PaginationOptions, conditions?: any, queryCallback?: QueryCallback<T, Array<T>>): Promise<Page<T>> {
     return new Promise(async (resolve, reject) => {
       try {
         const total = await this.model.countDocuments({}).exec();
 
-        const query = this.model
+        const query: Query<T[], T> = this.model
           .find(conditions)
           .skip(options.skip())
-          .limit(options.size)
-          .map(results => new Page({
-            page: options.page,
-            size: options.size,
-            total: total,
-            items: results
-          }));
+          .limit(options.size);
 
-        resolve(await BaseService.callQueryCallback(query, queryCallback).exec());
+        const results: T[] = await BaseService.callQueryCallback(query, queryCallback).exec();
+
+        resolve(new Page({
+          page: options.page,
+          size: options.size,
+          total: total,
+          items: results
+        }));
       } catch (e) {
         reject(e);
       }
     });
   }
 
-  private static callQueryCallback<E extends Document, R = E>(query: DocumentQuery<R, E>, callback: QueryCallback<E, R>): DocumentQuery<R, E> {
+  private static callQueryCallback<E extends Document, R = E>(query: Query<R, E>, callback: QueryCallback<E, R>): Query<R, E> {
     return callback ? callback(query) : query;
   }
 
